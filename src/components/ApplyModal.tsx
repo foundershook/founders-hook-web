@@ -60,14 +60,14 @@ export default function ApplyModal({
 
         {status === "done" ? (
           <div className="flex flex-col items-center gap-3 py-6 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-400/10 text-gold-300">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/20 text-brand-300 shadow-[0_0_15px_rgba(99,91,255,0.3)]">
               <Check size={22} />
             </span>
             <p className="font-medium text-white">Application sent</p>
             <p className="text-sm text-mist-400">
               {startup.name} will be in touch if it&apos;s a match.
             </p>
-            <button onClick={onClose} className="btn-outline mt-2 !py-2 !px-5 text-xs">
+            <button onClick={onClose} className="btn-purple-outline mt-2 !py-2 !px-5 text-xs">
               Close
             </button>
           </div>
@@ -113,7 +113,7 @@ export default function ApplyModal({
             <button
               onClick={submit}
               disabled={!roleId || status === "loading"}
-              className="btn-gold w-full justify-center disabled:opacity-60"
+              className="btn-purple w-full justify-center disabled:opacity-60"
             >
               {status === "loading" ? "Sending…" : "Send application"}
             </button>

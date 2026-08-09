@@ -79,29 +79,29 @@ function FollowModal({ type, userId, onClose }: FollowModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-ink-900 p-6 shadow-2xl"
+        className="relative w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold capitalize text-white">{type}</h2>
+          <h2 className="font-display text-lg font-semibold capitalize text-slate-950">{type}</h2>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-mist-400 transition-colors hover:bg-white/5 hover:text-white"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-900"
           >
             <X size={18} />
           </button>
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-10 text-mist-400">
-            <Loader2 size={20} className="animate-spin text-gold-400" />
+          <div className="flex items-center justify-center py-10 text-slate-400">
+            <Loader2 size={20} className="animate-spin text-purple-600" />
           </div>
         ) : users.length === 0 ? (
-          <p className="py-8 text-center text-sm text-mist-500">
+          <p className="py-8 text-center text-sm text-slate-400">
             {type === "followers" ? "No followers yet." : "Not following anyone yet."}
           </p>
         ) : (
@@ -110,9 +110,9 @@ function FollowModal({ type, userId, onClose }: FollowModalProps) {
               <li key={u._id}>
                 <button
                   onClick={() => { onClose(); router.push(`/users/${u._id}`); }}
-                  className="group flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition-all hover:border-white/8 hover:bg-white/[0.04]"
+                  className="group flex w-full items-center gap-3 rounded-xl border border-transparent p-2 text-left transition-all hover:border-slate-200 hover:bg-slate-50"
                 >
-                  <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-white/10">
+                  <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-slate-200">
                     <Image
                       src={u.avatarUrl || "https://picsum.photos/seed/user/80/80"}
                       alt={u.name}
@@ -121,10 +121,10 @@ function FollowModal({ type, userId, onClose }: FollowModalProps) {
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">{u.name}</p>
-                    <p className="truncate text-xs text-mist-400">@{u.username}</p>
+                    <p className="truncate text-sm font-semibold text-slate-950">{u.name}</p>
+                    <p className="truncate text-xs text-slate-500">@{u.username}</p>
                   </div>
-                  <ChevronRight size={14} className="shrink-0 text-mist-600 group-hover:text-gold-400 transition-colors" />
+                  <ChevronRight size={14} className="shrink-0 text-slate-400 group-hover:text-purple-600 transition-colors" />
                 </button>
               </li>
             ))}
@@ -252,7 +252,7 @@ export default function ProfilePage() {
   const userId = user._id || user.id;
 
   return (
-    <div className="flex min-h-screen bg-ink-950">
+    <div className="flex min-h-screen bg-white">
       <Sidebar user={sidebarUser} />
 
       <main className="relative min-w-0 flex-1 overflow-hidden">
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                   {({ open }) => (
                     <div 
                       onClick={() => open()}
-                      className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-2xl border border-white/15 shadow-card"
+                      className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-2xl border border-slate-200 shadow-sm"
                     >
                       <Image
                         src={profilePic || "https://picsum.photos/seed/user/160/160"}
@@ -309,51 +309,51 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-gold-400/25 bg-gold-400/10 px-3 py-1 text-xs font-semibold text-gold-200">
+                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-600">
                   <UserRound size={14} />
                   Founder profile
                 </p>
-                <h1 className="font-display text-4xl font-semibold text-white">{user.name}</h1>
-                <p className="mt-1 text-sm text-mist-400">@{user.username}</p>
+                <h1 className="font-display text-4xl font-semibold text-slate-950">{user.name}</h1>
+                <p className="mt-1 text-sm text-slate-500">@{user.username}</p>
 
                 {/* ── Follow stats ── */}
                 <div className="mt-3 flex items-center gap-5">
                   <button
                     onClick={() => setFollowModal("followers")}
-                    className="group flex flex-col items-start transition-colors hover:text-gold-300"
+                    className="group flex flex-col items-start transition-colors hover:text-purple-600"
                   >
-                    <span className="text-lg font-bold leading-none text-white group-hover:text-gold-300 transition-colors">
+                    <span className="text-lg font-bold leading-none text-slate-950 group-hover:text-purple-600 transition-colors">
                       {followStats.followers}
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-mist-400">
+                    <span className="flex items-center gap-1 text-xs text-slate-500">
                       <Users size={11} />
                       Followers
                     </span>
                   </button>
 
-                  <div className="h-8 w-px bg-white/10" />
+                  <div className="h-8 w-px bg-slate-200" />
 
                   <button
                     onClick={() => setFollowModal("following")}
-                    className="group flex flex-col items-start transition-colors hover:text-gold-300"
+                    className="group flex flex-col items-start transition-colors hover:text-purple-600"
                   >
-                    <span className="text-lg font-bold leading-none text-white group-hover:text-gold-300 transition-colors">
+                    <span className="text-lg font-bold leading-none text-slate-950 group-hover:text-purple-600 transition-colors">
                       {followStats.following}
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-mist-400">
+                    <span className="flex items-center gap-1 text-xs text-slate-500">
                       <Users size={11} />
                       Following
                     </span>
                   </button>
 
-                  <div className="h-8 w-px bg-white/10" />
+                  <div className="h-8 w-px bg-slate-200" />
 
                   <div className="flex flex-col items-start">
-                    <span className="flex items-center gap-1 text-sm text-mist-400">
+                    <span className="flex items-center gap-1 text-sm text-slate-500">
                       <CalendarDays size={13} />
                       {joinedDate}
                     </span>
-                    <span className="text-xs text-mist-600">Joined</span>
+                    <span className="text-xs text-slate-400">Joined</span>
                   </div>
                 </div>
               </div>
@@ -366,9 +366,9 @@ export default function ProfilePage() {
           </div>
 
           {/* 2. GRID UPDATED HERE: lg:grid-cols-[minmax(0,1.5fr)_1fr] makes the right box smaller */}
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.5fr)_1fr] gap-6 border-b border-white/10 pb-8">
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.5fr)_1fr] gap-6 border-b border-slate-200 pb-8">
             
-            <section className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-xl h-full flex flex-col justify-between">
+            <section className="rounded-2xl border border-slate-100 bg-white p-6 h-full flex flex-col justify-between shadow-sm">
               {isEditingBio ? (
                 <div className="flex-1 flex flex-col gap-4">
                   <textarea
@@ -376,13 +376,13 @@ export default function ProfilePage() {
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="What are you building? What's your background?"
                     rows={6}
-                    className="w-full flex-1 resize-y rounded-xl border border-white/10 bg-ink-950 p-4 text-base leading-relaxed text-mist-100 placeholder:text-mist-600 focus:border-gold-500/50 focus:outline-none focus:ring-1 focus:ring-gold-500/50 transition-all"
+                    className="w-full flex-1 resize-y rounded-xl border border-slate-200 bg-slate-50 p-4 text-base leading-relaxed text-slate-800 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500/20 transition-all"
                   />
                   <div className="flex items-center gap-3 justify-end">
                     <button
                       onClick={() => setIsEditingBio(false)}
                       disabled={isSaving}
-                      className="inline-flex w-fit items-center gap-2 px-4 py-2 text-sm text-mist-300 hover:text-white transition-colors"
+                      className="inline-flex w-fit items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition-colors"
                     >
                       <X size={16} />
                       Cancel
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleSaveProfile}
                       disabled={isSaving}
-                      className="btn-gold inline-flex w-fit items-center gap-2 px-4 py-2 text-sm disabled:opacity-70"
+                      className="btn-purple inline-flex w-fit items-center gap-2 px-4 py-2 text-sm disabled:opacity-70"
                     >
                       {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                       {isSaving ? "Saving..." : "Save Bio"}
@@ -399,7 +399,7 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col justify-between">
-                  <p className="flex-1 text-base leading-relaxed text-mist-200 whitespace-pre-wrap">
+                  <p className="flex-1 text-base leading-relaxed text-slate-700 whitespace-pre-wrap">
                     {bio || "You haven't written a bio yet. Tell the community what you are building!"}
                   </p>
                   
@@ -414,7 +414,7 @@ export default function ProfilePage() {
                     
                     <button
                       disabled
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg border border-white/5 bg-white/5 text-mist-400 cursor-not-allowed"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg border border-slate-100 bg-slate-50 text-slate-400 cursor-not-allowed"
                       title="Coming Soon"
                     >
                       <Bot size={16} />
@@ -425,14 +425,14 @@ export default function ProfilePage() {
               )}
             </section>
 
-            <section className="rounded-2xl border border-white/10 bg-ink-900/75 p-6 shadow-card backdrop-blur h-full">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm h-full">
               <div className="mb-5 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-mist-300">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
                   <FileText size={18} />
                 </span>
                 <div>
-                  <h2 className="font-display text-lg font-semibold text-white">Profile Details</h2>
-                  <p className="text-sm text-mist-500">From onboarding</p>
+                  <h2 className="font-display text-lg font-semibold text-slate-950">Profile Details</h2>
+                  <p className="text-sm text-slate-400">From onboarding</p>
                 </div>
               </div>
 
@@ -441,17 +441,17 @@ export default function ProfilePage() {
                   {answerEntries.slice(0, 6).map(([question, answer]) => (
                     <div key={question}>
                       {/* 3. MAPPING APPLIED HERE: Checks the dictionary above for a custom label */}
-                      <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-mist-500">
+                      <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
                         {QUESTION_LABELS[question] || question}
                       </dt>
-                      <dd className="mt-1 text-sm leading-6 text-mist-200">
+                      <dd className="mt-1 text-sm leading-6 text-slate-700">
                         {formatAnswer(answer)}
                       </dd>
                     </div>
                   ))}
                 </dl>
               ) : (
-                <p className="text-sm leading-6 text-mist-400">
+                <p className="text-sm leading-6 text-slate-500">
                   Finish onboarding to fill out this profile framework.
                 </p>
               )}
@@ -462,25 +462,25 @@ export default function ProfilePage() {
           {/* ── My Projects Section ── */}
           <section className="mt-10">
             <div className="mb-5 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gold-400/10 text-gold-300">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
                 <Rocket size={19} />
               </span>
               <div>
-                <h2 className="font-display text-xl font-semibold text-white">My Projects</h2>
-                <p className="text-sm text-mist-500">Startups you&apos;ve published</p>
+                <h2 className="font-display text-xl font-semibold text-slate-950">My Projects</h2>
+                <p className="text-sm text-slate-400">Startups you&apos;ve published</p>
               </div>
             </div>
 
             {startupsLoading ? (
-              <div className="flex items-center gap-3 py-8 text-mist-400">
+              <div className="flex items-center gap-3 py-8 text-slate-500">
                 <Loader2 size={18} className="animate-spin" />
                 <span className="text-sm">Loading your projects…</span>
               </div>
             ) : myStartups.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-ink-900/40 px-6 py-12 text-center">
-                <Rocket size={36} className="mx-auto mb-3 text-mist-600" />
-                <p className="text-base font-medium text-mist-300">No projects yet</p>
-                <p className="mt-1 text-sm text-mist-500">Publish your first startup from the feed page to see it here.</p>
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-12 text-center">
+                <Rocket size={36} className="mx-auto mb-3 text-slate-400" />
+                <p className="text-base font-medium text-slate-600">No projects yet</p>
+                <p className="mt-1 text-sm text-slate-400">Publish your first startup from the feed page to see it here.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

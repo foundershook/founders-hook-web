@@ -11,24 +11,24 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(124, 58, 237, 0.35);
   color: #fff;
 }
 
-/* thin gold scrollbar, matches the brand accent instead of the browser default */
+/* sleek purple scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: #0c0d10;
+  background: #07070a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2c313b;
+  background: #2d244c;
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #52525b;
+  background: #635bff;
 }
 
 @layer components {
@@ -36,16 +36,28 @@ body {
     font-family: var(--font-display);
   }
 
+  .btn-purple {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-accent via-brand-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-purple transition-all duration-200 hover:scale-[1.03] hover:shadow-purpleGlow active:scale-[0.98];
+  }
+
+  .btn-purple-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-6 py-3 text-sm font-semibold text-brand-300 backdrop-blur-md transition-all duration-200 hover:border-brand-400 hover:bg-brand-500/20 hover:text-white hover:shadow-[0_0_20px_rgba(124,58,237,0.3)];
+  }
+
   .btn-gold {
-    @apply inline-flex items-center gap-2 rounded-full bg-gold-gradient px-6 py-3 text-sm font-semibold text-ink-950 shadow-gold transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-accent to-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-purple transition-all duration-200 hover:scale-[1.03] hover:shadow-purpleGlow active:scale-[0.98];
   }
 
   .btn-outline {
-    @apply inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-mist-100 backdrop-blur transition-colors duration-200 hover:border-gold-400/60 hover:bg-white/[0.06];
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-mist-100 backdrop-blur transition-all duration-200 hover:border-brand-400/70 hover:bg-brand-500/10 hover:text-white;
+  }
+
+  .badge-purple {
+    @apply inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-300 backdrop-blur-md shadow-[0_0_15px_rgba(99,91,255,0.15)];
   }
 
   .field-input {
-    @apply w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-mist-100 placeholder:text-mist-500 outline-none transition-colors focus:border-gold-400/60 focus:bg-white/[0.06];
+    @apply w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-mist-100 placeholder:text-mist-500 outline-none transition-colors focus:border-brand-500 focus:bg-white/[0.06] focus:ring-1 focus:ring-brand-500/50;
   }
 
   .chip {
@@ -53,7 +65,7 @@ body {
   }
 
   .chip-active {
-    @apply border-gold-400/70 bg-gold-400/10 text-gold-200;
+    @apply border-brand-400/80 bg-brand-500/20 text-brand-200 shadow-[0_0_12px_rgba(99,91,255,0.25)];
   }
 
   .animate-slide-in-right {

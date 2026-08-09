@@ -51,15 +51,22 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="hidden w-[84px] flex-col items-center border-r border-white/5 bg-ink-950/90 py-6 lg:flex xl:w-56 xl:items-stretch xl:px-4">
-        <Link href="/" className="mb-8 flex items-center gap-2 xl:px-2">
-          <Image src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg" alt="Founders Hook Logo" width={36} height={36} className="rounded-lg object-cover" />
-          <span className="hidden font-display text-sm font-semibold tracking-wide xl:inline">
-            FOUNDERS HOOK
-          </span>
+    <aside className="hidden w-[84px] flex-col items-center border-r border-slate-200 bg-white py-6 lg:flex xl:w-56 xl:items-stretch xl:px-4 shadow-xs">
+        <Link href="/" className="mb-8 flex items-center gap-2.5 xl:px-2 group">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white font-extrabold text-lg shadow-md shadow-purple-200">
+            F
+          </div>
+          <div className="hidden flex-col xl:flex">
+            <span className="font-bold text-sm tracking-wider text-slate-950 leading-tight">
+              FOUNDERS
+            </span>
+            <span className="font-bold text-xs tracking-widest text-purple-600 leading-tight">
+              HOOK
+            </span>
+          </div>
         </Link>
 
-        <nav className="flex flex-1 flex-col gap-1">
+        <nav className="flex flex-1 flex-col gap-1.5">
           {NAV_ITEMS.map((item) => {
             const active = item.href === pathname;
             return (
@@ -68,12 +75,11 @@ export default function Sidebar({
                 href={item.href}
                 className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors xl:px-3 ${
                   active
-                    ? "bg-gold-400/10 text-gold-200"
-                    : "text-mist-400 hover:bg-white/5 hover:text-white"
+                    ? "bg-purple-50 text-purple-700 font-bold shadow-xs"
+                    : "text-slate-600 font-medium hover:bg-slate-50 hover:text-purple-600"
                 }`}
               >
-                <item.icon size={19} className="shrink-0" />
-                <span className="hidden xl:inline">{item.label}</span>
+                <span>{item.label}</span>
               </Link>
             );
           })}
@@ -83,35 +89,35 @@ export default function Sidebar({
         <div ref={menuRef} className="relative mt-4">
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            className="flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-white/5"
+            className="flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-slate-50 border border-slate-100"
           >
             <Image
               src={user?.avatarUrl || "https://picsum.photos/seed/user/64/64"}
               alt={user?.name || "You"}
               width={34}
               height={34}
-              className="rounded-full border border-white/10 object-cover"
+              className="rounded-full border border-slate-200 object-cover"
             />
             <span className="hidden min-w-0 flex-1 xl:block">
-              <span className="block truncate text-sm font-medium text-white">
+              <span className="block truncate text-sm font-bold text-slate-900">
                 {user?.name || "Guest"}
               </span>
-              <span className="block truncate text-xs text-mist-500">Founder</span>
+              <span className="block truncate text-xs text-purple-600 font-semibold">Founder</span>
             </span>
-            <ChevronDown size={15} className="hidden shrink-0 text-mist-500 xl:block" />
+            <ChevronDown size={15} className="hidden shrink-0 text-slate-400 xl:block" />
           </button>
 
           {menuOpen && (
-            <div className="absolute bottom-full left-0 mb-2 w-44 overflow-hidden rounded-xl border border-white/10 bg-ink-850 shadow-card">
+            <div className="absolute bottom-full left-0 mb-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg z-50">
               <Link
                 href="/profile"
-                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-mist-300 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-slate-700 font-medium transition-colors hover:bg-slate-50 hover:text-purple-600"
               >
                 <UserRound size={15} /> Profile
               </Link>
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-mist-300 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-rose-600 font-medium transition-colors hover:bg-rose-50"
               >
                 <LogOut size={15} /> Log out
               </button>

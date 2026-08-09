@@ -50,19 +50,19 @@ function UserCard({
   return (
     <div
       onClick={onViewProfile}
-      className="group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 text-center transition-all duration-200 hover:border-gold-500/20 hover:bg-white/[0.06]"
+      className="group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-center transition-all duration-200 hover:border-purple-300 hover:shadow-md"
     >
       {/* Founder badge */}
       {user.isFounder && (
-        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl border-b border-l border-gold-400/20 bg-gold-400/10 px-2 py-0.5">
-          <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-gold-400">
+        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl border-b border-l border-purple-200 bg-purple-50 px-2 py-0.5">
+          <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-purple-600">
             <Rocket size={8} /> Founder
           </span>
         </div>
       )}
 
       {/* Circular avatar — centered */}
-      <div className="relative mb-3 h-[88px] w-[88px] overflow-hidden rounded-full border-2 border-white/15 shadow-lg transition-transform duration-200 group-hover:scale-105">
+      <div className="relative mb-3 h-[88px] w-[88px] overflow-hidden rounded-full border-2 border-slate-200 shadow-md transition-transform duration-200 group-hover:scale-105">
         <Image
           src={user.avatarUrl || "https://picsum.photos/seed/user/120/120"}
           alt={user.name}
@@ -72,19 +72,19 @@ function UserCard({
       </div>
 
       {/* Name */}
-      <h3 className="line-clamp-1 font-display text-[15px] font-bold text-white transition-colors group-hover:text-gold-100">
+      <h3 className="line-clamp-1 font-display text-[15px] font-bold text-slate-950 transition-colors group-hover:text-purple-700">
         {user.name}
       </h3>
 
       {/* Username / role */}
-      <p className="mt-0.5 text-xs text-mist-500">
+      <p className="mt-0.5 text-xs text-slate-400">
         {user.role ? user.role : `@${user.username}`}
       </p>
 
       {/* Follow / You button */}
       <div className="mt-4 w-full" onClick={(e) => e.stopPropagation()}>
         {user.isCurrentUser ? (
-          <span className="block w-full rounded-full border border-white/10 py-2 text-center text-xs font-semibold text-mist-500">
+          <span className="block w-full rounded-full border border-slate-200 py-2 text-center text-xs font-semibold text-slate-400">
             You
           </span>
         ) : currentUser ? (
@@ -94,8 +94,8 @@ function UserCard({
             id={`follow-${user._id}`}
             className={`inline-flex w-full items-center justify-center gap-2 rounded-full border py-2 text-xs font-semibold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${
               isFollowing
-                ? "border-gold-500/40 bg-gold-500/10 text-gold-300 hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300"
-                : "border-white/20 bg-white/[0.04] text-mist-200 hover:border-gold-400/50 hover:bg-gold-400/10 hover:text-gold-200"
+                ? "border-purple-300 bg-purple-50 text-purple-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+                : "border-slate-200 bg-slate-50 text-slate-700 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-600"
             }`}
           >
             {isPending ? (
@@ -186,32 +186,27 @@ export default function NetworkingPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-ink-950 text-mist-100">
+    <div className="flex min-h-screen bg-white text-slate-900">
       <Sidebar user={currentUser} />
 
       <main className="relative min-w-0 flex-1 overflow-x-hidden">
-        {/* Ambient glow */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-20 left-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-gold-400/[0.04] blur-[100px]" />
-        </div>
-
         <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-10 lg:px-10">
 
           {/* ── Header ───────────────────────────────────────────────── */}
-          <div className="mb-8 border-b border-white/[0.07] pb-8">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-gold-400/20 bg-gold-400/8 px-3 py-1 text-xs font-semibold text-gold-300">
+          <div className="mb-8 border-b border-slate-200 pb-8">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-600">
               <Network size={13} /> Platform Community
             </div>
-            <h1 className="font-display text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            <h1 className="font-display text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
               Networking
             </h1>
-            <p className="mt-2 text-sm text-mist-400">
+            <p className="mt-2 text-sm text-slate-500">
               Discover and connect with everyone on the Founders Hook platform.
             </p>
 
             {/* Search */}
             <div className="mt-6 relative w-full max-w-md">
-              <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-mist-500" />
+              <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 id="networking-search"
                 type="text"
@@ -221,7 +216,7 @@ export default function NetworkingPage() {
                 className="field-input pl-11 pr-10"
               />
               {query && (
-                <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-mist-500 hover:text-mist-300 transition-colors">
+                <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors">
                   <X size={14} />
                 </button>
               )}
@@ -230,33 +225,33 @@ export default function NetworkingPage() {
 
           {/* ── Grid ────────────────────────────────────────────────── */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center gap-4 py-32 text-mist-400">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-gold-400/20 bg-gold-400/8">
-                <Loader2 size={22} className="animate-spin text-gold-400" />
+            <div className="flex flex-col items-center justify-center gap-4 py-32 text-slate-500">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-200 bg-purple-50">
+                <Loader2 size={22} className="animate-spin text-purple-600" />
               </div>
               <p className="text-sm font-medium">Loading members…</p>
             </div>
           ) : users.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/8 bg-white/[0.01] py-20 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03]">
-                <Users size={24} className="text-mist-600" />
+            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-20 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white">
+                <Users size={24} className="text-slate-400" />
               </div>
-              <p className="text-base font-semibold text-mist-200">No members found</p>
-              <p className="text-sm text-mist-500">
+              <p className="text-base font-semibold text-slate-700">No members found</p>
+              <p className="text-sm text-slate-400">
                 {query ? `No results for "${query}".` : "Be the first to join!"}
               </p>
               {query && (
-                <button onClick={() => setQuery("")} className="text-xs text-gold-400 hover:text-gold-300 transition-colors">
+                <button onClick={() => setQuery("")} className="text-xs text-purple-600 hover:text-purple-700 transition-colors">
                   Clear search
                 </button>
               )}
             </div>
           ) : (
             <>
-              <p className="mb-5 text-xs text-mist-500">
-                Showing <span className="font-semibold text-mist-300">{users.length}</span>{" "}
+              <p className="mb-5 text-xs text-slate-400">
+                Showing <span className="font-semibold text-slate-700">{users.length}</span>{" "}
                 {users.length === 1 ? "person" : "people"}
-                {query && <> matching <span className="text-mist-300">&quot;{query}&quot;</span></>}
+                {query && <> matching <span className="text-slate-700">&quot;{query}&quot;</span></>}
               </p>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {users.map((user) => (

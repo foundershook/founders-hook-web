@@ -15,16 +15,16 @@ body {
   color: #fff;
 }
 
-/* sleek purple scrollbar */
+/* sleek light scrollbar */
 ::-webkit-scrollbar {
   width: 9px;
   height: 9px;
 }
 ::-webkit-scrollbar-track {
-  background: #07070a;
+  background: #f8fafc;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2d244c;
+  background: #cbd5e1;
   border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -33,39 +33,43 @@ body {
 
 @layer components {
   .font-display {
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
   }
 
   .btn-purple {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-accent via-brand-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-purple transition-all duration-200 hover:scale-[1.03] hover:shadow-purpleGlow active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-purple-600 hover:bg-purple-700 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-purple-200 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .btn-black {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-slate-950 hover:bg-black px-6 py-3 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
   }
 
   .btn-purple-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-6 py-3 text-sm font-semibold text-brand-300 backdrop-blur-md transition-all duration-200 hover:border-brand-400 hover:bg-brand-500/20 hover:text-white hover:shadow-[0_0_20px_rgba(124,58,237,0.3)];
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-purple-300 bg-purple-50/50 px-6 py-3 text-sm font-semibold text-purple-700 backdrop-blur-md transition-all duration-200 hover:border-purple-500 hover:bg-purple-100/70 hover:text-purple-800;
   }
 
   .btn-gold {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand-accent to-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-purple transition-all duration-200 hover:scale-[1.03] hover:shadow-purpleGlow active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-purple-600 hover:bg-purple-700 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-purple-200 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
   }
 
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-mist-100 backdrop-blur transition-all duration-200 hover:border-brand-400/70 hover:bg-brand-500/10 hover:text-white;
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-all duration-200 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-950;
   }
 
   .badge-purple {
-    @apply inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-300 backdrop-blur-md shadow-[0_0_15px_rgba(99,91,255,0.15)];
+    @apply inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50/80 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-purple-700 shadow-sm;
   }
 
   .field-input {
-    @apply w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-mist-100 placeholder:text-mist-500 outline-none transition-colors focus:border-brand-500 focus:bg-white/[0.06] focus:ring-1 focus:ring-brand-500/50;
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:border-purple-600 focus:ring-2 focus:ring-purple-500/20;
   }
 
   .chip {
-    @apply rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-mist-300 transition-all duration-150;
+    @apply rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 transition-all duration-150 hover:bg-slate-50;
   }
 
   .chip-active {
-    @apply border-brand-400/80 bg-brand-500/20 text-brand-200 shadow-[0_0_12px_rgba(99,91,255,0.25)];
+    @apply border-purple-500 bg-purple-50 text-purple-700 font-semibold shadow-sm;
   }
 
   .animate-slide-in-right {

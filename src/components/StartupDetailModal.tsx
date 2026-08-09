@@ -23,10 +23,10 @@ type FullStartup = StartupDTO & {
 
 const roleTypeColors: Record<string, string> = {
   Internship:
-    "bg-violet-400/10 text-violet-300 border border-violet-400/20",
+    "bg-violet-50 text-violet-700 border border-violet-200",
   "Full-time":
-    "bg-emerald-400/10 text-emerald-300 border border-emerald-400/20",
-  "Part-time": "bg-amber-400/10 text-amber-300 border border-amber-400/20",
+    "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  "Part-time": "bg-amber-50 text-amber-700 border border-amber-200",
 };
 
 export default function StartupDetailModal({
@@ -122,7 +122,7 @@ export default function StartupDetailModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/75 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/50 backdrop-blur-sm"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -132,12 +132,12 @@ export default function StartupDetailModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 16 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
-          className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-white/10 bg-ink-900 shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
+          className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl"
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-mist-400 backdrop-blur-sm transition hover:text-white"
+            className="absolute right-4 top-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition hover:bg-black/60"
           >
             <X size={16} />
           </button>
@@ -146,7 +146,7 @@ export default function StartupDetailModal({
           {isFounder && !loading && (
             <button
               onClick={() => setEditOpen(true)}
-              className="absolute right-14 top-4 z-10 flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-mist-300 backdrop-blur-sm transition hover:bg-white/10 hover:text-white"
+              className="absolute right-14 top-4 z-10 flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/90 px-3 py-1.5 text-xs font-medium text-slate-700 backdrop-blur-sm transition hover:bg-white hover:text-purple-600"
             >
               <Pencil size={12} /> Edit
             </button>
@@ -154,10 +154,10 @@ export default function StartupDetailModal({
 
           {loading ? (
             <div className="flex h-72 items-center justify-center">
-              <Loader2 size={28} className="animate-spin text-gold-300" />
+              <Loader2 size={28} className="animate-spin text-purple-600" />
             </div>
           ) : !startup ? (
-            <div className="flex h-72 items-center justify-center text-mist-400">
+            <div className="flex h-72 items-center justify-center text-slate-500">
               Failed to load startup details.
             </div>
           ) : (
@@ -170,10 +170,10 @@ export default function StartupDetailModal({
                   alt={startup.name}
                   className="h-full w-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-ink-900/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-white/30 to-transparent" />
 
                 {startup.featured && (
-                  <span className="absolute left-4 top-4 rounded-full bg-gold-gradient px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-ink-950">
+                  <span className="absolute left-4 top-4 rounded-full bg-purple-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
                     <Star size={10} className="mr-1 inline" />
                     Featured
                   </span>
@@ -184,7 +184,7 @@ export default function StartupDetailModal({
               <div className="relative px-6 pb-0 pt-0">
                 {/* Icon sits on the banner edge */}
                 <div className="-mt-7 mb-3 flex items-end gap-4">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-ink-800 bg-ink-850 text-3xl shadow-card overflow-hidden">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-white bg-slate-50 text-3xl shadow-sm overflow-hidden">
                     {startup.icon?.startsWith("http") ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={startup.icon} alt={startup.name} className="h-full w-full object-cover" />
@@ -193,23 +193,23 @@ export default function StartupDetailModal({
                     )}
                   </span>
                   <div className="pb-1">
-                    <h2 className="font-display text-xl font-semibold leading-tight text-white">
+                    <h2 className="font-display text-xl font-semibold leading-tight text-slate-950">
                       {startup.name}
                     </h2>
-                    <span className="mt-0.5 inline-block rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] text-mist-300">
+                    <span className="mt-0.5 inline-block rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] text-slate-600">
                       {startup.category}
                     </span>
                   </div>
                 </div>
 
                 {/* Tagline */}
-                <p className="text-sm font-medium text-mist-300">
+                <p className="text-sm font-medium text-slate-700">
                   {startup.tagline}
                 </p>
 
                 {/* Description */}
                 {startup.description && (
-                  <p className="mt-3 text-sm leading-relaxed text-mist-400">
+                  <p className="mt-3 text-sm leading-relaxed text-slate-500">
                     {startup.description}
                   </p>
                 )}
@@ -225,11 +225,11 @@ export default function StartupDetailModal({
                           src={m.avatarUrl}
                           alt={m.name}
                           title={m.name}
-                          className="h-8 w-8 rounded-full border-2 border-ink-900 object-cover"
+                          className="h-8 w-8 rounded-full border-2 border-white object-cover"
                         />
                       ))}
                     </div>
-                    <span className="flex items-center gap-1.5 text-xs text-mist-400">
+                    <span className="flex items-center gap-1.5 text-xs text-slate-500">
                       <Users size={13} />
                       {startup.members.length}{" "}
                       {startup.members.length === 1 ? "member" : "members"}
@@ -239,18 +239,18 @@ export default function StartupDetailModal({
 
                 {/* ── Open Roles ── */}
                 <div className="mt-6 mb-6">
-                  <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
-                    <Briefcase size={14} className="text-gold-300" />
+                  <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-950">
+                    <Briefcase size={14} className="text-purple-600" />
                     Open Roles
                     {startup.openRoles.length > 0 && (
-                      <span className="rounded-full bg-gold-400/10 px-2 py-0.5 text-[10px] font-medium text-gold-300">
+                      <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-medium text-purple-600">
                         {startup.openRoles.length}
                       </span>
                     )}
                   </h3>
 
                   {startup.openRoles.length === 0 ? (
-                    <p className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-5 text-center text-sm text-mist-500">
+                    <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-center text-sm text-slate-400">
                       No open roles at the moment.
                     </p>
                   ) : (
@@ -260,21 +260,21 @@ export default function StartupDetailModal({
                           key={role._id || `role-${idx}`}
                           whileHover={{ x: 2 }}
                           transition={{ duration: 0.15 }}
-                          className="flex items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 transition hover:border-white/15 hover:bg-white/[0.06]"
+                          className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 transition hover:border-purple-200 hover:bg-purple-50/50"
                         >
                           <div className="flex flex-col gap-1">
-                            <span className="text-sm font-medium text-white">
+                            <span className="text-sm font-medium text-slate-950">
                               {role.title}
                             </span>
                             {role.description && (
-                              <span className="line-clamp-1 text-xs text-mist-500">
+                              <span className="line-clamp-1 text-xs text-slate-400">
                                 {role.description}
                               </span>
                             )}
                             <span
                               className={`mt-0.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
                                 roleTypeColors[role.type] ??
-                                "bg-white/5 text-mist-400"
+                                "bg-slate-50 text-slate-500"
                               }`}
                             >
                               <Clock size={9} />
@@ -283,7 +283,7 @@ export default function StartupDetailModal({
                           </div>
                           <button
                             onClick={() => handleApply(role._id)}
-                            className="ml-4 flex shrink-0 items-center gap-1 rounded-full bg-gold-400/10 px-3 py-1.5 text-xs font-medium text-gold-300 transition hover:bg-gold-400/20"
+                            className="ml-4 flex shrink-0 items-center gap-1 rounded-full bg-purple-50 px-3 py-1.5 text-xs font-medium text-purple-600 transition hover:bg-purple-100"
                           >
                             Apply <ArrowRight size={11} />
                           </button>

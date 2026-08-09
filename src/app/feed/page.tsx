@@ -30,7 +30,7 @@ export default function FeedPage() {
   const [query, setQuery] = useState("");
   const [loadingStartups, setLoadingStartups] = useState(true);
   
-  // This state now controls your new ProjectSetupModal
+  // This state controls ProjectSetupModal
   const [createOpen, setCreateOpen] = useState(false);
 
   const loadStartups = useCallback(async (q?: string) => {
@@ -58,71 +58,60 @@ export default function FeedPage() {
   }, [query, loadStartups]);
 
   return (
-    <div className="flex min-h-screen bg-ink-950">
+    <div className="flex min-h-screen bg-slate-50/60 text-slate-900 font-sans">
       <Sidebar user={me} />
 
       <div className="relative flex-1">
-        <div className="absolute inset-x-0 top-0 h-72 overflow-hidden">
-          <Image
-            src="https://picsum.photos/seed/foundershook-feed/1800/500"
-            alt=""
-            fill
-            className="object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-ink-950/40 via-ink-950/80 to-ink-950" />
-        </div>
-
         <main className="relative z-10 mx-auto max-w-6xl px-6 pb-12 pt-8 lg:px-10">
           {/* HEADER */}
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-6">
             <div>
-              <h1 className="font-display text-2xl font-semibold text-white sm:text-3xl">
+              <h1 className="font-extrabold text-2xl font-bold text-slate-950 sm:text-3xl tracking-tight">
                 {greeting()}{me?.name ? `, ${me.name.split(" ")[0]}` : ""} 👋
               </h1>
-              <p className="mt-1 text-sm text-mist-400">
+              <p className="mt-1 text-sm text-slate-600 font-normal">
                 Let&apos;s build something impactful today.
               </p>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="relative w-full max-w-xs">
-                <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-mist-500" />
+                <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search for founders or startups…"
-                  className="field-input pl-11 pr-10"
+                  className="field-input pl-11 pr-10 border-slate-200 bg-white"
                 />
-                <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-[10px] text-mist-500">
+                <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500 font-mono">
                   ⌘K
                 </kbd>
               </div>
               <button
                 onClick={() => setCreateOpen(true)}
-                className="btn-gold flex shrink-0 items-center gap-1.5 !px-4 !py-2.5 text-sm"
+                className="btn-purple flex shrink-0 items-center gap-1.5 !px-4 !py-2.5 text-sm font-semibold rounded-full shadow-md"
               >
                 <Plus size={15} /> Create Startup
               </button>
-              <button className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-mist-300 hover:text-white">
+              <button className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-purple-600 hover:border-purple-200 shadow-xs">
                 <Bell size={18} />
-                <span className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-gold-400" />
+                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-purple-600 ring-2 ring-white" />
               </button>
             </div>
           </div>
 
           {/* DISCOVER STARTUPS */}
-          <section className="mt-10">
+          <section className="mt-8">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold text-white">
+              <h2 className="font-extrabold text-xl text-slate-950">
                 Discover Impactful Startups
               </h2>
-              {/* Removed the empty Publish Yours button entirely from here */}
             </div>
 
             {loadingStartups ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-64 animate-pulse rounded-2xl bg-white/5" />
+                  <div key={i} className="h-64 animate-pulse rounded-2xl bg-slate-200/60" />
                 ))}
               </div>
             ) : startups.length === 0 ? (
@@ -144,10 +133,10 @@ export default function FeedPage() {
           {/* KNOWLEDGE HUB */}
           <section className="mt-10">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold text-white">
+              <h2 className="font-extrabold text-xl text-slate-950">
                 Knowledge Hub
               </h2>
-              <button className="flex items-center gap-1 text-sm font-medium text-gold-300 hover:text-gold-200">
+              <button className="flex items-center gap-1 text-sm font-bold text-purple-600 hover:text-purple-700">
                 View all <ChevronRight size={15} />
               </button>
             </div>
@@ -168,8 +157,6 @@ export default function FeedPage() {
         </main>
       </div>
 
-
-
       {createOpen && (
         <ProjectSetupModal
           onClose={() => {
@@ -181,8 +168,6 @@ export default function FeedPage() {
     </div>
   );
 }
-
-
 
 function EmptyState({
   title,
@@ -199,12 +184,12 @@ function EmptyState({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-8 py-10 text-center"
+      className="rounded-2xl border border-dashed border-slate-300 bg-white px-8 py-10 text-center shadow-xs"
     >
-      <p className="font-display text-base font-semibold text-white">{title}</p>
-      <p className="mt-1 text-sm text-mist-400">{subtitle}</p>
+      <p className="font-bold text-base text-slate-900">{title}</p>
+      <p className="mt-1 text-sm text-slate-500 font-normal">{subtitle}</p>
       {actionLabel && onAction && (
-        <button onClick={onAction} className="btn-gold mt-4 !py-2 !px-5 text-xs">
+        <button onClick={onAction} className="btn-purple mt-4 !py-2 !px-5 text-xs font-semibold rounded-full">
           {actionLabel}
         </button>
       )}

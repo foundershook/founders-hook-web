@@ -14,6 +14,7 @@ type Me = {
   name: string;
   username: string;
   avatarUrl: string;
+  isFounder?: boolean;
 };
 
 function greeting() {

@@ -3,7 +3,7 @@ import { verifySession } from "@/lib/auth-edge";
 import { SESSION_COOKIE } from "@/lib/auth-constants";
 
 // Added /feed to the protected routes array
-const PROTECTED = ["/onboarding", "/dashboard", "/waitlist-success", "/feed"];
+const PROTECTED = ["/onboarding", "/dashboard", "/waitlist-success", "/feed", "/founders-hook"];
 
 // Define who gets to bypass the waitlist and see the app
 // Replace these with the exact username(s) you register with
@@ -43,6 +43,7 @@ export const config = {
     "/onboarding/:path*",
     "/dashboard/:path*",
     "/waitlist-success/:path*",
-    "/feed/:path*"
+    "/feed/:path*",
+    "/founders-hook/:path*"
   ],
 };

@@ -223,7 +223,7 @@ export default function UserProfilePage() {
     : "Recently";
 
   const sidebarUser = currentUser
-    ? { name: currentUser.name, username: currentUser.username, avatarUrl: currentUser.avatarUrl }
+    ? { name: currentUser.name, username: currentUser.username, avatarUrl: currentUser.avatarUrl, isFounder: currentUser.isFounder }
     : null;
 
   return (

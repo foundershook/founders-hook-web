@@ -258,11 +258,11 @@ function VerifyEmailForm() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 * i, duration: 0.3 }}
                         className={[
-                          "h-14 w-11 rounded-xl border text-center font-mono text-xl font-bold text-white outline-none transition-all duration-200",
-                          "bg-white/[0.04] placeholder:text-mist-600",
+                          "h-14 w-11 rounded-xl border text-center font-mono text-xl font-bold text-white outline-none transition-all duration-300",
+                          "bg-white/[0.04] placeholder:text-mist-600 hover:border-gold-400/60 hover:shadow-[0_0_18px_rgba(212,160,84,0.3)]",
                           digit
-                            ? "border-gold-400/70 bg-gold-400/8 shadow-[0_0_16px_rgba(212,160,84,0.15)]"
-                            : "border-white/10 focus:border-gold-400/60 focus:bg-white/[0.06]",
+                            ? "border-gold-400/80 bg-gold-400/10 shadow-[0_0_20px_rgba(212,160,84,0.35)]"
+                            : "border-white/10 focus:border-gold-400/80 focus:bg-white/[0.06] focus:shadow-[0_0_22px_rgba(212,160,84,0.4)]",
                         ].join(" ")}
                       />
                     ))}
@@ -299,7 +299,7 @@ function VerifyEmailForm() {
                     id="verify-otp-btn"
                     type="submit"
                     disabled={!isComplete || loading}
-                    className="btn-white mt-5 w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-ink-950 transition-all duration-300 hover:bg-white/95 hover:shadow-[0_0_30px_rgba(255,255,255,0.7)] hover:scale-[1.01] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-none disabled:hover:scale-100"
                   >
                     {loading ? (
                       <>
@@ -322,7 +322,7 @@ function VerifyEmailForm() {
                     id="resend-otp-btn"
                     onClick={handleResend}
                     disabled={cooldown > 0 || resending}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-gold-400 transition-colors hover:text-gold-400 disabled:cursor-not-allowed disabled:text-mist-500"
+                    className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-sm font-semibold text-gold-400 transition-all duration-300 hover:bg-gold-400/15 hover:text-gold-300 hover:shadow-[0_0_20px_rgba(212,160,84,0.5)] hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:text-mist-500 disabled:hover:bg-transparent disabled:hover:shadow-none disabled:hover:scale-100"
                   >
                     {resending ? (
                       <>
@@ -338,9 +338,9 @@ function VerifyEmailForm() {
                 </div>
 
                 {/* Back to signup */}
-                <p className="mt-6 text-center text-xs text-mist-600">
-                  Wrong email?{" "}
-                  <Link href="/signup" className="text-mist-400 underline underline-offset-2 hover:text-mist-200">
+                <p className="mt-6 text-center text-xs text-mist-400">
+                  <span className="font-semibold text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.6)]">Wrong email?</span>{" "}
+                  <Link href="/signup" className="inline-block font-semibold text-purple-300 underline underline-offset-4 transition-all duration-300 hover:text-purple-200 hover:drop-shadow-[0_0_12px_rgba(192,132,252,0.9)] hover:scale-105">
                     Go back
                   </Link>
                 </p>

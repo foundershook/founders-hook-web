@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+
 
 /**
  * Brevo & SMTP transactional email service.
@@ -82,45 +82,19 @@ function buildOtpEmailHtml(otp: string): string {
   `.trim();
 }
 
-export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<void> {
+interface SendEmailOptions {
+  to: string;
+  subject: string;
+  htmlContent: string;
+  textContent?: string;
+}
+
+export async function sendEmail({ to, subject, htmlContent, textContent }: SendEmailOptions): Promise<void> {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL || process.env.SMTP_FROM || "noreply@foundershook.com";
   const senderName = process.env.BREVO_SENDER_NAME || "Founders Hook";
 
-  // 1. Try Nodemailer SMTP if configured
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = parseInt(process.env.SMTP_PORT || "587", 10);
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
-
-  if (smtpHost && smtpUser && smtpPass) {
-    try {
-      const transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
-      });
-
-      await transporter.sendMail({
-        from: `"${senderName}" <${senderEmail}>`,
-        to,
-        subject: `${otp} is your Founders Hook verification code`,
-        text: `Your Founders Hook verification code is: ${otp}\n\nThis code expires in 15 minutes.\n\nIf you didn't sign up, ignore this email.`,
-        html: buildOtpEmailHtml(otp),
-      });
-
-      console.log(`[OTP EMAIL SENT via SMTP] To: ${to}, Code: ${otp}`);
-      return;
-    } catch (err: any) {
-      console.error("[SMTP ERROR] Failed to send email via SMTP:", err?.message || err);
-    }
-  }
-
-  // 2. Try Brevo API if configured
+  // 1. Try Brevo API if configured
   if (apiKey && apiKey !== "your-brevo-api-key-here") {
     const payload = {
       sender: {
@@ -128,9 +102,9 @@ export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<vo
         email: senderEmail,
       },
       to: [{ email: to }],
-      subject: `${otp} is your Founders Hook verification code`,
-      textContent: `Your Founders Hook verification code is: ${otp}\n\nThis code expires in 15 minutes.\n\nIf you didn't sign up, ignore this email.`,
-      htmlContent: buildOtpEmailHtml(otp),
+      subject,
+      ...(textContent && { textContent }),
+      htmlContent,
     };
 
     try {
@@ -145,7 +119,7 @@ export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<vo
       });
 
       if (res.ok) {
-        console.log(`[OTP EMAIL SENT via BREVO API] To: ${to}, Code: ${otp}`);
+        console.log(`[EMAIL SENT via BREVO API] To: ${to}, Subject: ${subject}`);
         return;
       } else {
         const errorBody = await res.text();
@@ -159,10 +133,17 @@ export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<vo
   // 3. Fallback for Development mode: Output to console
   console.log(`
 =====================================================
-[OTP DEV MODE] Verification Code for ${to}: ${otp}
-Expires in 15 minutes.
-(To deliver real emails to inbox, configure SMTP_HOST/SMTP_USER/SMTP_PASS or BREVO_API_KEY in .env)
+[EMAIL DEV MODE] To: ${to}
+Subject: ${subject}
 =====================================================
   `);
+}
+
+export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<void> {
+  const subject = `${otp} is your Founders Hook verification code`;
+  const textContent = `Your Founders Hook verification code is: ${otp}\n\nThis code expires in 15 minutes.\n\nIf you didn't sign up, ignore this email.`;
+  const htmlContent = buildOtpEmailHtml(otp);
+
+  await sendEmail({ to, subject, htmlContent, textContent });
 }
 

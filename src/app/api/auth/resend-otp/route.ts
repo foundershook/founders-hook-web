@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { connectToDatabase } from "@/lib/mongodb";
 import OtpVerification from "@/models/OtpVerification";
-import { sendOtpEmail } from "@/lib/mailjet";
+import { sendOtpEmail } from "@/lib/brevo";
 
 // Generate a 6-digit numeric OTP
 function generateOtp(): string {

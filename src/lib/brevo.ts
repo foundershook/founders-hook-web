@@ -1,9 +1,9 @@
 /**
- * Mailjet transactional email service.
+ * Brevo transactional email service.
  * Uses the REST API directly — no SDK needed.
  */
 
-const MAILJET_API_URL = "https://api.mailjet.com/v3.1/send";
+const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
 interface SendOtpEmailOptions {
   to: string;
@@ -82,62 +82,56 @@ function buildOtpEmailHtml(otp: string): string {
 }
 
 export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<void> {
-  const apiKey = process.env.MAILJET_API_KEY;
-  const apiSecret = process.env.MAILJET_API_SECRET;
-  const senderEmail = process.env.MAILJET_SENDER_EMAIL || "noreply@foundershook.com";
-  const senderName = process.env.MAILJET_SENDER_NAME || "Founders Hook";
+  const apiKey = process.env.BREVO_API_KEY;
+  const senderEmail = process.env.BREVO_SENDER_EMAIL || "noreply@foundershook.com";
+  const senderName = process.env.BREVO_SENDER_NAME || "Founders Hook";
 
-  if (!apiKey || !apiSecret || apiKey === "your-mailjet-api-key-here") {
+  if (!apiKey || apiKey === "your-brevo-api-key-here") {
     // In development without a real key, just log the OTP
     console.log(`[OTP DEV MODE] Code for ${to}: ${otp}`);
     return;
   }
 
   const payload = {
-    Messages: [
+    sender: {
+      name: senderName,
+      email: senderEmail,
+    },
+    to: [
       {
-        From: {
-          Email: senderEmail,
-          Name: senderName,
-        },
-        To: [
-          {
-            Email: to,
-          },
-        ],
-        Subject: `${otp} is your Founders Hook verification code`,
-        TextPart: `Your Founders Hook verification code is: ${otp}\n\nThis code expires in 15 minutes.\n\nIf you didn't sign up, ignore this email.`,
-        HTMLPart: buildOtpEmailHtml(otp),
+        email: to,
       },
     ],
+    subject: \`\${otp} is your Founders Hook verification code\`,
+    textContent: \`Your Founders Hook verification code is: \${otp}\\n\\nThis code expires in 15 minutes.\\n\\nIf you didn't sign up, ignore this email.\`,
+    htmlContent: buildOtpEmailHtml(otp),
   };
 
-  const auth = Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
-
   try {
-    const res = await fetch(MAILJET_API_URL, {
+    const res = await fetch(BREVO_API_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Basic ${auth}`,
+        "accept": "application/json",
+        "api-key": apiKey,
+        "content-type": "application/json",
       },
       body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
       const errorBody = await res.text();
-      console.error("Mailjet API error:", res.status, errorBody);
+      console.error("Brevo API error:", res.status, errorBody);
 
       if (process.env.NODE_ENV !== "production" || res.status === 401 || res.status === 403) {
-        console.warn(`[OTP FALLBACK DEV MODE] Mailjet email failed (${res.status}). OTP for ${to}: ${otp}`);
+        console.warn(\`[OTP FALLBACK DEV MODE] Brevo email failed (\${res.status}). OTP for \${to}: \${otp}\`);
         return;
       }
 
-      throw new Error(`Failed to send verification email (Mailjet ${res.status})`);
+      throw new Error(\`Failed to send verification email (Brevo \${res.status})\`);
     }
   } catch (err: any) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn(`[OTP FALLBACK DEV MODE] Could not send email via Mailjet: ${err?.message || err}. OTP for ${to}: ${otp}`);
+      console.warn(\`[OTP FALLBACK DEV MODE] Could not send email via Brevo: \${err?.message || err}. OTP for \${to}: \${otp}\`);
       return;
     }
     throw err;

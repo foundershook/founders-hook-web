@@ -123,15 +123,15 @@ export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<vo
       console.error("Brevo API error:", res.status, errorBody);
 
       if (process.env.NODE_ENV !== "production" || res.status === 401 || res.status === 403) {
-        console.warn(\`[OTP FALLBACK DEV MODE] Brevo email failed (\${res.status}). OTP for \${to}: \${otp}\`);
+        console.warn(`[OTP FALLBACK DEV MODE] Brevo email failed (${res.status}). OTP for ${to}: ${otp}`);
         return;
       }
 
-      throw new Error(\`Failed to send verification email (Brevo \${res.status})\`);
+      throw new Error(`Failed to send verification email (Brevo ${res.status})`);
     }
   } catch (err: any) {
     if (process.env.NODE_ENV !== "production") {
-      console.warn(\`[OTP FALLBACK DEV MODE] Could not send email via Brevo: \${err?.message || err}. OTP for \${to}: \${otp}\`);
+      console.warn(`[OTP FALLBACK DEV MODE] Could not send email via Brevo: ${err?.message || err}. OTP for ${to}: ${otp}`);
       return;
     }
     throw err;

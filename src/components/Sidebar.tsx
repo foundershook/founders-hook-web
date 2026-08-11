@@ -11,6 +11,7 @@ import {
   Users,
   BookOpen,
   Network,
+  Anchor,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { label: "Home", icon: Home, href: "/feed" },
   { label: "Profile", icon: UserRound, href: "/profile" },
   { label: "Founders", icon: Users, href: "/founders" },
+  { label: "Founders Hook", icon: Anchor, href: "/founders-hook" },
   { label: "Networking", icon: Network, href: "/networking" },
   { label: "Knowledge Hub", icon: BookOpen, href: "/knowledge-hub" },
 ];
@@ -25,7 +27,7 @@ const NAV_ITEMS = [
 export default function Sidebar({
   user,
 }: {
-  user: { name: string; username: string; avatarUrl: string } | null;
+  user: { name: string; username: string; avatarUrl: string; isFounder?: boolean } | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -69,6 +71,7 @@ export default function Sidebar({
         <nav className="flex flex-1 flex-col gap-1.5">
           {NAV_ITEMS.map((item) => {
             const active = item.href === pathname;
+            const Icon = item.icon;
             return (
               <Link
                 key={item.label}
@@ -79,7 +82,8 @@ export default function Sidebar({
                     : "text-slate-600 font-medium hover:bg-slate-50 hover:text-purple-600"
                 }`}
               >
-                <span>{item.label}</span>
+                <Icon size={18} className="shrink-0" />
+                <span className="hidden xl:inline">{item.label}</span>
               </Link>
             );
           })}

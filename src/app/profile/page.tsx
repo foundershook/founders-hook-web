@@ -247,6 +247,7 @@ export default function ProfilePage() {
     name: user.name,
     username: user.username,
     avatarUrl: profilePic || user.avatarUrl,
+    isFounder: user.isFounder,
   };
 
   const userId = user._id || user.id;

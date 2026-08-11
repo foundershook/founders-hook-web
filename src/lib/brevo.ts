@@ -102,8 +102,8 @@ export async function sendOtpEmail({ to, otp }: SendOtpEmailOptions): Promise<vo
         email: to,
       },
     ],
-    subject: \`\${otp} is your Founders Hook verification code\`,
-    textContent: \`Your Founders Hook verification code is: \${otp}\\n\\nThis code expires in 15 minutes.\\n\\nIf you didn't sign up, ignore this email.\`,
+    subject: `${otp} is your Founders Hook verification code`,
+    textContent: `Your Founders Hook verification code is: ${otp}\n\nThis code expires in 15 minutes.\n\nIf you didn't sign up, ignore this email.`,
     htmlContent: buildOtpEmailHtml(otp),
   };
 

@@ -38,8 +38,8 @@ export default function SignupPage() {
         return;
       }
       
-      // Navigate to onboarding to complete the waitlist application
-      router.push("/onboarding");
+      // Navigate to OTP verification page
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
       
     } catch {
       setError("Network error. Please try again.");

@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     // OTP is correct — check one more time that user hasn't been created in the meantime
     const existing = await User.findOne({
       $or: [
-        { email: record.formData.username },
+        { email: record.email },
         { username: record.formData.username },
       ],
     });

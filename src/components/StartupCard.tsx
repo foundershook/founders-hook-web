@@ -25,26 +25,32 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
   return (
     <>
       <motion.div
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.2 }}
+        whileHover={{ y: -3, scale: 1.01 }}
+        transition={{ duration: 0.18 }}
         onClick={() => setDetailOpen(true)}
-        className="relative flex w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs hover:shadow-md hover:border-purple-200 cursor-pointer transition-all"
+        className="relative flex w-full flex-col overflow-hidden rounded-2xl border border-ink-700/70 bg-ink-850 cursor-pointer transition-all hover:border-white/30 hover:shadow-glow"
+        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
       >
+        {/* Featured badge */}
         {startup.featured && (
-          <span className="absolute right-3 top-3 z-10 rounded-full bg-purple-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm">
+          <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm">
             Featured
           </span>
         )}
 
-        <div className="relative h-28 w-full overflow-hidden bg-slate-100">
+        {/* Cover image */}
+        <div className="relative h-28 w-full overflow-hidden bg-ink-800">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={startup.coverImage}
             alt=""
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-transparent to-transparent" />
-          <span className="absolute -bottom-5 left-4 flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-xl shadow-md overflow-hidden">
+          {/* Reduced gradient overlay so the banner is clearer */}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-850/80 via-ink-850/10 to-transparent" />
+
+          {/* Icon badge over image bottom-left */}
+          <span className="absolute -bottom-4 left-3 flex h-9 w-9 items-center justify-center rounded-lg border border-ink-700/60 bg-ink-800 text-base shadow-card overflow-hidden">
             {startup.icon?.startsWith("http") ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={startup.icon} alt={startup.name} className="h-full w-full object-cover" />
@@ -54,52 +60,57 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
           </span>
         </div>
 
-        <div className="flex flex-1 flex-col p-4 pt-8">
-          <h3 className="font-bold text-base text-slate-950">
+        {/* Body */}
+        <div className="flex flex-1 flex-col p-3 pt-7">
+          <h3 className="font-bold text-sm text-sand-100 leading-tight">
             {startup.name}
           </h3>
-          <p className="mt-1 line-clamp-2 flex-1 text-xs sm:text-sm text-slate-600 font-normal">
+          <p className="mt-1 line-clamp-2 flex-1 text-[11px] text-sand-400 leading-relaxed">
             {startup.tagline}
           </p>
 
-          <span className="mt-3 inline-block w-fit rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-[11px] font-semibold text-purple-700">
+          {/* Category pill */}
+          <span className="mt-2.5 inline-block w-fit rounded-full border border-ink-700/60 bg-ink-800 px-2.5 py-0.5 text-[10px] font-medium text-sand-400">
             {startup.category}
           </span>
 
-          <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-            <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <div className="flex -space-x-2">
+          {/* Footer */}
+          <div className="mt-3 flex items-center justify-between border-t border-ink-700/50 pt-2.5">
+            {/* Member avatars + count */}
+            <div className="flex items-center gap-1.5 text-[11px] text-sand-600">
+              <div className="flex -space-x-1.5">
                 {startup.members.slice(0, 3).map((m, idx) => (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={m._id || `member-${idx}`}
                     src={m.avatarUrl}
                     alt={m.name}
-                    className="h-6 w-6 rounded-full border-2 border-white object-cover shadow-xs"
+                    className="h-5 w-5 rounded-full border border-ink-850 object-cover"
                   />
                 ))}
               </div>
-              <span className="flex items-center gap-1 font-medium">
-                <Users size={12} /> {startup.members.length}
+              <span className="flex items-center gap-0.5 font-medium text-sand-600">
+                <Users size={10} /> {startup.members.length}
               </span>
             </div>
 
+            {/* Apply / Arrow button */}
             {startup.openRoles.length > 0 ? (
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // don't open detail modal
+                  e.stopPropagation();
                   setApplyOpen(true);
                 }}
-                className="flex items-center gap-1 rounded-full bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-purple-700 transition-colors"
+                className="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-white hover:bg-sand-200 transition-colors"
               >
-                Apply <ArrowRight size={12} />
+                Apply <ArrowRight size={11} />
               </button>
             ) : (
               <button
                 onClick={(e) => e.stopPropagation()}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-purple-50 hover:text-purple-600"
+                className="flex h-6 w-6 items-center justify-center rounded-full bg-ink-800 text-sand-400 hover:bg-white/10 hover:text-sand-100 transition-colors"
               >
-                <ArrowRight size={14} />
+                <ArrowRight size={12} />
               </button>
             )}
           </div>
@@ -109,7 +120,6 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
       {applyOpen && (
         <ApplyModal startup={startup} onClose={() => setApplyOpen(false)} />
       )}
-
       {detailOpen && (
         <StartupDetailModal
           startupId={startup._id}

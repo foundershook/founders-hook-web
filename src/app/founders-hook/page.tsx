@@ -38,7 +38,7 @@ interface ApplicationItem {
 const roleTypeColors: Record<string, string> = {
   Internship: "bg-violet-50 text-violet-700 border border-violet-200",
   "Full-time": "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  "Part-time": "bg-amber-50 text-amber-700 border border-amber-200",
+  "Part-time": "bg-ink-800 text-sand-200 border border-ink-700",
 };
 
 const TABS = ["All", "Pending", "Accepted", "Rejected"] as const;

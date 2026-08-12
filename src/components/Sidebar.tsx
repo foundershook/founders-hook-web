@@ -12,15 +12,17 @@ import {
   BookOpen,
   Network,
   Anchor,
+  Rss,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const NAV_ITEMS = [
-  { label: "Home", icon: Home, href: "/feed" },
-  { label: "Profile", icon: UserRound, href: "/profile" },
-  { label: "Founders", icon: Users, href: "/founders" },
-  { label: "Founders Hook", icon: Anchor, href: "/founders-hook" },
-  { label: "Networking", icon: Network, href: "/networking" },
+  { label: "Home",          icon: Home,     href: "/feed" },
+  { label: "Feed",          icon: Rss,      href: "/feed" },
+  { label: "Profile",       icon: UserRound, href: "/profile" },
+  { label: "Founders",      icon: Users,    href: "/founders" },
+  { label: "Founders Hook", icon: Anchor,   href: "/founders-hook" },
+  { label: "Networking",    icon: Network,  href: "/networking" },
   { label: "Knowledge Hub", icon: BookOpen, href: "/knowledge-hub" },
 ];
 
@@ -30,9 +32,8 @@ export default function Sidebar({
   user: { name: string; username: string; avatarUrl: string; isFounder?: boolean } | null;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  
-  // State for dropdown menu
+  const router   = useRouter();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -53,92 +54,95 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="hidden w-[84px] flex-col items-center border-r border-slate-200 bg-white py-6 lg:flex xl:w-56 xl:items-stretch xl:px-4 shadow-xs">
-        <Link href="/" className="mb-8 flex items-center gap-2.5 xl:px-2 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white font-extrabold text-lg shadow-md shadow-purple-200">
-            F
-          </div>
-          <div className="hidden flex-col xl:flex">
-            <span className="font-bold text-sm tracking-wider text-slate-950 leading-tight">
-              FOUNDERS
-            </span>
-            <span className="font-bold text-xs tracking-widest text-purple-600 leading-tight">
-              HOOK
-            </span>
-          </div>
-        </Link>
-
-        <nav className="flex flex-1 flex-col gap-1.5">
-          {NAV_ITEMS.map((item) => {
-            const active = item.href === pathname;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors xl:px-3 ${
-                  active
-                    ? "bg-purple-50 text-purple-700 font-bold shadow-xs"
-                    : "text-slate-600 font-medium hover:bg-slate-50 hover:text-purple-600"
-                }`}
-              >
-                <Icon size={18} className="shrink-0" />
-                <span className="hidden xl:inline">{item.label}</span>
-              </Link>
-            );
-          })}
-
-          <div className="my-1.5 border-t border-slate-100" />
-
-          <button
-            onClick={handleLogout}
-            title="Log out"
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-700"
-          >
-            <LogOut size={18} className="shrink-0 text-rose-500" />
-            <span className="hidden xl:inline">Log out</span>
-          </button>
-        </nav>
-
-        {/* USER PROFILE SECTION */}
-        <div ref={menuRef} className="relative mt-4">
-          <button
-            onClick={() => setMenuOpen((v) => !v)}
-            className="flex w-full items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-slate-50 border border-slate-100"
-          >
-            <Image
-              src={user?.avatarUrl || "https://picsum.photos/seed/user/64/64"}
-              alt={user?.name || "You"}
-              width={34}
-              height={34}
-              className="rounded-full border border-slate-200 object-cover"
-            />
-            <span className="hidden min-w-0 flex-1 xl:block">
-              <span className="block truncate text-sm font-bold text-slate-900">
-                {user?.name || "Guest"}
-              </span>
-              <span className="block truncate text-xs text-purple-600 font-semibold">Founder</span>
-            </span>
-            <ChevronDown size={15} className="hidden shrink-0 text-slate-400 xl:block" />
-          </button>
-
-          {menuOpen && (
-            <div className="absolute bottom-full left-0 mb-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg z-50">
-              <Link
-                href="/profile"
-                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-slate-700 font-medium transition-colors hover:bg-slate-50 hover:text-purple-600"
-              >
-                <UserRound size={15} /> Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-rose-600 font-medium transition-colors hover:bg-rose-50"
-              >
-                <LogOut size={15} /> Log out
-              </button>
-            </div>
-          )}
+    <aside
+      className="hidden w-[72px] flex-col items-center border-r border-ink-700/60 bg-ink-900 py-5 lg:flex xl:w-52 xl:items-stretch xl:px-3"
+      style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+    >
+      {/* LOGO — matches amber "F" badge in screenshot */}
+      <Link href="/" className="mb-7 flex items-center gap-2.5 xl:px-2 group">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-ink-950 font-extrabold text-base shadow-glow">
+          F
         </div>
-      </aside>
+        <div className="hidden flex-col xl:flex leading-none">
+          <span className="font-bold text-[11px] tracking-[0.18em] text-sand-100 uppercase">
+            Founders Hook
+          </span>
+        </div>
+      </Link>
+
+      {/* NAV ITEMS */}
+      <nav className="flex flex-1 flex-col gap-0.5" style={{ fontFamily: "'Calibri', sans-serif" }}>
+        {NAV_ITEMS.map((item) => {
+          // both /feed routes point same, highlight whichever matches
+          const active = pathname === item.href || (item.href === "/feed" && pathname === "/feed");
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all xl:px-3 ${
+                active
+                  ? "bg-white/15 text-white font-semibold border-l-2 border-white"
+                  : "text-sand-400 font-medium hover:bg-ink-800 hover:text-sand-100 border-l-2 border-transparent"
+              }`}
+            >
+              <Icon size={17} className="shrink-0" />
+              <span className="hidden xl:inline">{item.label}</span>
+            </Link>
+          );
+        })}
+
+        <div className="my-2 border-t border-ink-700/60" />
+
+        <button
+          onClick={handleLogout}
+          title="Log out"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-rose-400/80 transition-all hover:bg-rose-500/10 hover:text-rose-400 border-l-2 border-transparent"
+        >
+          <LogOut size={17} className="shrink-0" />
+          <span className="hidden xl:inline">Log out</span>
+        </button>
+      </nav>
+
+      {/* USER PROFILE */}
+      <div ref={menuRef} className="relative mt-3">
+        <button
+          onClick={() => setMenuOpen((v) => !v)}
+          className="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left transition-colors hover:bg-ink-800 border border-ink-700/60"
+        >
+          <Image
+            src={user?.avatarUrl || "https://picsum.photos/seed/user/64/64"}
+            alt={user?.name || "You"}
+            width={32}
+            height={32}
+            className="rounded-full border border-white/30 object-cover shrink-0"
+          />
+          <span className="hidden min-w-0 flex-1 xl:block">
+            <span className="block truncate text-sm font-bold text-sand-100">
+              {user?.name || "Guest"}
+            </span>
+            <span className="block truncate text-xs text-white/80 font-medium">Founder</span>
+          </span>
+          <ChevronDown size={14} className="hidden shrink-0 text-sand-600 xl:block" />
+        </button>
+
+        {menuOpen && (
+          <div className="absolute bottom-full left-0 mb-2 w-48 overflow-hidden rounded-xl border border-ink-700/60 bg-ink-850 shadow-card z-50">
+            <Link
+              href="/profile"
+              className="flex w-full items-center gap-2 px-4 py-3 text-sm text-sand-200 font-medium transition-colors hover:bg-ink-800 hover:text-sand-100"
+            >
+              <UserRound size={14} /> Profile
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center gap-2 px-4 py-3 text-sm text-rose-400 font-medium transition-colors hover:bg-rose-500/10"
+            >
+              <LogOut size={14} /> Log out
+            </button>
+          </div>
+        )}
+      </div>
+    </aside>
   );
 }

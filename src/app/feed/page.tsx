@@ -2,9 +2,8 @@
 
 import ProjectSetupModal from "@/components/ProjectSetupModal";
 import { useEffect, useState, useCallback } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { Search, Bell, Plus, ChevronRight } from "lucide-react";
+import { Search, Bell, Plus, ChevronRight, Home, Rss, Users, Anchor, Network, BookOpen, Settings } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
 import PostCard, { PostDTO } from "@/components/PostCard";
@@ -24,14 +23,21 @@ function greeting() {
   return "Good evening";
 }
 
+// Bottom mobile nav items matching the screenshot
+const MOBILE_NAV = [
+  { icon: Home, label: "Home", href: "/feed" },
+  { icon: Rss, label: "Feed", href: "/feed" },
+  { icon: Plus, label: "", href: "#", isCreate: true },
+  { icon: Users, label: "Network", href: "/networking" },
+  { icon: Settings, label: "More", href: "#" },
+];
+
 export default function FeedPage() {
   const [me, setMe] = useState<Me | null>(null);
   const [startups, setStartups] = useState<StartupDTO[]>([]);
   const [posts, setPosts] = useState<PostDTO[]>([]);
   const [query, setQuery] = useState("");
   const [loadingStartups, setLoadingStartups] = useState(true);
-  
-  // This state controls ProjectSetupModal
   const [createOpen, setCreateOpen] = useState(false);
 
   const loadStartups = useCallback(async (q?: string) => {
@@ -44,13 +50,9 @@ export default function FeedPage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((d) => setMe(d.user));
+    fetch("/api/auth/me").then((r) => r.json()).then((d) => setMe(d.user));
     loadStartups();
-    fetch("/api/posts")
-      .then((r) => r.json())
-      .then((d) => setPosts(d.posts || []));
+    fetch("/api/posts").then((r) => r.json()).then((d) => setPosts(d.posts || []));
   }, [loadStartups]);
 
   useEffect(() => {
@@ -59,60 +61,78 @@ export default function FeedPage() {
   }, [query, loadStartups]);
 
   return (
-    <div className="flex min-h-screen bg-slate-50/60 text-slate-900 font-sans">
+    <div
+      className="flex min-h-screen bg-ink-950 text-sand-200"
+      style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+    >
       <Sidebar user={me} />
 
-      <div className="relative flex-1">
-        <main className="relative z-10 mx-auto max-w-6xl px-6 pb-12 pt-8 lg:px-10">
-          {/* HEADER */}
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-6">
+      {/* MAIN CONTENT */}
+      <div className="relative flex-1 overflow-y-auto pb-16 lg:pb-0">
+        {/* Background Image Overlay restricted to header */}
+        <div
+          className="absolute top-0 left-0 right-0 h-72 z-0 pointer-events-none opacity-50"
+          style={{
+            backgroundImage: "url('https://res.cloudinary.com/t7efuhnd/image/upload/v1786473992/ebenezer42-planet-6092940_gyiiif.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
+          }}
+        />
+
+        <main className="relative z-10 w-full px-5 pb-10 pt-7 lg:px-8">
+
+          {/* ── HEADER ── */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="font-extrabold text-2xl font-bold text-slate-950 sm:text-3xl tracking-tight">
-                {greeting()}{me?.name ? `, ${me.name.split(" ")[0]}` : ""} 👋
+              <h1 className="font-bold text-2xl sm:text-[1.75rem] tracking-tight text-sand-100">
+                {greeting()}, {me?.name ? me.name.split(" ")[0] : "there"} 👋
               </h1>
-              <p className="mt-1 text-sm text-slate-600 font-normal">
+              <p className="mt-0.5 text-sm text-sand-400">
                 Let&apos;s build something impactful today.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="relative w-full max-w-xs">
-                <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            {/* Search + Bell */}
+            <div className="flex items-center gap-2.5">
+              <div className="relative">
+                <Search size={14} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sand-600" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search for founders or startups…"
-                  className="field-input pl-11 pr-10 border-slate-200 bg-white"
+                  placeholder="Search for founders or startups..."
+                  className="h-9 w-64 rounded-full border border-ink-700 bg-ink-850 pl-9 pr-4 text-xs text-sand-200 placeholder:text-sand-600 outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/10"
                 />
-                <kbd className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 rounded-md border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-500 font-mono">
-                  ⌘K
-                </kbd>
               </div>
+
               <button
-                onClick={() => setCreateOpen(true)}
-                className="btn-purple flex shrink-0 items-center gap-1.5 !px-4 !py-2.5 text-sm font-semibold rounded-full shadow-md"
+                className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ink-700 bg-ink-850 text-sand-400 hover:text-sand-100 transition-colors"
+                aria-label="Notifications"
               >
-                <Plus size={15} /> Create Startup
-              </button>
-              <button className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-purple-600 hover:border-purple-200 shadow-xs">
-                <Bell size={18} />
-                <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-purple-600 ring-2 ring-white" />
+                <Bell size={16} />
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-white" />
               </button>
             </div>
           </div>
 
-          {/* DISCOVER STARTUPS */}
-          <section className="mt-8">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-extrabold text-xl text-slate-950">
+          {/* ── DISCOVER STARTUPS ── */}
+          <section className="mt-20">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="font-bold text-base text-sand-100">
                 Discover Impactful Startups
               </h2>
             </div>
 
             {loadingStartups ? (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="h-64 animate-pulse rounded-2xl bg-slate-200/60" />
+              /* Skeleton grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-1">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-[260px] w-full animate-pulse rounded-2xl bg-ink-850"
+                  />
                 ))}
               </div>
             ) : startups.length === 0 ? (
@@ -123,22 +143,25 @@ export default function FeedPage() {
                 onAction={() => setCreateOpen(true)}
               />
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              /* Grid expanding downwards */
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-2">
                 {startups.map((s) => (
-                  <StartupCard key={s._id} startup={s} />
+                  <div key={s._id} className="w-full">
+                    <StartupCard startup={s} />
+                  </div>
                 ))}
               </div>
             )}
           </section>
 
-          {/* KNOWLEDGE HUB */}
-          <section className="mt-10">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-extrabold text-xl text-slate-950">
+          {/* ── KNOWLEDGE HUB ── */}
+          <section className="mt-9">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="font-bold text-base text-sand-100">
                 Knowledge Hub
               </h2>
-              <button className="flex items-center gap-1 text-sm font-bold text-purple-600 hover:text-purple-700">
-                View all <ChevronRight size={15} />
+              <button className="flex items-center gap-1 text-xs font-semibold text-white hover:text-sand-100 transition-colors">
+                View all <ChevronRight size={13} />
               </button>
             </div>
 
@@ -148,7 +171,7 @@ export default function FeedPage() {
                 subtitle="Founder tips and guides will show up here as they're published."
               />
             ) : (
-              <div className="flex snap-x gap-4 overflow-x-auto pb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-2">
                 {posts.map((p) => (
                   <PostCard key={p._id} post={p} />
                 ))}
@@ -157,6 +180,47 @@ export default function FeedPage() {
           </section>
         </main>
       </div>
+
+      {/* ── BOTTOM NAV (mobile, visible in screenshot) ── */}
+      <nav
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-ink-700/70 bg-ink-900/95 px-2 py-2 backdrop-blur-md lg:hidden"
+        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+      >
+        {MOBILE_NAV.map((item) => {
+          const Icon = item.icon;
+          if (item.isCreate) {
+            return (
+              <button
+                key="create"
+                onClick={() => setCreateOpen(true)}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink-950 shadow-glow"
+                aria-label="Create Startup"
+              >
+                <Plus size={20} />
+              </button>
+            );
+          }
+          return (
+            <a
+              key={item.label}
+              href={item.href}
+              className="flex flex-col items-center gap-0.5 text-sand-400 hover:text-sand-100 transition-colors"
+            >
+              <Icon size={20} />
+              <span className="text-[10px]">{item.label}</span>
+            </a>
+          );
+        })}
+      </nav>
+
+      {/* Desktop "Create Startup" button – floating bottom-right on desktop */}
+      <button
+        onClick={() => setCreateOpen(true)}
+        className="fixed bottom-6 right-6 z-50 hidden items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:bg-sand-200 transition-all hover:scale-[1.03] active:scale-[0.97] lg:flex"
+        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+      >
+        <Plus size={16} /> Create Startup
+      </button>
 
       {createOpen && (
         <ProjectSetupModal
@@ -185,12 +249,15 @@ function EmptyState({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="rounded-2xl border border-dashed border-slate-300 bg-white px-8 py-10 text-center shadow-xs"
+      className="rounded-2xl border border-dashed border-ink-700 bg-ink-900 px-8 py-10 text-center"
     >
-      <p className="font-bold text-base text-slate-900">{title}</p>
-      <p className="mt-1 text-sm text-slate-500 font-normal">{subtitle}</p>
+      <p className="font-bold text-sm text-sand-200">{title}</p>
+      <p className="mt-1 text-xs text-sand-400">{subtitle}</p>
       {actionLabel && onAction && (
-        <button onClick={onAction} className="btn-purple mt-4 !py-2 !px-5 text-xs font-semibold rounded-full">
+        <button
+          onClick={onAction}
+          className="btn-white mt-4 !py-1.5 !px-4 text-xs rounded-full"
+        >
           {actionLabel}
         </button>
       )}

@@ -39,7 +39,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Startup Growth": "bg-emerald-50 text-emerald-700 border-emerald-200",
   Fundraising: "bg-sky-50 text-sky-700 border-sky-200",
   Productivity: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
-  Marketing: "bg-amber-50 text-amber-700 border-amber-200",
+  Marketing: "bg-ink-800 text-sand-200 border-ink-700",
   Operations: "bg-cyan-50 text-cyan-700 border-cyan-200",
   Engineering: "bg-indigo-50 text-indigo-700 border-indigo-200",
 };

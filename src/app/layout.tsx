@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 export const metadata: Metadata = {
   title: "Founders Hook — The Exclusive Network for Startup Founders",
@@ -20,8 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${jakarta.variable} font-sans`}>
-      <body className="bg-white text-slate-900 font-sans antialiased selection:bg-purple-100 selection:text-purple-900">
+    <html lang="en">
+      <body
+        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+        className="bg-ink-950 text-sand-200 antialiased"
+      >
         {children}
       </body>
     </html>

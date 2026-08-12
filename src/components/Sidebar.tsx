@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Home,
   ChevronDown,
   LogOut,
   UserRound,
@@ -17,7 +16,6 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 const NAV_ITEMS = [
-  { label: "Home",          icon: Home,     href: "/feed" },
   { label: "Feed",          icon: Rss,      href: "/feed" },
   { label: "Profile",       icon: UserRound, href: "/profile" },
   { label: "Founders",      icon: Users,    href: "/founders" },

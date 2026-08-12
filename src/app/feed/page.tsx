@@ -3,7 +3,7 @@
 import ProjectSetupModal from "@/components/ProjectSetupModal";
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Search, Bell, Plus, ChevronRight, Home, Rss, Users, Anchor, Network, BookOpen, Settings } from "lucide-react";
+import { Search, Bell, Plus, ChevronRight, Rss, Users, Anchor, Network, BookOpen, Settings } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
 import PostCard, { PostDTO } from "@/components/PostCard";
@@ -25,7 +25,6 @@ function greeting() {
 
 // Bottom mobile nav items matching the screenshot
 const MOBILE_NAV = [
-  { icon: Home, label: "Home", href: "/feed" },
   { icon: Rss, label: "Feed", href: "/feed" },
   { icon: Plus, label: "", href: "#", isCreate: true },
   { icon: Users, label: "Network", href: "/networking" },

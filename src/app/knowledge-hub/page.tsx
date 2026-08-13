@@ -146,8 +146,8 @@ export default function KnowledgeHubPage() {
     <div className="flex min-h-screen bg-white text-slate-900">
       <Sidebar user={currentUser} />
 
-      <main className="relative min-w-0 flex-1 overflow-hidden">
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-12 lg:px-10">
+      <main className="relative min-w-0 flex-1 overflow-y-auto">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-12 lg:px-10">
           {/* Header */}
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-8">
             <div>

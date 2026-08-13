@@ -1,17 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
         port: '',
-        pathname: '/**', // This allows all image paths from Cloudinary
+        pathname: '/**',
       },
-      // You can keep other domains here if you have them (like picsum.photos)
       {
         protocol: 'https',
         hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fastly.picsum.photos',
         port: '',
         pathname: '/**',
       },

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { Check, Rocket } from "lucide-react";
+import Link from "next/link";
+import { Check, Rocket, Home } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
@@ -79,6 +80,15 @@ export default async function WaitlistSuccessPage() {
             Don&apos;t have a startup yet? No worries — you can add one after launch.
           </p>
         )}
+
+        {/* Go to Home Page Button */}
+        <Link
+          href="/"
+          className="mt-8 inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-purple-500 to-violet-500 px-6 py-3.5 text-sm font-bold text-white shadow-[0_0_25px_rgba(147,51,234,0.5)] transition-all duration-300 hover:shadow-[0_0_40px_rgba(147,51,234,0.7)] hover:scale-[1.02] hover:brightness-110 active:scale-[0.98] animate-[purpleGlow_2s_ease-in-out_infinite]"
+        >
+          <Home size={18} />
+          Go to Home Page
+        </Link>
 
       </div>
     </main>

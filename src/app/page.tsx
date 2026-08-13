@@ -15,7 +15,12 @@ import {
   MessageSquare,
   Globe,
   BookOpen,
+<<<<<<< HEAD
   Star,
+=======
+  Menu,
+  X,
+>>>>>>> 47877ca37bb73ba81d731af7578af17c9ebad9ae
 } from "lucide-react";
 
 type Stats = { founders: number; startups: number; openRoles: number };
@@ -118,6 +123,16 @@ const AVATARS = [
 export default function LandingPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const loggedIn = useAuthedUser();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     fetch("/api/stats")
@@ -157,6 +172,7 @@ export default function LandingPage() {
           ))}
         </nav>
 
+<<<<<<< HEAD
         <Link href={primaryHref} className="landing-nav-cta">
           {primaryLabel}
           <ArrowRight size={14} />
@@ -176,6 +192,90 @@ export default function LandingPage() {
             <span className="landing-badge-dot" />
             <span>Built by Student Founders. For Student Founders.</span>
           </motion.div>
+=======
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-700 transition-colors hover:bg-slate-100 md:hidden"
+            aria-label="Open menu"
+          >
+            <Menu size={22} />
+          </button>
+          <Link href={primaryHref} className="btn-purple !py-2.5 !px-5 text-xs md:text-sm font-semibold">
+            {primaryLabel}
+            <ArrowRight size={15} />
+          </Link>
+        </div>
+      </header>
+
+      {/* MOBILE MENU BACKDROP */}
+      <div
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+      {/* MOBILE MENU DRAWER */}
+      <aside
+        className={`fixed right-0 top-0 z-[51] flex h-full w-72 flex-col bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between p-6 pb-4">
+          <span className="font-extrabold text-lg tracking-wider text-slate-950">
+            MENU
+          </span>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+            aria-label="Close menu"
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <nav className="flex flex-1 flex-col gap-1 px-6">
+          {NAV_LINKS.map((l, i) => (
+            <Link
+              key={l.label}
+              href={l.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-xl px-4 py-3 text-base font-medium transition-colors hover:bg-slate-100 ${
+                i === 0
+                  ? "text-purple-600 font-bold bg-purple-50"
+                  : "text-slate-700"
+              }`}
+            >
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+        <div className="p-6 pt-4">
+          <Link
+            href={primaryHref}
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
+          >
+            {primaryLabel}
+            <ArrowRight size={15} />
+          </Link>
+        </div>
+      </aside>
+
+      {/* HERO */}
+      <section className="relative z-10 w-full pb-16 pt-6">
+        <div className="relative overflow-hidden border-y border-slate-200 bg-slate-50/50 shadow-sm lg:border-x">
+          <div className="absolute inset-0">
+            <Image
+              src="https://res.cloudinary.com/t7efuhnd/image/upload/v1785570893/tyler-franta-iusJ25iYu1c-unsplash_ysk7pp.jpg"
+              alt="Founders collaborating in a coworking space"
+              fill
+              priority
+              className="object-cover opacity-65"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/75 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-white/30" />
+          </div>
+>>>>>>> 47877ca37bb73ba81d731af7578af17c9ebad9ae
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

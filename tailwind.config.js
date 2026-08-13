@@ -70,12 +70,17 @@ module.exports = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        purpleGlow: {
+          "0%, 100%": { boxShadow: "0 0 20px rgba(147,51,234,0.4), 0 0 40px rgba(147,51,234,0.15)" },
+          "50%": { boxShadow: "0 0 30px rgba(147,51,234,0.6), 0 0 60px rgba(147,51,234,0.25)" },
+        },
       },
       animation: {
         fadeUp: "fadeUp 0.7s ease forwards",
         floatSlow: "floatSlow 6s ease-in-out infinite",
         pulseGlow: "pulseGlow 4s ease-in-out infinite",
         shimmer: "shimmer 2.5s linear infinite",
+        purpleGlow: "purpleGlow 2s ease-in-out infinite",
       },
     },
   },

@@ -186,16 +186,14 @@ export default function LandingPage() {
 
       {/* MOBILE MENU BACKDROP */}
       <div
-        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
-          mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 md:hidden ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
         onClick={() => setMobileMenuOpen(false)}
       />
       {/* MOBILE MENU DRAWER */}
       <aside
-        className={`fixed right-0 top-0 z-[51] flex h-full w-72 flex-col bg-[#FAF8F4] shadow-2xl transition-transform duration-300 ease-out md:hidden ${
-          mobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed right-0 top-0 z-[51] flex h-full w-72 flex-col bg-[#FAF8F4] shadow-2xl transition-transform duration-300 ease-out md:hidden ${mobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-between p-6 pb-4 border-b border-[#e8e4dc]">
           <span className="font-bold text-lg tracking-wider text-[#1a1a1a]">

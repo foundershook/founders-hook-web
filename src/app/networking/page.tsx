@@ -189,8 +189,8 @@ export default function NetworkingPage() {
     <div className="flex min-h-screen bg-white text-slate-900">
       <Sidebar user={currentUser} />
 
-      <main className="relative min-w-0 flex-1 overflow-x-hidden">
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-10 lg:px-10">
+      <main className="relative min-w-0 flex-1 overflow-y-auto">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-10 lg:px-10">
 
           {/* ── Header ───────────────────────────────────────────────── */}
           <div className="mb-8 border-b border-slate-200 pb-8">

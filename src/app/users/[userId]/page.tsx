@@ -230,8 +230,8 @@ export default function UserProfilePage() {
     <div className="flex min-h-screen bg-ink-950">
       <Sidebar user={sidebarUser} />
 
-      <main className="relative min-w-0 flex-1 overflow-hidden">
-        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:px-10">
+      <main className="relative min-w-0 flex-1 overflow-y-auto">
+        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-20 lg:pt-16 lg:px-10">
 
           {/* Back button */}
           <button

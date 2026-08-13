@@ -3,7 +3,7 @@
 import ProjectSetupModal from "@/components/ProjectSetupModal";
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Search, Bell, Plus, ChevronRight, Rss, Users, Anchor, Network, BookOpen, Settings } from "lucide-react";
+import { Search, Bell, Plus, ChevronRight } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
 import PostCard, { PostDTO } from "@/components/PostCard";
@@ -23,13 +23,6 @@ function greeting() {
   return "Good evening";
 }
 
-// Bottom mobile nav items matching the screenshot
-const MOBILE_NAV = [
-  { icon: Rss, label: "Feed", href: "/feed" },
-  { icon: Plus, label: "", href: "#", isCreate: true },
-  { icon: Users, label: "Network", href: "/networking" },
-  { icon: Settings, label: "More", href: "#" },
-];
 
 export default function FeedPage() {
   const [me, setMe] = useState<Me | null>(null);
@@ -81,7 +74,7 @@ export default function FeedPage() {
           }}
         />
 
-        <main className="relative z-10 w-full px-5 pb-10 pt-7 lg:px-8">
+        <main className="relative z-10 w-full px-5 pb-10 pt-16 lg:pt-7 lg:px-8">
 
           {/* ── HEADER ── */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -96,13 +89,13 @@ export default function FeedPage() {
 
             {/* Search + Bell */}
             <div className="flex items-center gap-2.5">
-              <div className="relative">
+              <div className="relative flex-1 sm:flex-initial">
                 <Search size={14} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sand-600" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search for founders or startups..."
-                  className="h-9 w-64 rounded-full border border-ink-700 bg-ink-850 pl-9 pr-4 text-xs text-sand-200 placeholder:text-sand-600 outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/10"
+                  className="h-9 w-full rounded-full border border-ink-700 bg-ink-850 pl-9 pr-4 text-base text-sand-200 placeholder:text-sand-600 outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/10 sm:w-64 sm:text-xs"
                 />
               </div>
 
@@ -180,45 +173,17 @@ export default function FeedPage() {
         </main>
       </div>
 
-      {/* ── BOTTOM NAV (mobile, visible in screenshot) ── */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-ink-700/70 bg-ink-900/95 px-2 py-2 backdrop-blur-md lg:hidden"
-        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
-      >
-        {MOBILE_NAV.map((item) => {
-          const Icon = item.icon;
-          if (item.isCreate) {
-            return (
-              <button
-                key="create"
-                onClick={() => setCreateOpen(true)}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink-950 shadow-glow"
-                aria-label="Create Startup"
-              >
-                <Plus size={20} />
-              </button>
-            );
-          }
-          return (
-            <a
-              key={item.label}
-              href={item.href}
-              className="flex flex-col items-center gap-0.5 text-sand-400 hover:text-sand-100 transition-colors"
-            >
-              <Icon size={20} />
-              <span className="text-[10px]">{item.label}</span>
-            </a>
-          );
-        })}
-      </nav>
+
 
       {/* Desktop "Create Startup" button – floating bottom-right on desktop */}
       <button
         onClick={() => setCreateOpen(true)}
-        className="fixed bottom-6 right-6 z-50 hidden items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-white shadow-glow hover:bg-sand-200 transition-all hover:scale-[1.03] active:scale-[0.97] lg:flex"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-white text-ink-950 shadow-glow hover:bg-sand-200 transition-all hover:scale-[1.03] active:scale-[0.97] lg:h-auto lg:w-auto lg:gap-2 lg:px-5 lg:py-2.5"
         style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+        aria-label="Create Startup"
       >
-        <Plus size={16} /> Create Startup
+        <Plus size={20} className="shrink-0" />
+        <span className="hidden text-sm font-semibold lg:inline">Create Startup</span>
       </button>
 
       {createOpen && (

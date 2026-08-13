@@ -33,7 +33,7 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
       >
         {/* Featured badge */}
         {startup.featured && (
-          <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm">
+          <span className="absolute right-2.5 top-2.5 z-10 rounded-full bg-purple-600 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm">
             Featured
           </span>
         )}
@@ -101,7 +101,7 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
                   e.stopPropagation();
                   setApplyOpen(true);
                 }}
-                className="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-white hover:bg-sand-200 transition-colors"
+                className="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-ink-950 hover:bg-sand-200 transition-colors"
               >
                 Apply <ArrowRight size={11} />
               </button>

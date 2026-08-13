@@ -152,8 +152,8 @@ export default function FoundersHookPage() {
     <div className="flex min-h-screen bg-slate-50/60 text-slate-900 font-sans">
       <Sidebar user={me ? { ...me, isFounder: me.isFounder } : null} />
 
-      <main className="relative min-w-0 flex-1 overflow-hidden">
-        <div className="relative z-10 mx-auto max-w-4xl px-6 pb-20 pt-10 lg:px-10">
+      <main className="relative min-w-0 flex-1 overflow-y-auto">
+        <div className="relative z-10 mx-auto max-w-4xl px-6 pb-20 pt-16 lg:pt-10 lg:px-10">
           {/* ── Header ── */}
           <div className="mb-10 border-b border-slate-200/80 pb-8">
             <motion.div

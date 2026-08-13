@@ -15,39 +15,17 @@ import {
   MessageSquare,
   Globe,
   BookOpen,
+  Star,
 } from "lucide-react";
 
 type Stats = { founders: number; startups: number; openRoles: number };
 
 const NAV_LINKS = [
-  { label: "Home", href: "/" },
-  { label: "Founders", href: "/feed" },
-  { label: "Startups", href: "/feed" },
+  { label: "Discover", href: "/feed" },
   { label: "Community", href: "/feed" },
+  { label: "Startups", href: "/feed" },
   { label: "Resources", href: "/feed" },
-];
-
-const FEATURES = [
-  {
-    icon: Handshake,
-    title: "Connect",
-    desc: "Meet fellow student founders building in your field.",
-  },
-  {
-    icon: Sparkles,
-    title: "Collaborate",
-    desc: "Form co-founding teams and ship your idea together.",
-  },
-  {
-    icon: TrendingUp,
-    title: "Grow",
-    desc: "Get resources, mentorship and expert guidance.",
-  },
-  {
-    icon: Briefcase,
-    title: "Hire",
-    desc: "Bring on student interns who want real experience.",
-  },
+  { label: "Events", href: "/feed" },
 ];
 
 function useAuthedUser() {
@@ -61,6 +39,82 @@ function useAuthedUser() {
   return loggedIn;
 }
 
+/* iMac Keyboard Row Component */
+function KeyboardRow({ keys, hasWideKey }: { keys: number; hasWideKey?: boolean }) {
+  return (
+    <div className="kb-row">
+      {Array.from({ length: keys }).map((_, i) => (
+        <div
+          key={i}
+          className={`kb-key${hasWideKey && i === Math.floor(keys / 2) ? " kb-key-wide" : ""}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* Pure CSS iMac Mockup */
+function IMacMockup() {
+  return (
+    <div className="imac-wrapper">
+      {/* iMac Body */}
+      <div className="imac-body">
+        <div className="imac-bezel-top">
+          <div className="imac-camera" />
+        </div>
+        <div className="imac-screen">
+          <Image
+            src="/dashboard-mockup.jpg"
+            alt="Founders Hook Dashboard"
+            fill
+            priority
+            style={{ objectFit: "cover", objectPosition: "top left" }}
+          />
+        </div>
+        <div className="imac-chin" />
+      </div>
+
+      {/* Stand */}
+      <div className="imac-stand">
+        <div className="imac-stand-neck" />
+        <div className="imac-stand-base" />
+      </div>
+    </div>
+  );
+}
+
+/* Desk accessories: keyboard + mouse + mug */
+function DeskAccessories() {
+  return (
+    <div className="desk-accessories">
+      {/* Keyboard */}
+      <div className="css-keyboard">
+        <KeyboardRow keys={14} />
+        <KeyboardRow keys={13} />
+        <KeyboardRow keys={12} />
+        <KeyboardRow keys={10} hasWideKey />
+      </div>
+
+      {/* Mouse */}
+      <div className="css-mouse" />
+
+      {/* Coffee Mug */}
+      <div className="css-mug">
+        <div className="mug-body" />
+        <div className="mug-handle" />
+      </div>
+    </div>
+  );
+}
+
+/* Avatar Stack for social proof */
+const AVATARS = [
+  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80",
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&h=80&q=80",
+];
+
 export default function LandingPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const loggedIn = useAuthedUser();
@@ -73,178 +127,146 @@ export default function LandingPage() {
   }, []);
 
   const primaryHref = loggedIn ? "/feed" : "/signup";
-  const primaryLabel = loggedIn ? "Go to Feed" : "Join the Early Access";
+  const primaryLabel = loggedIn ? "Go to Feed" : "Join Waitlist";
 
   return (
-    <main className="relative min-h-screen w-full bg-white text-slate-900 font-sans selection:bg-purple-100 selection:text-purple-900">
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-40 flex w-full items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 py-4 backdrop-blur-md sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-3 group">
+    <main className="landing-page">
+      {/* ─── NAVBAR ─── */}
+      <motion.header
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="landing-nav"
+      >
+        <Link href="/" className="landing-nav-logo">
           <Image
             src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg"
             alt="Founders Hook Logo"
-            width={38}
-            height={38}
-            className="rounded-xl object-cover ring-2 ring-purple-500/20 transition-transform group-hover:scale-105 shadow-sm"
+            width={36}
+            height={36}
+            className="landing-nav-logo-icon"
           />
-          <span className="font-extrabold text-lg tracking-wider text-slate-950">
-            FOUNDERS HOOK
-          </span>
+          <span className="landing-nav-logo-text">Founders Hook</span>
         </Link>
 
-        <nav className="hidden items-center gap-9 text-sm font-medium text-slate-600 md:flex">
-          {NAV_LINKS.map((l, i) => (
-            <Link
-              key={l.label}
-              href={l.href}
-              className={`transition-colors hover:text-slate-950 ${
-                i === 0 ? "text-purple-600 font-bold border-b-2 border-purple-600 pb-0.5" : ""
-              }`}
-            >
+        <nav className="landing-nav-links">
+          {NAV_LINKS.map((l) => (
+            <Link key={l.label} href={l.href}>
               {l.label}
             </Link>
           ))}
         </nav>
 
-        <Link href={primaryHref} className="btn-purple !py-2.5 !px-5 text-xs md:text-sm font-semibold">
+        <Link href={primaryHref} className="landing-nav-cta">
           {primaryLabel}
-          <ArrowRight size={15} />
+          <ArrowRight size={14} />
         </Link>
-      </header>
+      </motion.header>
 
-      {/* HERO */}
-      <section className="relative z-10 w-full pb-16 pt-6">
-        <div className="relative overflow-hidden border-y border-slate-200 bg-slate-50/50 shadow-sm lg:border-x">
-          <div className="absolute inset-0">
-            <Image
-              src="https://res.cloudinary.com/t7efuhnd/image/upload/v1785570893/tyler-franta-iusJ25iYu1c-unsplash_ysk7pp.jpg"
-              alt="Founders collaborating in a coworking space"
-              fill
-              priority
-              className="object-cover opacity-65"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-white/75 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-white/60 via-transparent to-white/30" />
-          </div>
+      {/* ─── HERO ─── */}
+      <section className="landing-hero">
+        {/* Left Column */}
+        <div className="landing-hero-left">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="landing-badge"
+          >
+            <span className="landing-badge-dot" />
+            <span>Built by Student Founders. For Student Founders.</span>
+          </motion.div>
 
-          <div className="relative px-6 pb-14 pt-14 sm:px-10 lg:px-14 lg:pb-24 lg:pt-24 min-h-[420px] sm:min-h-[500px] lg:min-h-[560px]">
-            {/* Floating Feature Bubbles — desktop */}
-            {FEATURES.map((f, i) => {
-              const positions = [
-                "left-3 top-10 sm:left-6 sm:top-14 lg:left-8 lg:top-16",
-                "right-3 top-8 sm:right-6 sm:top-12 lg:right-10 lg:top-14",
-                "left-3 bottom-24 sm:left-8 sm:bottom-28 lg:left-10 lg:bottom-32",
-                "right-3 bottom-20 sm:right-8 sm:bottom-24 lg:right-8 lg:bottom-28",
-              ];
-              const floatDelays = ["0s", "1.5s", "3s", "4.5s"];
-              return (
-                <motion.div
-                  key={f.title}
-                  initial={{ opacity: 0, scale: 0.8, y: 12 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: 0.35 + i * 0.12 }}
-                  style={{ animationDelay: floatDelays[i] }}
-                  className={`absolute ${positions[i]} z-20 hidden sm:flex items-center gap-3 rounded-2xl border border-white/60 bg-white/80 backdrop-blur-lg px-4 py-3 shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-default animate-floatSlow`}
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-600">
-                    <f.icon size={18} />
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm text-slate-900">{f.title}</p>
-                    <p className="text-[11px] text-slate-500 max-w-[150px] leading-snug">{f.desc}</p>
-                  </div>
-                </motion.div>
-              );
-            })}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="landing-heading"
+          >
+            Meet Your Next{" "}
+            <span className="landing-heading-accent">Co-founder.</span>
+          </motion.h1>
 
-            {/* Centered Hero Content */}
-            <div className="relative z-10 flex flex-col items-center text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="badge-purple mb-4"
-              >
-                <span>BUILD. CONNECT. GROW.</span>
-              </motion.div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.25 }}
+            className="landing-subtitle"
+          >
+            India&apos;s private network where ambitious student founders build
+            startups together, find teammates, validate ideas and launch faster.
+          </motion.p>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.05 }}
-                className="mx-auto max-w-3xl font-extrabold text-4xl sm:text-5xl lg:text-6xl leading-tight text-slate-950 tracking-tight"
-              >
-                The Exclusive Network for{" "}
-                <span className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 bg-clip-text text-transparent">
-                  Startup Founders
-                </span>
-                .
-              </motion.h1>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="landing-cta-group"
+          >
+            <Link href={primaryHref} className="landing-btn-primary">
+              {primaryLabel}
+              <ArrowRight size={15} />
+            </Link>
+            <Link href="/feed" className="landing-btn-secondary">
+              Explore Community
+            </Link>
+          </motion.div>
 
-              <motion.p
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.15 }}
-                className="mx-auto mt-6 max-w-lg text-base sm:text-lg leading-relaxed text-slate-600 font-normal"
-              >
-                Founders Hook is where college founders publish their ideas,
-                build teams, and connect with students looking for real
-                startup internships. Built for founders, by founders.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.25 }}
-                className="mt-9 flex flex-wrap justify-center gap-4"
-              >
-                <Link href={primaryHref} className="btn-purple !px-7 !py-3.5 font-semibold">
-                  {primaryLabel}
-                  <ArrowRight size={16} />
-                </Link>
-                <Link href="/feed" className="btn-purple-outline !px-7 !py-3.5 font-semibold">
-                  Explore Founders
-                </Link>
-              </motion.div>
-            </div>
-
-            {/* Mobile Feature Bubbles — horizontal scroll */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-10 flex sm:hidden gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-none"
-            >
-              {FEATURES.map((f) => (
-                <div
-                  key={f.title}
-                  className="flex shrink-0 items-center gap-2.5 rounded-2xl border border-white/60 bg-white/80 backdrop-blur-md px-3.5 py-2.5 shadow-md"
-                >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-                    <f.icon size={15} />
-                  </div>
-                  <div>
-                    <p className="font-bold text-xs text-slate-900">{f.title}</p>
-                    <p className="text-[10px] text-slate-500 max-w-[110px] leading-tight">{f.desc}</p>
-                  </div>
-                </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+            className="landing-social-proof"
+          >
+            <div className="landing-avatar-stack">
+              {AVATARS.map((src, i) => (
+                <img key={i} src={src} alt={`Founder ${i + 1}`} />
               ))}
-            </motion.div>
-          </div>
-
-          {/* STATS BAR */}
-          <div className="relative mb-8 grid grid-cols-1 gap-6 border-y border-slate-200 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 px-8 py-7 text-white shadow-md sm:grid-cols-3 lg:px-14">
-            <StatItem icon={Users} value={stats?.founders} label="Active Founders" />
-            <StatItem icon={Rocket} value={stats?.startups} label="Startups" divider />
-            <StatItem icon={Briefcase} value={stats?.openRoles} label="Open Internships" />
-          </div>
+            </div>
+            <div className="landing-stars">
+              {[1, 2, 3, 4].map((s) => (
+                <Star key={s} size={14} fill="#1a1a1a" />
+              ))}
+            </div>
+            <span className="landing-social-text">
+              {stats ? `${stats.founders.toLocaleString()}+` : "1000+"} founders
+              joining the waitlist
+            </span>
+          </motion.div>
         </div>
+
+        {/* Right Column — iMac + Desk */}
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="landing-hero-right"
+        >
+          <IMacMockup />
+          <DeskAccessories />
+        </motion.div>
       </section>
 
+      {/* ─── BOTTOM — Founders Photo ─── */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.5 }}
+        className="landing-bottom-section"
+      >
+        <div className="landing-founders-image">
+          <Image
+            src="/founders-working.jpg"
+            alt="Founders working together — Build Disrupt Repeat"
+            fill
+            style={{ objectFit: "cover" }}
+          />
+        </div>
+        <div />
+      </motion.div>
 
-
-      {/* NETWORKING SECTION */}
-      <section className="relative z-10 w-full border-y border-slate-200 bg-slate-50/60 py-24">
+      {/* ─── NETWORKING SECTION ─── */}
+      <section className="landing-section relative z-10 w-full border-t border-[#e8e4dc] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
             <motion.div
@@ -253,17 +275,18 @@ export default function LandingPage() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
             >
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 text-purple-600 shadow-xs">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#d4d0c8] bg-[#f0ece4] text-[#6B7A2F]">
                 <Globe size={28} />
               </div>
-              <h2 className="font-extrabold text-3xl sm:text-4xl text-slate-950 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl tracking-tight text-[#1a1a1a]">
                 The Network for the Next Generation
               </h2>
-              <p className="mt-6 text-base leading-relaxed text-slate-600 font-normal">
-                Connect with passionate student founders from campuses around the world. 
-                Whether you're looking for a technical co-founder to build your MVP or 
-                a marketing wiz to launch your product, our networking tools make it 
-                effortless to find the right people for your startup journey.
+              <p className="mt-6 text-base leading-relaxed text-[#666] font-normal">
+                Connect with passionate student founders from campuses around
+                the world. Whether you&apos;re looking for a technical co-founder to
+                build your MVP or a marketing wiz to launch your product, our
+                networking tools make it effortless to find the right people for
+                your startup journey.
               </p>
               <ul className="mt-8 space-y-4">
                 {[
@@ -271,8 +294,11 @@ export default function LandingPage() {
                   "Filter startups by industry and funding stage.",
                   "Join localized communities and special interest groups.",
                 ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-sm text-slate-700 font-normal">
-                    <div className="h-2 w-2 rounded-full bg-purple-600" />
+                  <li
+                    key={i}
+                    className="flex items-center gap-3 text-sm text-[#4a4a4a] font-normal"
+                  >
+                    <div className="h-2 w-2 rounded-full bg-[#6B7A2F]" />
                     {item}
                   </li>
                 ))}
@@ -283,7 +309,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="relative aspect-square max-h-[500px] w-full overflow-hidden rounded-2xl border border-slate-200 lg:h-[500px] shadow-lg"
+              className="relative aspect-square max-h-[500px] w-full overflow-hidden rounded-2xl border border-[#e8e4dc] lg:h-[500px] shadow-lg"
             >
               <Image
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800"
@@ -296,8 +322,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FOUNDERS INTERACTION SECTION */}
-      <section className="relative z-10 w-full bg-white py-24">
+      {/* ─── FOUNDERS INTERACTION SECTION ─── */}
+      <section className="landing-section relative z-10 w-full py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
             <motion.div
@@ -305,7 +331,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="order-2 relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-slate-200 lg:order-1 lg:h-[500px] shadow-lg"
+              className="order-2 relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#e8e4dc] lg:order-1 lg:h-[500px] shadow-lg"
             >
               <Image
                 src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800"
@@ -321,25 +347,36 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
               className="order-1 lg:order-2"
             >
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 text-purple-600 shadow-xs">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#d4d0c8] bg-[#f0ece4] text-[#6B7A2F]">
                 <MessageSquare size={28} />
               </div>
-              <h2 className="font-extrabold text-3xl sm:text-4xl text-slate-950 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl tracking-tight text-[#1a1a1a]">
                 Meaningful Interactions
               </h2>
-              <p className="mt-6 text-base leading-relaxed text-slate-600 font-normal">
-                Stop shouting into the void. Founders Hook provides dedicated spaces 
-                to discuss ideas, ask for feedback, and form partnerships. It's a 
-                community that actually cares about what you're building.
+              <p className="mt-6 text-base leading-relaxed text-[#666] font-normal">
+                Stop shouting into the void. Founders Hook provides dedicated
+                spaces to discuss ideas, ask for feedback, and form
+                partnerships. It&apos;s a community that actually cares about what
+                you&apos;re building.
               </p>
               <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div className="rounded-xl border border-purple-100 bg-purple-50/50 p-5">
-                  <h4 className="font-bold text-slate-950 text-base">Direct Messaging</h4>
-                  <p className="mt-2 text-sm text-slate-600 font-normal">Reach out directly to potential co-founders and team members securely.</p>
+                <div className="rounded-xl border border-[#d4d0c8] bg-[#f0ece4]/50 p-5">
+                  <h4 className="font-bold text-[#1a1a1a] text-base">
+                    Direct Messaging
+                  </h4>
+                  <p className="mt-2 text-sm text-[#666] font-normal">
+                    Reach out directly to potential co-founders and team members
+                    securely.
+                  </p>
                 </div>
-                <div className="rounded-xl border border-purple-100 bg-purple-50/50 p-5">
-                  <h4 className="font-bold text-slate-950 text-base">Project Feeds</h4>
-                  <p className="mt-2 text-sm text-slate-600 font-normal">Share your progress, post updates, and get constructive feedback from peers.</p>
+                <div className="rounded-xl border border-[#d4d0c8] bg-[#f0ece4]/50 p-5">
+                  <h4 className="font-bold text-[#1a1a1a] text-base">
+                    Project Feeds
+                  </h4>
+                  <p className="mt-2 text-sm text-[#666] font-normal">
+                    Share your progress, post updates, and get constructive
+                    feedback from peers.
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -347,8 +384,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* KNOWLEDGE HUB SECTION */}
-      <section className="relative z-10 w-full border-t border-slate-200 bg-slate-50/50 py-24 pb-32">
+      {/* ─── KNOWLEDGE HUB SECTION ─── */}
+      <section className="landing-section relative z-10 w-full border-t border-[#e8e4dc] py-24 pb-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center">
             <motion.div
@@ -357,16 +394,16 @@ export default function LandingPage() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
             >
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-purple-200 bg-purple-50 text-purple-600 shadow-xs">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#d4d0c8] bg-[#f0ece4] text-[#6B7A2F]">
                 <BookOpen size={32} />
               </div>
-              <h2 className="font-extrabold text-3xl sm:text-4xl text-slate-950 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl tracking-tight text-[#1a1a1a]">
                 The Founders Knowledge Hub
               </h2>
-              <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-600 font-normal">
-                Building a startup is hard. We provide the resources you need to 
-                navigate the journey from idea to execution. Access guides, templates, 
-                and case studies tailored for student entrepreneurs.
+              <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#666] font-normal">
+                Building a startup is hard. We provide the resources you need to
+                navigate the journey from idea to execution. Access guides,
+                templates, and case studies tailored for student entrepreneurs.
               </p>
             </motion.div>
           </div>
@@ -376,18 +413,18 @@ export default function LandingPage() {
               {
                 title: "Startup Playbooks",
                 desc: "Step-by-step guides from ideation to seed round.",
-                img: "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&q=80&w=800"
+                img: "https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&q=80&w=800",
               },
               {
                 title: "Pitch Templates",
                 desc: "Winning pitch deck structures used by successful founders.",
-                img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=800"
+                img: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=800",
               },
               {
                 title: "Legal & Equity",
                 desc: "Understand term sheets, vesting, and founder agreements.",
-                img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800"
-              }
+                img: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=80&w=800",
+              },
             ].map((item, i) => (
               <motion.div
                 key={item.title}
@@ -395,9 +432,9 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: i * 0.15 }}
-                className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:border-purple-300 hover:shadow-md"
+                className="group overflow-hidden rounded-2xl border border-[#e8e4dc] bg-white transition-all duration-300 hover:border-[#6B7A2F]/40 hover:shadow-md"
               >
-                <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                <div className="relative h-48 w-full overflow-hidden bg-[#f0ece4]">
                   <Image
                     src={item.img}
                     alt={item.title}
@@ -406,10 +443,12 @@ export default function LandingPage() {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="font-bold text-lg text-slate-950 group-hover:text-purple-600 transition-colors">
+                  <h3 className="font-bold text-lg text-[#1a1a1a] group-hover:text-[#6B7A2F] transition-colors">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-sm text-slate-600 font-normal">{item.desc}</p>
+                  <p className="mt-2 text-sm text-[#666] font-normal">
+                    {item.desc}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -422,7 +461,7 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="mt-16 flex justify-center"
           >
-            <Link href={primaryHref} className="btn-purple !px-8 !py-3.5 font-semibold">
+            <Link href={primaryHref} className="landing-btn-primary">
               Explore Resources
               <ArrowRight size={18} />
             </Link>
@@ -430,39 +469,11 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-500 font-normal">
-        © {new Date().getFullYear()} Founders Hook. Built for founders, by founders.
+      {/* ─── FOOTER ─── */}
+      <footer className="landing-section relative z-10 border-t border-[#e8e4dc] py-8 text-center text-xs text-[#999] font-normal">
+        © {new Date().getFullYear()} Founders Hook. Built for founders, by
+        founders.
       </footer>
     </main>
-  );
-}
-
-function StatItem({
-  icon: Icon,
-  value,
-  label,
-  divider,
-}: {
-  icon: React.ElementType;
-  value?: number;
-  label: string;
-  divider?: boolean;
-}) {
-  return (
-    <div className={`flex items-center gap-4 ${divider ? "sm:border-x sm:border-purple-500/40 sm:px-6" : ""}`}>
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-white shadow-xs">
-        <Icon size={22} />
-      </div>
-      <div>
-        <p className="font-extrabold text-2xl text-white">
-          {value === undefined ? (
-            <span className="inline-block h-6 w-14 animate-pulse rounded bg-white/20 align-middle" />
-          ) : (
-            `${value.toLocaleString()}+`
-          )}
-        </p>
-        <p className="text-xs font-semibold text-purple-100">{label}</p>
-      </div>
-    </div>
   );
 }

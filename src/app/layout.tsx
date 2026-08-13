@@ -14,10 +14,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
-        className="bg-ink-950 text-sand-200 antialiased"
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="bg-ink-950 text-sand-200 antialiased">
         {children}
       </body>
     </html>

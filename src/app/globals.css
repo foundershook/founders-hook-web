@@ -13,8 +13,8 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.3);
-  color: #fcfaf5;
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
 }
 
 /* Scrollbar */
@@ -182,6 +182,20 @@ body {
   font-family: 'Inter', sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+.landing-page ::selection,
+.landing-page::selection {
+  background-color: #1a1a1a;
+  color: #FAF8F4;
+}
+
+.landing-page .landing-btn-primary::selection,
+.landing-page .landing-btn-primary *::selection,
+.landing-page .landing-nav-cta::selection,
+.landing-page .landing-nav-cta *::selection {
+  background-color: #6B7A2F;
+  color: #ffffff;
 }
 
 /* Navbar */

@@ -18,6 +18,12 @@ import {
   Star,
   Menu,
   X,
+  CheckCircle2,
+  Calendar,
+  UserCheck,
+  Trophy,
+  Share2,
+  Lightbulb,
 } from "lucide-react";
 
 type Stats = { founders: number; startups: number; openRoles: number };
@@ -116,6 +122,281 @@ const AVATARS = [
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80",
   "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&h=80&q=80",
 ];
+
+/* Founders Ecosystem Spiderweb Diagram Component */
+function FoundersEcosystemWeb() {
+  const items = [
+    {
+      title: "Find Co-founders",
+      desc: "Connect with builders who match your vibe",
+      icon: Users,
+    },
+    {
+      title: "Validate Ideas",
+      desc: "Test your ideas with real people",
+      icon: CheckCircle2,
+    },
+    {
+      title: "Resources & Tools",
+      desc: "Access curated tools and templates",
+      icon: Briefcase,
+    },
+    {
+      title: "Pitch Nights & Events",
+      desc: "Showcase and grow with the community",
+      icon: Calendar,
+    },
+    {
+      title: "Mentorship & Guidance",
+      desc: "Learn from founders who've done it",
+      icon: UserCheck,
+    },
+    {
+      title: "Hackathons & Contests",
+      desc: "Build, compete and win opportunities",
+      icon: Trophy,
+    },
+    {
+      title: "Build Network",
+      desc: "Expand your network across colleges",
+      icon: Share2,
+    },
+    {
+      title: "Share Ideas",
+      desc: "Get feedback and validate your ideas",
+      icon: Lightbulb,
+    },
+  ];
+
+  // Concentric octagons radiuses in percentage
+  const radiuses = [10, 20, 30, 40];
+  const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+
+  const getOctagonPoints = (r: number) => {
+    return angles
+      .map((a) => {
+        const rad = ((a - 90) * Math.PI) / 180;
+        const x = 50 + r * Math.cos(rad);
+        const y = 50 + r * Math.sin(rad);
+        return `${x},${y}`;
+      })
+      .join(" ");
+  };
+
+  return (
+    <section className="relative w-full overflow-hidden bg-[#FAF8F4] py-16 lg:py-24 border-t border-[#e8e4dc]">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="mb-12 text-center">
+          <span className="inline-block rounded-full bg-[#f0ece4] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#6B7A2F] border border-[#d4d0c8]">
+            Founders Hook Ecosystem
+          </span>
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#1a1a1a] sm:text-4xl">
+            Everything Student Founders Need to Launch
+          </h2>
+          <p className="mt-2 text-base text-[#666] max-w-2xl mx-auto">
+            Our interconnected platform empowers ambition at every stage of your startup journey.
+          </p>
+        </div>
+
+        {/* Spiderweb Diagram Area */}
+        <div className="relative mx-auto min-h-[580px] lg:min-h-[660px] w-full max-w-[1000px] flex items-center justify-center">
+          {/* SVG Background Octagonal Web Grid */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <svg
+              className="h-[440px] w-[440px] lg:h-[500px] lg:w-[500px]"
+              viewBox="0 0 100 100"
+            >
+              {/* Concentric Octagon Rings */}
+              {radiuses.map((r, idx) => (
+                <polygon
+                  key={idx}
+                  points={getOctagonPoints(r)}
+                  fill="none"
+                  stroke="#8b893a"
+                  strokeWidth="0.4"
+                  strokeOpacity="0.45"
+                />
+              ))}
+
+              {/* Radial Spokes */}
+              {angles.map((a, idx) => {
+                const rad = ((a - 90) * Math.PI) / 180;
+                const maxR = radiuses[radiuses.length - 1];
+                const x2 = 50 + maxR * Math.cos(rad);
+                const y2 = 50 + maxR * Math.sin(rad);
+                return (
+                  <line
+                    key={idx}
+                    x1="50"
+                    y1="50"
+                    x2={x2}
+                    y2={y2}
+                    stroke="#8b893a"
+                    strokeWidth="0.4"
+                    strokeOpacity="0.45"
+                  />
+                );
+              })}
+
+              {/* Golden Grid Intersection Dots */}
+              {radiuses.map((r) =>
+                angles.map((a, i) => {
+                  const rad = ((a - 90) * Math.PI) / 180;
+                  const cx = 50 + r * Math.cos(rad);
+                  const cy = 50 + r * Math.sin(rad);
+                  return (
+                    <circle
+                      key={`${r}-${i}`}
+                      cx={cx}
+                      cy={cy}
+                      r="0.8"
+                      fill="#8b893a"
+                    />
+                  );
+                })
+              )}
+            </svg>
+          </div>
+
+          {/* Central Logo Badge */}
+          <div className="relative z-20 flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-full bg-white shadow-xl border-4 border-[#FAF8F4] p-3 text-center transition-transform hover:scale-105">
+            <div className="flex flex-col items-center justify-center">
+              <span className="font-extrabold text-3xl sm:text-4xl tracking-tighter text-[#1a1a1a] leading-none">
+                F<span className="text-[#6B7A2F] italic">i</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Desktop Floating Node Cards with Solid White Backdrop Cards so SVG lines NEVER cover text */}
+          <div className="hidden lg:block absolute inset-0 pointer-events-auto z-10">
+            {/* 1. Find Co-founders (Top) */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <Users size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Find Co-founders</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Connect with builders who match your vibe</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Validate Ideas (Top Right) */}
+            <div className="absolute top-12 right-4 flex items-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <CheckCircle2 size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Validate Ideas</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Test your ideas with real people</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Resources & Tools (Right) */}
+            <div className="absolute top-1/2 right-0 -translate-y-1/2 flex items-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <Briefcase size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Resources & Tools</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Access curated tools and templates</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Pitch Nights & Events (Bottom Right) */}
+            <div className="absolute bottom-12 right-4 flex items-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <Calendar size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Pitch Nights & Events</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Showcase and grow with the community</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. Mentorship & Guidance (Bottom) */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <UserCheck size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Mentorship & Guidance</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Learn from founders who&apos;ve done it</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. Hackathons & Contests (Bottom Left) */}
+            <div className="absolute bottom-12 left-4 flex items-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <Trophy size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Hackathons & Contests</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Build, compete and win opportunities</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 7. Build Network (Left) */}
+            <div className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <Share2 size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Build Network</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Expand your network across colleges</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 8. Share Ideas (Top Left) */}
+            <div className="absolute top-12 left-4 flex items-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
+                  <Lightbulb size={18} />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Share Ideas</h3>
+                  <p className="text-xs text-[#666] font-normal leading-tight">Get feedback and validate your ideas</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile View: High Contrast Responsive Grid */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+          {items.map((item, idx) => {
+            const IconComp = item.icon;
+            return (
+              <div key={idx} className="flex items-center gap-4 rounded-xl border border-[#e8e4dc] bg-white p-4 shadow-sm">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] border border-[#d4d0c8] text-[#1a1a1a]">
+                  <IconComp size={18} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#1a1a1a] text-sm">{item.title}</h3>
+                  <p className="text-xs text-[#666] font-normal mt-0.5">{item.desc}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function LandingPage() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -315,23 +596,8 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ─── BOTTOM — Founders Photo ─── */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.5 }}
-        className="landing-bottom-section"
-      >
-        <div className="landing-founders-image">
-          <Image
-            src="/founders-working.jpg"
-            alt="Founders working together — Build Disrupt Repeat"
-            fill
-            style={{ objectFit: "cover" }}
-          />
-        </div>
-        <div />
-      </motion.div>
+      {/* ─── ECOSYSTEM SPIDERWEB DIAGRAM (BELOW COMPUTER) ─── */}
+      <FoundersEcosystemWeb />
 
       {/* ─── NETWORKING SECTION ─── */}
       <section className="landing-section relative z-10 w-full border-t border-[#e8e4dc] py-24">

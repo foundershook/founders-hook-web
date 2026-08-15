@@ -61,6 +61,155 @@ function KeyboardRow({ keys, hasWideKey }: { keys: number; hasWideKey?: boolean 
   );
 }
 
+/* iMac Launch Countdown Timer (Target: 24 August 2026, 6:00 PM IST) */
+const LAUNCH_TARGET_DATE_MS = new Date("2026-08-24T18:00:00+05:30").getTime();
+
+function MacLaunchTimer() {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isEnded: false,
+    mounted: false,
+  });
+
+  useEffect(() => {
+    const calculateTime = () => {
+      const now = new Date().getTime();
+      const difference = LAUNCH_TARGET_DATE_MS - now;
+
+      if (difference <= 0) {
+        setTimeLeft({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          isEnded: true,
+          mounted: true,
+        });
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setTimeLeft({
+        days,
+        hours,
+        minutes,
+        seconds,
+        isEnded: false,
+        mounted: true,
+      });
+    };
+
+    calculateTime();
+    const interval = setInterval(calculateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <div className="relative h-full w-full flex flex-col justify-between p-3 sm:p-5 select-none overflow-hidden font-sans">
+      {/* Top macOS Browser / Window Bar */}
+      <div className="flex items-center justify-between z-10">
+        <div className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] shadow-sm inline-block" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] shadow-sm inline-block" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f] shadow-sm inline-block" />
+        </div>
+        <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[10px] sm:text-xs font-medium text-white/80 backdrop-blur-md border border-white/10">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8b893a] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#b6b44c]" />
+          </span>
+          foundershook.com/launch
+        </div>
+        <div className="text-[10px] sm:text-xs font-semibold text-[#8b893a] uppercase tracking-wider hidden sm:block">
+          Live Timer
+        </div>
+      </div>
+
+      {/* Main Countdown Display Area */}
+      <div className="my-auto z-10 flex flex-col items-center text-center px-1">
+        {/* Launch Pill */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#8b893a]/40 bg-[#8b893a]/15 px-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#d8d672] backdrop-blur-md mb-2 sm:mb-3 shadow-sm">
+          <Sparkles size={13} className="text-[#e2e078] animate-pulse" />
+          <span>Platform Launch Countdown</span>
+        </div>
+
+        {/* Big Countdown Timer Grid */}
+        <div className="grid grid-cols-4 gap-1.5 sm:gap-3 w-full max-w-[420px] my-1 sm:my-2">
+          {/* Days */}
+          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
+              {timeLeft.mounted ? pad(timeLeft.days) : "--"}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+              Days
+            </span>
+          </div>
+
+          {/* Hours */}
+          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
+              {timeLeft.mounted ? pad(timeLeft.hours) : "--"}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+              Hours
+            </span>
+          </div>
+
+          {/* Minutes */}
+          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
+              {timeLeft.mounted ? pad(timeLeft.minutes) : "--"}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+              Mins
+            </span>
+          </div>
+
+          {/* Seconds */}
+          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#e8e4dc] tabular-nums">
+              {timeLeft.mounted ? pad(timeLeft.seconds) : "--"}
+            </span>
+            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+              Secs
+            </span>
+          </div>
+        </div>
+
+        {/* Target Time Callout */}
+        <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium text-[#FAF8F4]/90 bg-black/40 px-3 py-1 rounded-full border border-white/10">
+          <Calendar size={13} className="text-[#8b893a]" />
+          <span>24 August 2026 • 6:00 PM IST</span>
+        </div>
+      </div>
+
+      {/* Bottom Bar: Access Status */}
+      <div className="z-10 flex items-center justify-between pt-1 border-t border-white/10 text-[10px] sm:text-xs text-white/70">
+        <div className="flex items-center gap-1.5">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <span>Waitlist Applications Active</span>
+        </div>
+        <Link
+          href="/signup"
+          className="inline-flex items-center gap-1 font-semibold text-[#f0ece4] hover:text-white transition-colors underline underline-offset-2"
+        >
+          <span>Get Early Access</span>
+          <ArrowRight size={11} />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 /* Pure CSS iMac Mockup */
 function IMacMockup() {
   return (
@@ -71,13 +220,23 @@ function IMacMockup() {
           <div className="imac-camera" />
         </div>
         <div className="imac-screen">
+          {/* Background Dashboard Mockup Image */}
           <Image
             src="/dashboard-mockup.jpg"
             alt="Founders Hook Dashboard"
             fill
             priority
             style={{ objectFit: "cover", objectPosition: "top left" }}
+            className="opacity-25 filter blur-[1px]"
           />
+          {/* Dark Glassmorphic Radial Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#12140d]/90 via-[#18181b]/92 to-[#09090b]/95" />
+          {/* Ambient Glows */}
+          <div className="absolute -top-12 -left-12 h-44 w-44 rounded-full bg-[#8b893a]/25 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-12 -right-12 h-44 w-44 rounded-full bg-[#6B7A2F]/20 blur-3xl pointer-events-none" />
+
+          {/* Interactive Live Countdown Timer inside Mac */}
+          <MacLaunchTimer />
         </div>
         <div className="imac-chin" />
       </div>
@@ -125,46 +284,158 @@ const AVATARS = [
 
 /* Founders Ecosystem Spiderweb Diagram Component */
 function FoundersEcosystemWeb() {
-  const items = [
+  const ecosystemNodes = [
     {
       title: "Find Co-founders",
       desc: "Connect with builders who match your vibe",
       icon: Users,
+      positionClass: "top-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300",
+      floatY: [0, -5, 2, -3, 0],
+      floatX: [0, 2.5, -2, 1.5, 0],
+      rotate: [0, 0.6, -0.4, 0.3, 0],
+      duration: 7.2,
+      delay: 0,
+      iconColor: "text-[#6B7A2F] bg-[#FAF8F4]",
     },
     {
       title: "Validate Ideas",
       desc: "Test your ideas with real people",
       icon: CheckCircle2,
+      positionClass: "top-10 right-4 lg:right-6 flex items-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      floatY: [0, 4, -3, 2, 0],
+      floatX: [0, -3, 2.5, -1.5, 0],
+      rotate: [0, -0.7, 0.5, -0.3, 0],
+      duration: 6.8,
+      delay: 0.8,
+      iconColor: "text-[#2563EB] bg-[#EFF6FF]",
     },
     {
       title: "Resources & Tools",
       desc: "Access curated tools and templates",
       icon: Briefcase,
+      positionClass: "top-1/2 right-0 -translate-y-1/2 flex items-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      floatY: [0, -4, 3, -2, 0],
+      floatX: [0, 3, -2.5, 2, 0],
+      rotate: [0, 0.8, -0.6, 0.4, 0],
+      duration: 8.0,
+      delay: 1.5,
+      iconColor: "text-[#D97706] bg-[#FEF3C7]",
     },
     {
       title: "Pitch Nights & Events",
       desc: "Showcase and grow with the community",
       icon: Calendar,
+      positionClass: "bottom-10 right-4 lg:right-6 flex items-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      floatY: [0, 4.5, -2.5, 3, 0],
+      floatX: [0, -2.5, 3, -2, 0],
+      rotate: [0, -0.6, 0.5, -0.3, 0],
+      duration: 7.0,
+      delay: 2.2,
+      iconColor: "text-[#7C3AED] bg-[#F5F3FF]",
     },
     {
       title: "Mentorship & Guidance",
       desc: "Learn from founders who've done it",
       icon: UserCheck,
+      positionClass: "bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300",
+      floatY: [0, 5, -4, 2, 0],
+      floatX: [0, -3, 2, -2.5, 0],
+      rotate: [0, 0.7, -0.5, 0.3, 0],
+      duration: 7.6,
+      delay: 0.5,
+      iconColor: "text-[#059669] bg-[#ECFDF5]",
     },
     {
       title: "Hackathons & Contests",
       desc: "Build, compete and win opportunities",
       icon: Trophy,
+      positionClass: "bottom-10 left-4 lg:left-6 flex items-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      floatY: [0, -3.5, 4, -2.5, 0],
+      floatX: [0, 3, -2, 2.5, 0],
+      rotate: [0, -0.8, 0.7, -0.4, 0],
+      duration: 6.9,
+      delay: 1.8,
+      iconColor: "text-[#E11D48] bg-[#FFF1F2]",
     },
     {
       title: "Build Network",
       desc: "Expand your network across colleges",
       icon: Share2,
+      positionClass: "top-1/2 left-0 -translate-y-1/2 flex items-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      floatY: [0, 3.5, -3, 2.5, 0],
+      floatX: [0, -3.5, 2.5, -1.8, 0],
+      rotate: [0, 0.7, -0.8, 0.5, 0],
+      duration: 7.4,
+      delay: 1.2,
+      iconColor: "text-[#0891B2] bg-[#ECFEFF]",
     },
     {
       title: "Share Ideas",
       desc: "Get feedback and validate your ideas",
       icon: Lightbulb,
+      positionClass: "top-10 left-4 lg:left-6 flex items-center",
+      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      floatY: [0, -4.5, 2.5, -3.5, 0],
+      floatX: [0, 2.5, -3, 1.8, 0],
+      rotate: [0, -0.6, 0.8, -0.5, 0],
+      duration: 6.6,
+      delay: 2.6,
+      iconColor: "text-[#CA8A04] bg-[#FEFCE8]",
+    },
+  ];
+
+  // Floating decorative ambient icons around the web (subtle ambient drift)
+  const floatingAmbientIcons = [
+    {
+      icon: Sparkles,
+      color: "text-[#8b893a]/70 bg-white/80",
+      size: 14,
+      position: "top-[18%] left-[28%]",
+      floatY: [0, -5, 2, -4, 0],
+      floatX: [0, 3, -2, 2, 0],
+      rotate: [0, 10, -8, 6, 0],
+      duration: 8.5,
+      delay: 0.6,
+    },
+    {
+      icon: Rocket,
+      color: "text-[#2563EB]/70 bg-white/80",
+      size: 15,
+      position: "top-[22%] right-[26%]",
+      floatY: [0, 5, -3, 4, 0],
+      floatX: [0, -3.5, 2.5, -2, 0],
+      rotate: [0, -8, 10, -6, 0],
+      duration: 7.8,
+      delay: 1.3,
+    },
+    {
+      icon: Star,
+      color: "text-[#D97706]/70 bg-white/80",
+      size: 13,
+      position: "bottom-[24%] left-[27%]",
+      floatY: [0, -4, 5, -3, 0],
+      floatX: [0, 2.5, -3, 2, 0],
+      rotate: [0, 12, -10, 8, 0],
+      duration: 8.8,
+      delay: 2.0,
+    },
+    {
+      icon: TrendingUp,
+      color: "text-[#059669]/70 bg-white/80",
+      size: 14,
+      position: "bottom-[20%] right-[28%]",
+      floatY: [0, 5.5, -4, 3, 0],
+      floatX: [0, -3, 3.5, -2, 0],
+      rotate: [0, -10, 8, -6, 0],
+      duration: 7.2,
+      delay: 2.7,
     },
   ];
 
@@ -259,137 +530,152 @@ function FoundersEcosystemWeb() {
             </svg>
           </div>
 
-          {/* Central Logo Badge */}
-          <div className="relative z-20 flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-full bg-white shadow-xl border-4 border-[#FAF8F4] p-3 text-center transition-transform hover:scale-105">
-            <div className="flex flex-col items-center justify-center">
-              <span className="font-extrabold text-3xl sm:text-4xl tracking-tighter text-[#1a1a1a] leading-none">
-                F<span className="text-[#6B7A2F] italic">i</span>
-              </span>
-            </div>
+          {/* Floating Ambient Micro Icons */}
+          <div className="hidden lg:block absolute inset-0 pointer-events-none z-10">
+            {floatingAmbientIcons.map((ambient, idx) => {
+              const AmbientIcon = ambient.icon;
+              return (
+                <motion.div
+                  key={`ambient-${idx}`}
+                  className={`absolute ${ambient.position}`}
+                  animate={{
+                    y: ambient.floatY,
+                    x: ambient.floatX,
+                    rotate: ambient.rotate,
+                    scale: [0.98, 1.02, 0.99, 1.01, 0.98],
+                  }}
+                  transition={{
+                    duration: ambient.duration,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: ambient.delay,
+                  }}
+                >
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full border border-[#e8e4dc] shadow-sm backdrop-blur-sm ${ambient.color}`}>
+                    <AmbientIcon size={ambient.size} />
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
 
-          {/* Desktop Floating Node Cards with Solid White Backdrop Cards so SVG lines NEVER cover text */}
+          {/* Central Logo Badge with Subtle Gentle Pulse */}
+          <motion.div
+            className="relative z-20 flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-full bg-white shadow-xl border-4 border-[#FAF8F4] p-2 text-center overflow-hidden cursor-pointer"
+            animate={{
+              scale: [1, 1.015, 0.99, 1.01, 1],
+              y: [0, -1.5, 1, -0.8, 0],
+            }}
+            transition={{
+              duration: 6.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            whileHover={{ scale: 1.06, rotate: 1.5 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <div className="relative h-full w-full rounded-full overflow-hidden">
+              <Image
+                src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg"
+                alt="Founders Hook Logo"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </motion.div>
+
+          {/* Desktop Floating Node Cards with Subtle Float Motion */}
           <div className="hidden lg:block absolute inset-0 pointer-events-auto z-10">
-            {/* 1. Find Co-founders (Top) */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <Users size={18} />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Find Co-founders</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Connect with builders who match your vibe</p>
-                </div>
-              </div>
-            </div>
+            {ecosystemNodes.map((node, idx) => {
+              const IconComp = node.icon;
+              return (
+                <div
+                  key={idx}
+                  className={`absolute ${node.positionClass}`}
+                >
+                  <motion.div
+                    animate={{
+                      y: node.floatY,
+                      x: node.floatX,
+                      rotate: node.rotate,
+                    }}
+                    transition={{
+                      duration: node.duration,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: node.delay,
+                    }}
+                    whileHover={{
+                      scale: 1.04,
+                      y: -3,
+                      transition: { duration: 0.2 },
+                    }}
+                    className={node.cardClass}
+                  >
+                    {/* Animated Icon Circle with Gentle Micro-Pulse */}
+                    <motion.div
+                      animate={{
+                        rotate: [0, 2, -2, 1, 0],
+                        scale: [1, 1.03, 0.98, 1.02, 1],
+                      }}
+                      transition={{
+                        duration: node.duration * 0.9,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: node.delay + 0.4,
+                      }}
+                      whileHover={{
+                        rotate: [0, -6, 6, -3, 0],
+                        scale: 1.1,
+                        transition: { duration: 0.3 },
+                      }}
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#e8e4dc] ${node.iconColor}`}
+                    >
+                      <IconComp size={18} />
+                    </motion.div>
 
-            {/* 2. Validate Ideas (Top Right) */}
-            <div className="absolute top-12 right-4 flex items-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <CheckCircle2 size={18} />
+                    <div className="text-left">
+                      <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">
+                        {node.title}
+                      </h3>
+                      <p className="text-xs text-[#666] font-normal leading-tight">
+                        {node.desc}
+                      </p>
+                    </div>
+                  </motion.div>
                 </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Validate Ideas</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Test your ideas with real people</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 3. Resources & Tools (Right) */}
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 flex items-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <Briefcase size={18} />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Resources & Tools</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Access curated tools and templates</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. Pitch Nights & Events (Bottom Right) */}
-            <div className="absolute bottom-12 right-4 flex items-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <Calendar size={18} />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Pitch Nights & Events</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Showcase and grow with the community</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 5. Mentorship & Guidance (Bottom) */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <UserCheck size={18} />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Mentorship & Guidance</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Learn from founders who&apos;ve done it</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 6. Hackathons & Contests (Bottom Left) */}
-            <div className="absolute bottom-12 left-4 flex items-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <Trophy size={18} />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Hackathons & Contests</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Build, compete and win opportunities</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 7. Build Network (Left) */}
-            <div className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <Share2 size={18} />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Build Network</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Expand your network across colleges</p>
-                </div>
-              </div>
-            </div>
-
-            {/* 8. Share Ideas (Top Left) */}
-            <div className="absolute top-12 left-4 flex items-center">
-              <div className="flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white p-3 shadow-md max-w-[240px]">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] text-[#1a1a1a]">
-                  <Lightbulb size={18} />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">Share Ideas</h3>
-                  <p className="text-xs text-[#666] font-normal leading-tight">Get feedback and validate your ideas</p>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Mobile View: High Contrast Responsive Grid */}
+        {/* Mobile View: High Contrast Responsive Grid with Gentle Micro-drift */}
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-          {items.map((item, idx) => {
+          {ecosystemNodes.map((item, idx) => {
             const IconComp = item.icon;
             return (
-              <div key={idx} className="flex items-center gap-4 rounded-xl border border-[#e8e4dc] bg-white p-4 shadow-sm">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#FAF8F4] border border-[#d4d0c8] text-[#1a1a1a]">
+              <motion.div
+                key={idx}
+                animate={{
+                  y: [0, (idx % 2 === 0 ? -2 : 2), 0],
+                }}
+                transition={{
+                  duration: 4.5 + (idx % 3) * 0.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: idx * 0.25,
+                }}
+                whileHover={{ scale: 1.01 }}
+                className="flex items-center gap-4 rounded-xl border border-[#e8e4dc] bg-white p-4 shadow-sm"
+              >
+                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#d4d0c8] ${item.iconColor}`}>
                   <IconComp size={18} />
                 </div>
                 <div>
                   <h3 className="font-bold text-[#1a1a1a] text-sm">{item.title}</h3>
                   <p className="text-xs text-[#666] font-normal mt-0.5">{item.desc}</p>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

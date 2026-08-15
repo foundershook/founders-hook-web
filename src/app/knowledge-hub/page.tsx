@@ -36,12 +36,12 @@ const CATEGORIES = [
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  "Startup Growth": "bg-emerald-50 text-emerald-700 border-emerald-200",
-  Fundraising: "bg-sky-50 text-sky-700 border-sky-200",
-  Productivity: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+  "Startup Growth": "bg-emerald-900/40 text-emerald-300 border-emerald-800",
+  Fundraising: "bg-sky-900/40 text-sky-300 border-sky-800",
+  Productivity: "bg-fuchsia-900/40 text-fuchsia-300 border-fuchsia-800",
   Marketing: "bg-ink-800 text-sand-200 border-ink-700",
-  Operations: "bg-cyan-50 text-cyan-700 border-cyan-200",
-  Engineering: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  Operations: "bg-cyan-900/40 text-cyan-300 border-cyan-800",
+  Engineering: "bg-indigo-900/40 text-indigo-300 border-indigo-800",
 };
 
 export default function KnowledgeHubPage() {
@@ -143,22 +143,34 @@ export default function KnowledgeHubPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-white text-slate-900">
+    <div className="flex min-h-screen bg-ink-950 text-sand-200" style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}>
       <Sidebar user={currentUser} />
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">
+        {/* Background Image Overlay restricted to header */}
+        <div
+          className="absolute top-0 left-0 right-0 h-72 z-0 pointer-events-none opacity-50"
+          style={{
+            backgroundImage: "url('YOUR_CLOUDINARY_IMAGE_URL_HERE')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
+          }}
+        />
         <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-12 lg:px-10">
           {/* Header */}
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-ink-700/60 pb-8">
             <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-600">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-white">
                 <BookOpen size={14} />
                 Knowledge Base
               </div>
-              <h1 className="font-display text-3xl font-semibold text-slate-950 sm:text-4xl">
+              <h1 className="font-display text-3xl font-semibold text-sand-100 sm:text-4xl">
                 Knowledge Hub
               </h1>
-              <p className="mt-1.5 text-sm text-slate-500">
+              <p className="mt-1.5 text-sm text-sand-400">
                 Insights, startup playbooks, and guides published by fellow founders.
               </p>
             </div>
@@ -168,7 +180,7 @@ export default function KnowledgeHubPage() {
               <div className="relative w-full max-w-xs sm:w-auto">
                 <Search
                   size={16}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sand-600"
                 />
                 <input
                   type="text"
@@ -182,7 +194,7 @@ export default function KnowledgeHubPage() {
               {/* Write Article Button */}
               <button
                 onClick={() => setIsWriteModalOpen(true)}
-                className="btn-purple inline-flex items-center gap-2 px-4 py-2.5 text-sm shrink-0"
+                className="btn-white inline-flex items-center gap-2 px-4 py-2.5 text-sm shrink-0"
               >
                 <PenSquare size={16} />
                 Write Article
@@ -198,8 +210,8 @@ export default function KnowledgeHubPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`snap-start rounded-full px-4 py-2 text-xs font-medium transition-all ${
                   selectedCategory === cat
-                    ? "bg-purple-600 text-white shadow-sm"
-                    : "border border-slate-200 bg-white text-slate-500 hover:border-purple-300 hover:text-purple-600"
+                    ? "bg-white text-white shadow-sm"
+                    : "border border-ink-700/60 bg-ink-850 text-sand-400 hover:border-white/50 hover:text-white"
                 }`}
               >
                 {cat}
@@ -209,20 +221,20 @@ export default function KnowledgeHubPage() {
 
           {/* Posts Grid */}
           {loading ? (
-            <div className="flex items-center justify-center gap-3 py-24 text-slate-500">
-              <Loader2 size={24} className="animate-spin text-purple-600" />
+            <div className="flex items-center justify-center gap-3 py-24 text-sand-400">
+              <Loader2 size={24} className="animate-spin text-white" />
               <span className="text-base font-medium">Loading articles…</span>
             </div>
           ) : filteredPosts.length === 0 ? (
-            <div className="mt-12 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
-              <BookOpen size={40} className="mx-auto mb-3 text-slate-400" />
-              <p className="text-lg font-medium text-slate-700">No articles found</p>
-              <p className="mt-1 text-sm text-slate-400">
+            <div className="mt-12 rounded-2xl border border-dashed border-ink-700 bg-ink-900 px-6 py-16 text-center">
+              <BookOpen size={40} className="mx-auto mb-3 text-sand-600" />
+              <p className="text-lg font-medium text-sand-300">No articles found</p>
+              <p className="mt-1 text-sm text-sand-600">
                 Be the first to share your startup knowledge and insights with the community.
               </p>
               <button
                 onClick={() => setIsWriteModalOpen(true)}
-                className="btn-purple mt-5 inline-flex items-center gap-2 px-4 py-2 text-xs"
+                className="btn-white mt-5 inline-flex items-center gap-2 px-4 py-2 text-xs"
               >
                 <Plus size={15} /> Write standard article
               </button>
@@ -232,12 +244,12 @@ export default function KnowledgeHubPage() {
               {filteredPosts.map((post) => {
                 const badgeColor =
                   CATEGORY_COLORS[post.category] ||
-                  "bg-purple-50 text-purple-600 border-purple-200";
+                  "bg-white/10 text-white border-white/30";
                 return (
                   <div
                     key={post._id}
                     onClick={() => setReadingPost(post)}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-purple-300 hover:shadow-md cursor-pointer"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-850 p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-white/50 hover:shadow-md cursor-pointer"
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2">
@@ -246,32 +258,32 @@ export default function KnowledgeHubPage() {
                         >
                           {post.category}
                         </span>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-[11px] text-sand-600">
                           {timeAgo(post.createdAt)}
                         </span>
                       </div>
 
-                      <h3 className="mt-4 font-display text-lg font-semibold leading-snug text-slate-950 group-hover:text-purple-600 transition-colors">
+                      <h3 className="mt-4 font-display text-lg font-semibold leading-snug text-sand-100 group-hover:text-white transition-colors">
                         {post.title}
                       </h3>
 
-                      <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-slate-500">
+                      <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-sand-400">
                         {post.excerpt}
                       </p>
                     </div>
 
-                    <div className="mt-6 flex items-center gap-3 border-t border-slate-200 pt-4">
+                    <div className="mt-6 flex items-center gap-3 border-t border-ink-700/60 pt-4">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={post.authorAvatar || "https://picsum.photos/seed/user/64/64"}
                         alt={post.authorName}
-                        className="h-8 w-8 rounded-full object-cover border border-slate-200"
+                        className="h-8 w-8 rounded-full object-cover border border-ink-700/60"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-semibold text-slate-700">
+                        <p className="truncate text-xs font-semibold text-sand-300">
                           {post.authorName}
                         </p>
-                        <p className="text-[10px] text-slate-400">Founder</p>
+                        <p className="text-[10px] text-sand-600">Founder</p>
                       </div>
                     </div>
                   </div>
@@ -285,23 +297,23 @@ export default function KnowledgeHubPage() {
       {/* WRITE ARTICLE MODAL */}
       {isWriteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl my-8">
+          <div className="relative w-full max-w-2xl rounded-2xl border border-ink-700/60 bg-ink-850 p-6 shadow-xl my-8">
             <button
               onClick={() => setIsWriteModalOpen(false)}
-              className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-50 hover:text-slate-900"
+              className="absolute right-4 top-4 rounded-lg p-1.5 text-sand-600 hover:bg-ink-900 hover:text-sand-200"
             >
               <X size={18} />
             </button>
 
             <div className="mb-6 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white">
                 <PenSquare size={19} />
               </span>
               <div>
-                <h2 className="font-display text-xl font-semibold text-slate-950">
+                <h2 className="font-display text-xl font-semibold text-sand-100">
                   Publish Knowledge Article
                 </h2>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-sand-400">
                   Share startup guides, technical insights, or lessons learned.
                 </p>
               </div>
@@ -315,7 +327,7 @@ export default function KnowledgeHubPage() {
 
             <form onSubmit={handlePublish} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-sand-400">
                   Article Title *
                 </label>
                 <input
@@ -329,13 +341,13 @@ export default function KnowledgeHubPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-sand-400">
                   Category *
                 </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="field-input bg-white cursor-pointer"
+                  className="field-input bg-ink-850 cursor-pointer"
                 >
                   {CATEGORIES.filter((c) => c !== "All").map((cat) => (
                     <option key={cat} value={cat}>
@@ -346,7 +358,7 @@ export default function KnowledgeHubPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-sand-400">
                   Summary / Excerpt *
                 </label>
                 <textarea
@@ -360,7 +372,7 @@ export default function KnowledgeHubPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-sand-400">
                   Full Article Content
                 </label>
                 <textarea
@@ -372,18 +384,18 @@ export default function KnowledgeHubPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-ink-700/60">
                 <button
                   type="button"
                   onClick={() => setIsWriteModalOpen(false)}
-                  className="px-4 py-2.5 text-xs text-slate-500 hover:text-slate-900"
+                  className="px-4 py-2.5 text-xs text-sand-400 hover:text-sand-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="btn-purple inline-flex items-center gap-2 px-5 py-2.5 text-xs disabled:opacity-50"
+                  className="btn-white inline-flex items-center gap-2 px-5 py-2.5 text-xs disabled:opacity-50"
                 >
                   {submitting ? (
                     <>
@@ -406,10 +418,10 @@ export default function KnowledgeHubPage() {
       {/* READING ARTICLE MODAL */}
       {readingPost && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 shadow-xl my-8 max-h-[90vh] overflow-y-auto">
+          <div className="relative w-full max-w-3xl rounded-2xl border border-ink-700/60 bg-ink-850 p-8 shadow-xl my-8 max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setReadingPost(null)}
-              className="absolute right-5 top-5 rounded-lg p-2 text-slate-400 hover:bg-slate-50 hover:text-slate-900"
+              className="absolute right-5 top-5 rounded-lg p-2 text-sand-600 hover:bg-ink-900 hover:text-sand-200"
             >
               <X size={20} />
             </button>
@@ -418,33 +430,33 @@ export default function KnowledgeHubPage() {
               <span
                 className={`rounded-full border px-3 py-1 text-xs font-medium ${
                   CATEGORY_COLORS[readingPost.category] ||
-                  "bg-purple-50 text-purple-600 border-purple-200"
+                  "bg-white/10 text-white border-white/30"
                 }`}
               >
                 {readingPost.category}
               </span>
             </div>
 
-            <h1 className="font-display text-2xl sm:text-3xl font-semibold text-slate-950 leading-snug">
+            <h1 className="font-display text-2xl sm:text-3xl font-semibold text-sand-100 leading-snug">
               {readingPost.title}
             </h1>
 
-            <div className="my-6 flex items-center gap-3 border-y border-slate-200 py-4">
+            <div className="my-6 flex items-center gap-3 border-y border-ink-700/60 py-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={readingPost.authorAvatar || "https://picsum.photos/seed/user/64/64"}
                 alt={readingPost.authorName}
-                className="h-10 w-10 rounded-full object-cover border border-slate-200"
+                className="h-10 w-10 rounded-full object-cover border border-ink-700/60"
               />
               <div>
-                <p className="text-sm font-semibold text-slate-950">{readingPost.authorName}</p>
-                <p className="flex items-center gap-2 text-xs text-slate-400">
+                <p className="text-sm font-semibold text-sand-100">{readingPost.authorName}</p>
+                <p className="flex items-center gap-2 text-xs text-sand-600">
                   <Calendar size={13} /> Published {timeAgo(readingPost.createdAt)}
                 </p>
               </div>
             </div>
 
-            <div className="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 whitespace-pre-wrap">
+            <div className="prose max-w-none text-sand-300 text-sm sm:text-base leading-relaxed space-y-4 whitespace-pre-wrap">
               {readingPost.content || readingPost.excerpt}
             </div>
           </div>

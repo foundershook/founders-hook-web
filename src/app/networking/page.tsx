@@ -50,19 +50,19 @@ function UserCard({
   return (
     <div
       onClick={onViewProfile}
-      className="group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 text-center transition-all duration-200 hover:border-purple-300 hover:shadow-md"
+      className="group relative flex cursor-pointer flex-col items-center overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-850 p-6 text-center transition-all duration-200 hover:border-white/50 hover:shadow-md"
     >
       {/* Founder badge */}
       {user.isFounder && (
-        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl border-b border-l border-purple-200 bg-purple-50 px-2 py-0.5">
-          <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-purple-600">
+        <div className="absolute right-0 top-0 rounded-bl-xl rounded-tr-2xl border-b border-l border-white/30 bg-white/10 px-2 py-0.5">
+          <span className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-white">
             <Rocket size={8} /> Founder
           </span>
         </div>
       )}
 
       {/* Circular avatar — centered */}
-      <div className="relative mb-3 h-[88px] w-[88px] overflow-hidden rounded-full border-2 border-slate-200 shadow-md transition-transform duration-200 group-hover:scale-105">
+      <div className="relative mb-3 h-[88px] w-[88px] overflow-hidden rounded-full border-2 border-ink-700/60 shadow-md transition-transform duration-200 group-hover:scale-105">
         <Image
           src={user.avatarUrl || "https://picsum.photos/seed/user/120/120"}
           alt={user.name}
@@ -72,19 +72,19 @@ function UserCard({
       </div>
 
       {/* Name */}
-      <h3 className="line-clamp-1 font-display text-[15px] font-bold text-slate-950 transition-colors group-hover:text-purple-700">
+      <h3 className="line-clamp-1 font-display text-[15px] font-bold text-sand-100 transition-colors group-hover:text-sand-100">
         {user.name}
       </h3>
 
       {/* Username / role */}
-      <p className="mt-0.5 text-xs text-slate-400">
+      <p className="mt-0.5 text-xs text-sand-600">
         {user.role ? user.role : `@${user.username}`}
       </p>
 
       {/* Follow / You button */}
       <div className="mt-4 w-full" onClick={(e) => e.stopPropagation()}>
         {user.isCurrentUser ? (
-          <span className="block w-full rounded-full border border-slate-200 py-2 text-center text-xs font-semibold text-slate-400">
+          <span className="block w-full rounded-full border border-ink-700/60 py-2 text-center text-xs font-semibold text-sand-600">
             You
           </span>
         ) : currentUser ? (
@@ -94,8 +94,8 @@ function UserCard({
             id={`follow-${user._id}`}
             className={`inline-flex w-full items-center justify-center gap-2 rounded-full border py-2 text-xs font-semibold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${
               isFollowing
-                ? "border-purple-300 bg-purple-50 text-purple-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600"
-                : "border-slate-200 bg-slate-50 text-slate-700 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-600"
+                ? "border-white/50 bg-white/10 text-white hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+                : "border-ink-700/60 bg-ink-900 text-sand-300 hover:border-white/50 hover:bg-white/10 hover:text-white"
             }`}
           >
             {isPending ? (
@@ -186,27 +186,39 @@ export default function NetworkingPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-white text-slate-900">
+    <div className="flex min-h-screen bg-ink-950 text-sand-200" style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}>
       <Sidebar user={currentUser} />
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">
+        {/* Background Image Overlay restricted to header */}
+        <div
+          className="absolute top-0 left-0 right-0 h-72 z-0 pointer-events-none opacity-50"
+          style={{
+            backgroundImage: "url('YOUR_CLOUDINARY_IMAGE_URL_HERE')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
+          }}
+        />
         <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-10 lg:px-10">
 
           {/* ── Header ───────────────────────────────────────────────── */}
-          <div className="mb-8 border-b border-slate-200 pb-8">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-600">
+          <div className="mb-8 border-b border-ink-700/60 pb-8">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-white">
               <Network size={13} /> Platform Community
             </div>
-            <h1 className="font-display text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
+            <h1 className="font-display text-4xl font-bold tracking-tight text-sand-100 sm:text-5xl">
               Networking
             </h1>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-sand-400">
               Discover and connect with everyone on the Founders Hook platform.
             </p>
 
             {/* Search */}
             <div className="mt-6 relative w-full max-w-md">
-              <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={15} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sand-600" />
               <input
                 id="networking-search"
                 type="text"
@@ -216,7 +228,7 @@ export default function NetworkingPage() {
                 className="field-input pl-11 pr-10"
               />
               {query && (
-                <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors">
+                <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-sand-600 hover:text-sand-300 transition-colors">
                   <X size={14} />
                 </button>
               )}
@@ -225,33 +237,33 @@ export default function NetworkingPage() {
 
           {/* ── Grid ────────────────────────────────────────────────── */}
           {loading ? (
-            <div className="flex flex-col items-center justify-center gap-4 py-32 text-slate-500">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-purple-200 bg-purple-50">
-                <Loader2 size={22} className="animate-spin text-purple-600" />
+            <div className="flex flex-col items-center justify-center gap-4 py-32 text-sand-400">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/30 bg-white/10">
+                <Loader2 size={22} className="animate-spin text-white" />
               </div>
               <p className="text-sm font-medium">Loading members…</p>
             </div>
           ) : users.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-20 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-white">
-                <Users size={24} className="text-slate-400" />
+            <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-ink-700 bg-ink-900 py-20 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-ink-700/60 bg-ink-850">
+                <Users size={24} className="text-sand-600" />
               </div>
-              <p className="text-base font-semibold text-slate-700">No members found</p>
-              <p className="text-sm text-slate-400">
+              <p className="text-base font-semibold text-sand-300">No members found</p>
+              <p className="text-sm text-sand-600">
                 {query ? `No results for "${query}".` : "Be the first to join!"}
               </p>
               {query && (
-                <button onClick={() => setQuery("")} className="text-xs text-purple-600 hover:text-purple-700 transition-colors">
+                <button onClick={() => setQuery("")} className="text-xs text-white hover:text-sand-100 transition-colors">
                   Clear search
                 </button>
               )}
             </div>
           ) : (
             <>
-              <p className="mb-5 text-xs text-slate-400">
-                Showing <span className="font-semibold text-slate-700">{users.length}</span>{" "}
+              <p className="mb-5 text-xs text-sand-600">
+                Showing <span className="font-semibold text-sand-300">{users.length}</span>{" "}
                 {users.length === 1 ? "person" : "people"}
-                {query && <> matching <span className="text-slate-700">&quot;{query}&quot;</span></>}
+                {query && <> matching <span className="text-sand-300">&quot;{query}&quot;</span></>}
               </p>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {users.map((user) => (

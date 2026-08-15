@@ -138,22 +138,34 @@ export default function FoundersPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-white text-slate-900">
+    <div className="flex min-h-screen bg-ink-950 text-sand-200" style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}>
       <Sidebar user={currentUser} />
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">
+        {/* Background Image Overlay restricted to header */}
+        <div
+          className="absolute top-0 left-0 right-0 h-72 z-0 pointer-events-none opacity-50"
+          style={{
+            backgroundImage: "url('YOUR_CLOUDINARY_IMAGE_URL_HERE')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
+          }}
+        />
         <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-12 lg:px-10">
           {/* Header */}
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-ink-700/60 pb-8">
             <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-600">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-white">
                 <Users size={14} />
                 Community Founders
               </div>
-              <h1 className="font-display text-3xl font-semibold text-slate-950 sm:text-4xl">
+              <h1 className="font-display text-3xl font-semibold text-sand-100 sm:text-4xl">
                 Startup Founders
               </h1>
-              <p className="mt-1.5 text-sm text-slate-500">
+              <p className="mt-1.5 text-sm text-sand-400">
                 Discover founders who have launched and published projects on Founders Hook.
               </p>
             </div>
@@ -162,7 +174,7 @@ export default function FoundersPage() {
             <div className="relative w-full max-w-xs">
               <Search
                 size={16}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sand-600"
               />
               <input
                 type="text"
@@ -176,15 +188,15 @@ export default function FoundersPage() {
 
           {/* Content */}
           {loading ? (
-            <div className="flex items-center justify-center gap-3 py-20 text-slate-500">
-              <Loader2 size={24} className="animate-spin text-purple-600" />
+            <div className="flex items-center justify-center gap-3 py-20 text-sand-400">
+              <Loader2 size={24} className="animate-spin text-white" />
               <span className="text-base font-medium">Loading founders…</span>
             </div>
           ) : filteredFounders.length === 0 ? (
-            <div className="mt-12 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
-              <Users size={40} className="mx-auto mb-3 text-slate-400" />
-              <p className="text-lg font-medium text-slate-700">No founders found</p>
-              <p className="mt-1 text-sm text-slate-400">
+            <div className="mt-12 rounded-2xl border border-dashed border-ink-700 bg-ink-900 px-6 py-16 text-center">
+              <Users size={40} className="mx-auto mb-3 text-sand-600" />
+              <p className="text-lg font-medium text-sand-300">No founders found</p>
+              <p className="mt-1 text-sm text-sand-600">
                 {query ? "Try adjusting your search query." : "No founders have published a project yet."}
               </p>
             </div>
@@ -198,14 +210,14 @@ export default function FoundersPage() {
                 return (
                   <div
                     key={founder._id}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-purple-300 hover:shadow-md"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-ink-700/60 bg-ink-850 p-6 shadow-sm transition-all duration-200 hover:border-white/50 hover:shadow-md"
                   >
                     <div>
                       {/* Profile Info */}
                       <div className="flex items-start gap-4">
                         <button
                           onClick={() => router.push(`/users/${founder._id}`)}
-                          className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-slate-200 transition-transform hover:scale-105"
+                          className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-ink-700/60 transition-transform hover:scale-105"
                         >
                           <Image
                             src={founder.avatarUrl || "https://picsum.photos/seed/user/120/120"}
@@ -217,12 +229,12 @@ export default function FoundersPage() {
                         <div className="min-w-0 flex-1">
                           <h3
                             onClick={() => router.push(`/users/${founder._id}`)}
-                            className="truncate cursor-pointer font-display text-lg font-semibold text-slate-950 hover:text-purple-600 transition-colors"
+                            className="truncate cursor-pointer font-display text-lg font-semibold text-sand-100 hover:text-white transition-colors"
                           >
                             {founder.name}
                           </h3>
-                          <p className="truncate text-xs text-slate-500">@{founder.username}</p>
-                          <p className="mt-1 flex items-center gap-1.5 text-[11px] text-slate-400">
+                          <p className="truncate text-xs text-sand-400">@{founder.username}</p>
+                          <p className="mt-1 flex items-center gap-1.5 text-[11px] text-sand-600">
                             <CalendarDays size={12} />
                             Joined{" "}
                             {founder.createdAt
@@ -242,8 +254,8 @@ export default function FoundersPage() {
                             className={`
                               shrink-0 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all duration-150
                               ${isFollowing
-                                ? "border-purple-300 bg-purple-50 text-purple-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600"
-                                : "border-slate-200 bg-slate-50 text-slate-700 hover:border-purple-300 hover:bg-purple-50 hover:text-purple-600"
+                                ? "border-white/50 bg-white/10 text-white hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+                                : "border-ink-700/60 bg-ink-900 text-sand-300 hover:border-white/50 hover:bg-white/10 hover:text-white"
                               }
                               disabled:opacity-50 disabled:cursor-not-allowed
                             `}
@@ -262,24 +274,24 @@ export default function FoundersPage() {
                       </div>
 
                       {/* Follower count */}
-                      <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+                      <div className="mt-3 flex items-center gap-1.5 text-xs text-sand-600">
                         <Users size={11} />
                         <span>
-                          <span className="font-semibold text-slate-700">{followerCount}</span>{" "}
+                          <span className="font-semibold text-sand-300">{followerCount}</span>{" "}
                           {followerCount === 1 ? "follower" : "followers"}
                         </span>
                       </div>
 
                       {/* Bio */}
-                      <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-slate-600">
+                      <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-sand-400">
                         {founder.bio || "No bio available."}
                       </p>
                     </div>
 
                     {/* Published Projects */}
-                    <div className="mt-6 border-t border-slate-200 pt-4">
-                      <div className="mb-3 flex items-center justify-between text-xs text-slate-500 font-semibold uppercase tracking-wider">
-                        <span className="flex items-center gap-1.5 text-purple-600">
+                    <div className="mt-6 border-t border-ink-700/60 pt-4">
+                      <div className="mb-3 flex items-center justify-between text-xs text-sand-400 font-semibold uppercase tracking-wider">
+                        <span className="flex items-center gap-1.5 text-white">
                           <Rocket size={13} /> Published Projects ({founder.startups.length})
                         </span>
                       </div>
@@ -289,10 +301,10 @@ export default function FoundersPage() {
                           <div
                             key={startup._id}
                             onClick={() => setSelectedStartupId(startup._id)}
-                            className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-slate-100 bg-slate-50 p-2.5 transition-colors hover:border-purple-300 hover:bg-purple-50/50"
+                            className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-ink-800 bg-ink-900 p-2.5 transition-colors hover:border-white/50 hover:bg-white/5"
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-sm overflow-hidden">
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-ink-700/60 bg-ink-850 text-sm overflow-hidden">
                                 {startup.icon?.startsWith("http") ? (
                                   /* eslint-disable-next-line @next/next/no-img-element */
                                   <img
@@ -305,15 +317,15 @@ export default function FoundersPage() {
                                 )}
                               </span>
                               <div className="min-w-0">
-                                <p className="truncate text-xs font-semibold text-slate-950">
+                                <p className="truncate text-xs font-semibold text-sand-100">
                                   {startup.name}
                                 </p>
-                                <p className="truncate text-[11px] text-slate-500">
+                                <p className="truncate text-[11px] text-sand-400">
                                   {startup.tagline}
                                 </p>
                               </div>
                             </div>
-                            <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600">
+                            <span className="shrink-0 rounded-full border border-ink-700/60 bg-ink-900 px-2 py-0.5 text-[10px] text-sand-400">
                               {startup.category}
                             </span>
                           </div>

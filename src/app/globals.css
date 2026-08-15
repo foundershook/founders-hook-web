@@ -541,7 +541,7 @@ body {
   align-items: flex-end;
   justify-content: center;
   gap: 2.5rem;
-  margin-top: -8px;
+  margin-top: 32px;
   position: relative;
   z-index: 3;
   width: 100%;
@@ -614,41 +614,45 @@ body {
 /* Coffee Mug */
 .css-mug {
   position: relative;
-  width: 52px;
-  height: 54px;
+  width: 78px;
+  height: 81px;
 }
 
 .mug-body {
-  width: 44px;
-  height: 50px;
+  width: 66px;
+  height: 75px;
   background: linear-gradient(180deg, #2c2c2e 0%, #1a1a1c 100%);
-  border-radius: 0 0 6px 6px;
+  border-radius: 0 0 10px 10px;
   position: relative;
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 25px rgba(182, 180, 76, 0.5); /* Cool brand-colored glow */
+  overflow: hidden;
 }
 
 .mug-body::before {
   content: '';
   position: absolute;
-  top: -3px;
-  left: -2px;
-  right: -2px;
-  height: 6px;
+  top: -4px;
+  left: -3px;
+  right: -3px;
+  height: 8px;
   background: #3a3a3c;
-  border-radius: 3px;
+  border-radius: 4px;
+  z-index: 10;
 }
 
 .mug-handle {
   position: absolute;
-  right: -10px;
-  top: 10px;
-  width: 14px;
-  height: 24px;
-  border: 3px solid #2c2c2e;
+  right: -15px;
+  top: 15px;
+  width: 21px;
+  height: 36px;
+  border: 4px solid #2c2c2e;
   border-left: none;
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 15px 15px 0;
+  z-index: 1;
 }
 
 /* ===========================

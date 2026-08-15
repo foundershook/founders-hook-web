@@ -62,7 +62,7 @@ function KeyboardRow({ keys, hasWideKey }: { keys: number; hasWideKey?: boolean 
 }
 
 /* iMac Launch Countdown Timer (Target: 24 August 2026, 6:00 PM IST) */
-const LAUNCH_TARGET_DATE_MS = new Date("2026-08-24T18:00:00+05:30").getTime();
+const LAUNCH_TARGET_DATE_MS = new Date("2026-08-20T18:00:00+05:30").getTime();
 
 function MacLaunchTimer() {
   const [timeLeft, setTimeLeft] = useState({
@@ -188,7 +188,7 @@ function MacLaunchTimer() {
         {/* Target Time Callout */}
         <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium text-[#FAF8F4]/90 bg-black/40 px-3 py-1 rounded-full border border-white/10">
           <Calendar size={13} className="text-[#8b893a]" />
-          <span>24 August 2026 • 6:00 PM IST</span>
+          <span>20 August 2026 • 6:00 PM IST</span>
         </div>
       </div>
 
@@ -267,7 +267,20 @@ function DeskAccessories() {
 
       {/* Coffee Mug */}
       <div className="css-mug">
-        <div className="mug-body" />
+        <div className="mug-body">
+          <div className="absolute inset-0 flex items-center justify-center pt-2 pointer-events-none z-10">
+            <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md border border-[#FAF8F4]/50 p-0.5 overflow-hidden">
+              <div className="relative h-full w-full rounded-full overflow-hidden">
+                <Image
+                  src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg"
+                  alt="Logo"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="mug-handle" />
       </div>
     </div>

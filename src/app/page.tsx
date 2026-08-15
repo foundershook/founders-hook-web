@@ -137,7 +137,7 @@ function MacLaunchTimer() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8b893a] opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#b6b44c]" />
           </span>
-          foundershook.com/launch
+          foundershook.in/launch
         </div>
         <div className="text-[10px] sm:text-xs font-semibold text-[#8b893a] uppercase tracking-wider hidden sm:block">
           Live Timer
@@ -843,18 +843,18 @@ const STEPS = [
           <Image src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300" alt="You" fill className="object-cover" />
         </div>
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/60 backdrop-blur-xl rounded-full px-5 py-2.5 border border-white/10 shadow-2xl">
-           <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
-           REC
+          <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+          REC
         </div>
-        
+
         <div className="w-full h-full relative">
-           <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800" alt="Founder" fill className="object-cover" />
-           <div className="absolute bottom-16 left-4 text-[10px] text-white bg-black/40 px-3 py-1 rounded-md backdrop-blur-sm flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Evelyn P. (Founder)</div>
+          <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800" alt="Founder" fill className="object-cover" />
+          <div className="absolute bottom-16 left-4 text-[10px] text-white bg-black/40 px-3 py-1 rounded-md backdrop-blur-sm flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Evelyn P. (Founder)</div>
         </div>
-        
+
         <div className="absolute top-4 right-4 w-32 h-24 rounded-xl overflow-hidden border-2 border-white/80 shadow-2xl transition-transform group-hover:scale-105 z-20">
-           <Image src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80&w=300" alt="You" fill className="object-cover" />
-           <div className="absolute bottom-1 left-1 text-[8px] text-white bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm">You</div>
+          <Image src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80&w=300" alt="You" fill className="object-cover" />
+          <div className="absolute bottom-1 left-1 text-[8px] text-white bg-black/40 px-1.5 py-0.5 rounded backdrop-blur-sm">You</div>
         </div>
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/60 backdrop-blur-xl rounded-full px-5 py-2.5 border border-white/10 shadow-2xl z-20">
           <div className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center cursor-pointer"><Mic size={14} className="text-white" /></div>
@@ -913,83 +913,83 @@ const APPLICANT_STEPS = [
     mockup: (
       <div className="relative w-full max-w-lg p-5 rounded-2xl bg-[#f0ece4] border border-[#d4d0c8] shadow-xl">
         <div className="flex items-center gap-6 border-b border-[#d4d0c8] pb-3 mb-4">
-           <div className="text-[11px] font-bold text-[#1a1a1a] border-b-2 border-[#6B7A2F] pb-3 -mb-[13px]">Projects for you</div>
-           <div className="text-[11px] font-medium text-[#666]">All projects</div>
-           <div className="text-[11px] font-medium text-[#666]">People</div>
-           <div className="text-[11px] font-medium text-[#666]">Saved</div>
+          <div className="text-[11px] font-bold text-[#1a1a1a] border-b-2 border-[#6B7A2F] pb-3 -mb-[13px]">Projects for you</div>
+          <div className="text-[11px] font-medium text-[#666]">All projects</div>
+          <div className="text-[11px] font-medium text-[#666]">People</div>
+          <div className="text-[11px] font-medium text-[#666]">Saved</div>
         </div>
         <div className="grid grid-cols-2 gap-3">
-           <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
-             <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#6B7A2F]/10 text-[#6B7A2F] flex items-center justify-center font-bold text-xs">P</div>
-                  <div>
-                     <div className="text-xs font-bold text-[#1a1a1a]">PumpGuard</div>
-                     <div className="text-[9px] text-[#666]">AI / HealthTech</div>
-                  </div>
+          <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#6B7A2F]/10 text-[#6B7A2F] flex items-center justify-center font-bold text-xs">P</div>
+                <div>
+                  <div className="text-xs font-bold text-[#1a1a1a]">PumpGuard</div>
+                  <div className="text-[9px] text-[#666]">AI / HealthTech</div>
                 </div>
-                <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
-             </div>
-             <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">AI-powered pump monitoring system to predict failures and reduce downtime.</div>
-             <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
-                <div className="flex items-center gap-1"><Users size={12} /> 5 on board</div>
-                <div className="font-semibold text-[#1a1a1a]">$80k - $120k</div>
-             </div>
-           </div>
-           
-           <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
-             <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#8b893a]/10 text-[#8b893a] flex items-center justify-center"><BookOpen size={14} /></div>
-                  <div>
-                     <div className="text-xs font-bold text-[#1a1a1a]">STUDAI</div>
-                     <div className="text-[9px] text-[#666]">EdTech / AI</div>
-                  </div>
+              </div>
+              <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
+            </div>
+            <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">AI-powered pump monitoring system to predict failures and reduce downtime.</div>
+            <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
+              <div className="flex items-center gap-1"><Users size={12} /> 5 on board</div>
+              <div className="font-semibold text-[#1a1a1a]">$80k - $120k</div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#8b893a]/10 text-[#8b893a] flex items-center justify-center"><BookOpen size={14} /></div>
+                <div>
+                  <div className="text-xs font-bold text-[#1a1a1a]">STUDAI</div>
+                  <div className="text-[9px] text-[#666]">EdTech / AI</div>
                 </div>
-                <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
-             </div>
-             <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">AI assistant for students that personalizes learning and boosts productivity.</div>
-             <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
-                <div className="flex items-center gap-1"><Users size={12} /> 3 on board</div>
-                <div className="font-semibold text-[#1a1a1a]">$40k - $70k</div>
-             </div>
-           </div>
-           
-           <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
-             <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#6B7A2F] text-white flex items-center justify-center font-bold text-xs">S</div>
-                  <div>
-                     <div className="text-xs font-bold text-[#1a1a1a]">Scallient AI</div>
-                     <div className="text-[9px] text-[#666]">AI / SaaS</div>
-                  </div>
+              </div>
+              <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
+            </div>
+            <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">AI assistant for students that personalizes learning and boosts productivity.</div>
+            <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
+              <div className="flex items-center gap-1"><Users size={12} /> 3 on board</div>
+              <div className="font-semibold text-[#1a1a1a]">$40k - $70k</div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#6B7A2F] text-white flex items-center justify-center font-bold text-xs">S</div>
+                <div>
+                  <div className="text-xs font-bold text-[#1a1a1a]">Scallient AI</div>
+                  <div className="text-[9px] text-[#666]">AI / SaaS</div>
                 </div>
-                <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
-             </div>
-             <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">Scallient builds AI solutions that automate customer support at scale.</div>
-             <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
-                <div className="flex items-center gap-1"><Users size={12} /> 4 on board</div>
-                <div className="font-semibold text-[#1a1a1a]">$70k - $110k</div>
-             </div>
-           </div>
-           
-           <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
-             <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] text-white flex items-center justify-center"><Shield size={14} /></div>
-                  <div>
-                     <div className="text-xs font-bold text-[#1a1a1a]">EverProbe</div>
-                     <div className="text-[9px] text-[#666]">Cybersecurity</div>
-                  </div>
+              </div>
+              <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
+            </div>
+            <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">Scallient builds AI solutions that automate customer support at scale.</div>
+            <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
+              <div className="flex items-center gap-1"><Users size={12} /> 4 on board</div>
+              <div className="font-semibold text-[#1a1a1a]">$70k - $110k</div>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl border border-[#d4d0c8] bg-white shadow-sm hover:border-[#6B7A2F]/40 transition-colors cursor-pointer group">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#1a1a1a] text-white flex items-center justify-center"><Shield size={14} /></div>
+                <div>
+                  <div className="text-xs font-bold text-[#1a1a1a]">EverProbe</div>
+                  <div className="text-[9px] text-[#666]">Cybersecurity</div>
                 </div>
-                <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
-             </div>
-             <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">Real-time threat detection platform for modern infrastructure.</div>
-             <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
-                <div className="flex items-center gap-1"><Users size={12} /> 6 on board</div>
-                <div className="font-semibold text-[#1a1a1a]">$90k - $130k</div>
-             </div>
-           </div>
+              </div>
+              <Bookmark size={14} className="text-[#999] group-hover:text-[#6B7A2F] transition-colors" />
+            </div>
+            <div className="text-[10px] text-[#666] mb-3 leading-tight h-8">Real-time threat detection platform for modern infrastructure.</div>
+            <div className="flex items-center justify-between text-[10px] text-[#666] border-t border-[#f0ece4] pt-2">
+              <div className="flex items-center gap-1"><Users size={12} /> 6 on board</div>
+              <div className="font-semibold text-[#1a1a1a]">$90k - $130k</div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -1002,18 +1002,18 @@ const APPLICANT_STEPS = [
       <div className="relative flex gap-6 w-full max-w-md items-center justify-center h-64">
         <div className="flex flex-col p-5 rounded-2xl bg-white border border-[#d4d0c8] shadow-xl w-56 transform -rotate-3 z-10 hover:-rotate-1 transition-transform relative">
           <div className="text-[11px] font-bold text-[#1a1a1a] flex items-center gap-1.5 mb-4"><Mail size={14} className="text-[#6B7A2F]" /> E-Mail Invitation</div>
-          
+
           <div className="mb-3">
-             <div className="text-[9px] text-[#666] font-bold mb-0.5 uppercase tracking-wider">Role</div>
-             <div className="text-[11px] font-semibold text-[#1a1a1a]">Backend Engineer</div>
+            <div className="text-[9px] text-[#666] font-bold mb-0.5 uppercase tracking-wider">Role</div>
+            <div className="text-[11px] font-semibold text-[#1a1a1a]">Backend Engineer</div>
           </div>
           <div className="mb-3">
-             <div className="text-[9px] text-[#666] font-bold mb-0.5 uppercase tracking-wider">About the role</div>
-             <div className="text-[10px] text-[#666] leading-relaxed">You'll be building the core APIs and infrastructure for our platform.</div>
+            <div className="text-[9px] text-[#666] font-bold mb-0.5 uppercase tracking-wider">About the role</div>
+            <div className="text-[10px] text-[#666] leading-relaxed">You'll be building the core APIs and infrastructure for our platform.</div>
           </div>
           <div className="mb-4">
-             <div className="text-[9px] text-[#666] font-bold mb-1.5 uppercase tracking-wider">Why do you want to join?</div>
-             <div className="h-14 w-full bg-[#FAF8F4] border border-[#d4d0c8] rounded-lg p-2 text-[10px] text-[#999]">Type your answer here...</div>
+            <div className="text-[9px] text-[#666] font-bold mb-1.5 uppercase tracking-wider">Why do you want to join?</div>
+            <div className="h-14 w-full bg-[#FAF8F4] border border-[#d4d0c8] rounded-lg p-2 text-[10px] text-[#999]">Type your answer here...</div>
           </div>
           <div className="w-full bg-[#6B7A2F] hover:bg-[#5a6628] text-white text-[11px] font-bold py-2.5 rounded-lg text-center transition-colors shadow-md">
             Submit Answer
@@ -1022,21 +1022,21 @@ const APPLICANT_STEPS = [
 
         <div className="flex flex-col p-4 rounded-2xl bg-white border border-[#d4d0c8] shadow-xl w-56 transform rotate-3 z-20 hover:rotate-1 transition-transform relative">
           <div className="text-[11px] font-bold text-[#1a1a1a] text-center mb-3">Campaign</div>
-          
+
           <div className="relative h-24 w-full rounded-xl overflow-hidden mb-3 border border-[#e8e4dc]">
             <Image src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=400" alt="Campaign" fill className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
             <div className="absolute top-2 left-2 text-[9px] font-bold text-white flex items-center gap-1.5"><span className="w-4 h-4 bg-white/20 rounded flex items-center justify-center text-white backdrop-blur-sm">N</span> NEUROVIA</div>
-            <div className="absolute bottom-2 left-2 right-2 text-center text-white text-[10px] leading-tight">We are looking for a <br/><span className="text-[#6B7A2F] font-bold text-xs">Marketing Co-Founder</span></div>
+            <div className="absolute bottom-2 left-2 right-2 text-center text-white text-[10px] leading-tight">We are looking for a <br /><span className="text-[#6B7A2F] font-bold text-xs">Marketing Co-Founder</span></div>
           </div>
 
           <div className="text-[9px] text-[#666] font-bold mb-2 uppercase tracking-wider">About the campaign</div>
           <ul className="text-[10px] text-[#666] space-y-1.5 mb-4">
-             <li className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-[#6B7A2F]/10 flex items-center justify-center shrink-0"><Check size={10} className="text-[#6B7A2F]" /></div> Build brand & GTM strategy</li>
-             <li className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-[#6B7A2F]/10 flex items-center justify-center shrink-0"><Check size={10} className="text-[#6B7A2F]" /></div> Lead user acquisition</li>
-             <li className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-[#6B7A2F]/10 flex items-center justify-center shrink-0"><Check size={10} className="text-[#6B7A2F]" /></div> Work with the founder</li>
+            <li className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-[#6B7A2F]/10 flex items-center justify-center shrink-0"><Check size={10} className="text-[#6B7A2F]" /></div> Build brand & GTM strategy</li>
+            <li className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-[#6B7A2F]/10 flex items-center justify-center shrink-0"><Check size={10} className="text-[#6B7A2F]" /></div> Lead user acquisition</li>
+            <li className="flex items-center gap-2"><div className="w-4 h-4 rounded-full bg-[#6B7A2F]/10 flex items-center justify-center shrink-0"><Check size={10} className="text-[#6B7A2F]" /></div> Work with the founder</li>
           </ul>
-          
+
           <div className="w-full bg-white border-2 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white text-[#1a1a1a] text-[11px] font-bold py-2 rounded-lg text-center transition-colors">
             Book Meeting
           </div>
@@ -1050,32 +1050,32 @@ const APPLICANT_STEPS = [
     desc: "Hop on a quick call with the founder to see if you click. You'll align on the role, expectations, and whether this is the right team to build with.",
     mockup: (
       <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-white aspect-[16/10] flex flex-col p-2 gap-2">
-         {/* Top Row: Two people */}
-         <div className="flex gap-2 h-1/2">
-            <div className="relative w-1/2 h-full rounded-xl overflow-hidden bg-gray-100">
-               <Image src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=400&q=80" alt="Scott" fill className="object-cover" />
-               <div className="absolute bottom-2 left-2 text-[10px] font-medium text-white bg-black/50 px-2 py-1 rounded-lg backdrop-blur-md flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Scott White</div>
-            </div>
-            <div className="relative w-1/2 h-full rounded-xl overflow-hidden bg-gray-100">
-               <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" alt="Evelyn" fill className="object-cover" />
-               <div className="absolute bottom-2 left-2 text-[10px] font-medium text-white bg-black/50 px-2 py-1 rounded-lg backdrop-blur-md flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Evelyn Parker</div>
-               <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-red-500/90 px-2 py-1 rounded-lg text-[9px] font-bold text-white backdrop-blur-md shadow-sm"><div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div> REC</div>
-            </div>
-         </div>
-         {/* Bottom Row: You + Controls */}
-         <div className="relative h-1/2 rounded-xl overflow-hidden w-2/3 mx-auto shadow-inner bg-gray-100">
-            <Image src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=400&q=80" alt="Carl" fill className="object-cover" />
-            <div className="absolute bottom-2 left-2 text-[10px] font-medium text-white bg-black/50 px-2 py-1 rounded-lg backdrop-blur-md flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Carl Peterson (You)</div>
-         </div>
+        {/* Top Row: Two people */}
+        <div className="flex gap-2 h-1/2">
+          <div className="relative w-1/2 h-full rounded-xl overflow-hidden bg-gray-100">
+            <Image src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=400&q=80" alt="Scott" fill className="object-cover" />
+            <div className="absolute bottom-2 left-2 text-[10px] font-medium text-white bg-black/50 px-2 py-1 rounded-lg backdrop-blur-md flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Scott White</div>
+          </div>
+          <div className="relative w-1/2 h-full rounded-xl overflow-hidden bg-gray-100">
+            <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80" alt="Evelyn" fill className="object-cover" />
+            <div className="absolute bottom-2 left-2 text-[10px] font-medium text-white bg-black/50 px-2 py-1 rounded-lg backdrop-blur-md flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Evelyn Parker</div>
+            <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-red-500/90 px-2 py-1 rounded-lg text-[9px] font-bold text-white backdrop-blur-md shadow-sm"><div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div> REC</div>
+          </div>
+        </div>
+        {/* Bottom Row: You + Controls */}
+        <div className="relative h-1/2 rounded-xl overflow-hidden w-2/3 mx-auto shadow-inner bg-gray-100">
+          <Image src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=400&q=80" alt="Carl" fill className="object-cover" />
+          <div className="absolute bottom-2 left-2 text-[10px] font-medium text-white bg-black/50 px-2 py-1 rounded-lg backdrop-blur-md flex items-center gap-1.5"><div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div> Carl Peterson (You)</div>
+        </div>
 
-         {/* Call Controls */}
-         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/90 backdrop-blur-xl rounded-full px-5 py-2.5 border border-[#e8e4dc] shadow-xl z-20">
+        {/* Call Controls */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/90 backdrop-blur-xl rounded-full px-5 py-2.5 border border-[#e8e4dc] shadow-xl z-20">
           <div className="w-9 h-9 rounded-full bg-black/5 hover:bg-black/10 transition-colors flex items-center justify-center cursor-pointer"><Mic size={16} className="text-[#1a1a1a]" /></div>
           <div className="w-9 h-9 rounded-full bg-black/5 hover:bg-black/10 transition-colors flex items-center justify-center cursor-pointer"><Video size={16} className="text-[#1a1a1a]" /></div>
           <div className="w-11 h-11 rounded-full bg-red-500 hover:bg-red-600 transition-colors flex items-center justify-center cursor-pointer shadow-lg shadow-red-500/20"><Phone size={18} className="text-white fill-white transform rotate-[135deg]" /></div>
           <div className="w-9 h-9 rounded-full bg-black/5 hover:bg-black/10 transition-colors flex items-center justify-center cursor-pointer"><Users size={16} className="text-[#1a1a1a]" /></div>
           <div className="w-9 h-9 rounded-full bg-black/5 hover:bg-black/10 transition-colors flex items-center justify-center cursor-pointer"><MessageSquare size={16} className="text-[#1a1a1a]" /></div>
-         </div>
+        </div>
       </div>
     )
   }
@@ -1100,8 +1100,8 @@ function HowItWorksSteps() {
           >
             How It Works
           </motion.span>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1109,13 +1109,13 @@ function HowItWorksSteps() {
             className="flex justify-center mt-6 mb-8"
           >
             <div className="bg-[#f0ece4] p-1.5 rounded-full inline-flex border border-[#d4d0c8] shadow-sm">
-              <button 
+              <button
                 onClick={() => setActiveTab('founder')}
                 className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${activeTab === 'founder' ? 'bg-white text-[#1a1a1a] shadow-md' : 'text-[#666] hover:text-[#1a1a1a]'}`}
               >
                 For Founders
               </button>
-              <button 
+              <button
                 onClick={() => setActiveTab('applicant')}
                 className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${activeTab === 'applicant' ? 'bg-white text-[#1a1a1a] shadow-md' : 'text-[#666] hover:text-[#1a1a1a]'}`}
               >
@@ -1140,7 +1140,7 @@ function HowItWorksSteps() {
             transition={{ delay: 0.2 }}
             className="mt-4 text-lg text-[#666] max-w-2xl mx-auto font-normal"
           >
-            {activeTab === 'founder' 
+            {activeTab === 'founder'
               ? "From building your profile to meeting your next co-founder, we streamline the entire process of finding the right team."
               : "From building your profile to meeting your next team, we streamline the entire process of finding your perfect project."}
           </motion.p>

@@ -14,6 +14,7 @@ import {
   TrendingUp,
   MessageSquare,
   Globe,
+  Network,
   BookOpen,
   Star,
   Menu,
@@ -24,16 +25,22 @@ import {
   Trophy,
   Share2,
   Lightbulb,
+  AlertCircle,
+  Mail,
+  Check,
+  Mic,
+  Video,
+  Phone,
 } from "lucide-react";
 
 type Stats = { founders: number; startups: number; openRoles: number };
 
 const NAV_LINKS = [
-  { label: "Discover", href: "/feed" },
-  { label: "Community", href: "/feed" },
-  { label: "Startups", href: "/feed" },
-  { label: "Resources", href: "/feed" },
-  { label: "Events", href: "/feed" },
+  { label: "Discover", href: "/signup" },
+  { label: "Community", href: "/signup" },
+  { label: "Startups", href: "/signup" },
+  { label: "Resources", href: "/signup" },
+  { label: "Events", href: "/signup" },
 ];
 
 function useAuthedUser() {
@@ -633,36 +640,290 @@ function FoundersEcosystemWeb() {
                           rotate: [0, 2, -2, 1, 0],
                           scale: [1, 1.03, 0.98, 1.02, 1],
                         }}
-                      transition={{
-                        duration: node.duration * 0.9,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: node.delay + 0.4,
-                      }}
-                      whileHover={{
-                        rotate: [0, -6, 6, -3, 0],
-                        scale: 1.1,
-                        transition: { duration: 0.3 },
-                      }}
-                      className={`flex h-6 w-6 lg:h-10 lg:w-10 shrink-0 items-center justify-center rounded-full border border-[#e8e4dc] ${node.iconColor}`}
-                    >
-                      <IconComp className="h-3 w-3 lg:h-[18px] lg:w-[18px]" />
-                    </motion.div>
+                        transition={{
+                          duration: node.duration * 0.9,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                          delay: node.delay + 0.4,
+                        }}
+                        whileHover={{
+                          rotate: [0, -6, 6, -3, 0],
+                          scale: 1.1,
+                          transition: { duration: 0.3 },
+                        }}
+                        className={`flex h-6 w-6 lg:h-10 lg:w-10 shrink-0 items-center justify-center rounded-full border border-[#e8e4dc] ${node.iconColor}`}
+                      >
+                        <IconComp className="h-3 w-3 lg:h-[18px] lg:w-[18px]" />
+                      </motion.div>
 
-                    <div className="w-full">
-                      <h3 className="font-bold text-[#1a1a1a] text-[9px] sm:text-[10px] lg:text-sm leading-[1.1] lg:leading-snug">
-                        {node.title}
-                      </h3>
-                      <p className="hidden lg:block text-xs text-[#666] font-normal leading-tight mt-0.5">
-                        {node.desc}
-                      </p>
-                    </div>
-                  </motion.div>
+                      <div className="w-full">
+                        <h3 className="font-bold text-[#1a1a1a] text-[9px] sm:text-[10px] lg:text-sm leading-[1.1] lg:leading-snug">
+                          {node.title}
+                        </h3>
+                        <p className="hidden lg:block text-xs text-[#666] font-normal leading-tight mt-0.5">
+                          {node.desc}
+                        </p>
+                      </div>
+                    </motion.div>
                   </div>
                 </div>
               );
             })}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── HOW IT WORKS STEPS ─── */
+const STEPS = [
+  {
+    num: "01",
+    title: "Build your Profile",
+    desc: "In ~5 minutes, answer a few questions and let our AI turn it into a polished public profile that highlights your skills, experience, and what you're looking for.",
+    mockup: (
+      <div className="relative flex flex-col gap-3 p-5 rounded-2xl bg-white/80 backdrop-blur-xl border border-[#e8e4dc] shadow-xl w-full max-w-sm transform transition-transform hover:scale-105 duration-500">
+        <div className="absolute -top-6 -right-6 w-24 h-24 bg-[#6B7A2F]/10 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-[#8b893a]/10 rounded-full blur-2xl"></div>
+
+        <div className="flex items-center gap-4 relative z-10">
+          <div className="relative">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#f0ece4] to-[#e8e4dc] flex items-center justify-center text-[#6B7A2F] font-bold text-xl shadow-sm border border-white">WS</div>
+            <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+          </div>
+          <div>
+            <div className="font-bold text-[#1a1a1a] text-lg">William Smith</div>
+            <div className="text-xs text-[#666] flex items-center gap-1">
+              <Globe size={10} /> Europe, United Kingdom
+            </div>
+          </div>
+        </div>
+        <div className="mt-2 p-4 rounded-xl bg-gradient-to-br from-[#FAF8F4] to-[#f0ece4] border border-[#e8e4dc] relative z-10 shadow-sm">
+          <div className="inline-block px-2 py-1 bg-[#6B7A2F]/10 rounded text-[10px] font-bold text-[#6B7A2F] mb-2 uppercase tracking-wider">Top Skill</div>
+          <div className="font-bold text-[#1a1a1a] text-[15px] mb-1">Content creation</div>
+          <div className="text-xs text-[#666] leading-relaxed">I've developed a system which analyzes brand's competitors top performing videos and suggests a viral script based on trending patterns.</div>
+        </div>
+      </div>
+    )
+  },
+  {
+    num: "02",
+    title: "Create the Company",
+    desc: "Tell us about your idea/project and we'll generate a clean Company Page for you (problem, solution, links, media, context). You can edit anything anytime — and we use this info to match the right people to your project.",
+    mockup: (
+      <div className="relative w-full max-w-sm h-56 rounded-2xl bg-white overflow-hidden shadow-xl border border-[#e8e4dc] transform transition-transform hover:-translate-y-2 duration-500">
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-br from-[#1a1a1a] to-[#333]"></div>
+        <div className="absolute top-4 left-5 text-white font-black tracking-widest text-lg z-10 flex items-center gap-2">
+          <Rocket size={18} className="text-[#8b893a]" />
+          FOUNDERS <span className="text-[#8b893a]">HOOK</span>
+        </div>
+
+        <div className="absolute top-14 left-4 right-4 flex flex-col gap-3 z-10">
+          <div className="bg-white/90 backdrop-blur-md p-3 rounded-xl border border-[#e8e4dc] shadow-sm transform -rotate-1 ml-auto w-[85%]">
+            <div className="text-[10px] font-bold text-[#8b893a] mb-1 uppercase tracking-wider flex items-center gap-1"><AlertCircle size={10} /> Problem</div>
+            <div className="text-[9px] text-[#4a4a4a] leading-relaxed">The current flight simulation equipment market does not actively showcase hardware flight dynamics, forcing them to point to dry routine.</div>
+          </div>
+          <div className="bg-white/95 backdrop-blur-md p-3 rounded-xl border border-[#e8e4dc] shadow-md transform rotate-1 mr-auto w-[85%]">
+            <div className="text-[10px] font-bold text-[#6B7A2F] mb-1 uppercase tracking-wider flex items-center gap-1"><CheckCircle2 size={10} /> Solution</div>
+            <div className="text-[9px] text-[#4a4a4a] leading-relaxed">Falcon Matter aims to build a modular HOTAS system which replicates real-life flight dynamics and feeling of flying jet cockpit parts. All ready and plug &amp; play.</div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    num: "03",
+    title: "Setup Your Campaign",
+    desc: "Define who you need (skills, experience level, location, availability, working style). We'll build a highly targeted shortlist, then automatically reach out to the best matches and introduce your project to them.",
+    mockup: (
+      <div className="relative flex gap-4 w-full max-w-md items-center justify-center h-56">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#6B7A2F]/5 rounded-full blur-3xl z-0"></div>
+
+        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-white border border-[#e8e4dc] shadow-xl w-44 transform -rotate-6 z-10 transition-transform hover:-rotate-2 duration-500">
+          <div className="text-[10px] font-bold text-[#6B7A2F] mb-2 text-center uppercase tracking-widest bg-[#6B7A2F]/5 py-1 rounded-md">Targeted Invitation</div>
+          {[
+            { n: "Will Smith", r: "Content Creator", img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80" },
+            { n: "Adam Smith", r: "Growth Marketer", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=80&h=80&q=80" }
+          ].map((u, i) => (
+            <div key={i} className="flex items-center gap-2.5 p-1">
+              <div className="w-8 h-8 rounded-full overflow-hidden relative border border-[#e8e4dc]"><Image src={u.img} alt={u.n} fill className="object-cover" /></div>
+              <div>
+                <div className="text-[11px] font-bold text-[#1a1a1a]">{u.n}</div>
+                <div className="text-[9px] text-[#666]">{u.r}</div>
+              </div>
+            </div>
+          ))}
+          <div className="mt-1 mx-auto w-6 h-6 bg-[#6B7A2F] rounded-full flex items-center justify-center shadow-md">
+            <Mail size={10} className="text-white" />
+          </div>
+        </div>
+
+        <div className="flex flex-col p-5 rounded-2xl bg-[#1a1a1a] border border-[#333] shadow-2xl w-52 transform rotate-3 z-20 transition-transform hover:rotate-1 duration-500 overflow-hidden relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent"></div>
+          <div className="text-[9px] text-white/50 mb-3 uppercase tracking-widest flex items-center gap-1.5"><Briefcase size={10} /> Campaign</div>
+          <div className="text-sm font-bold text-white leading-snug mb-4">We are looking for a <span className="text-[#8b893a]">Marketing Co-Founder</span></div>
+          <div className="text-[10px] text-white/70 mb-2 border-b border-white/10 pb-1">About the project</div>
+          <div className="space-y-2 mt-2">
+            <div className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#6B7A2F]"></div><div className="h-1.5 w-full bg-white/10 rounded-full"></div></div>
+            <div className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#6B7A2F]"></div><div className="h-1.5 w-4/5 bg-white/10 rounded-full"></div></div>
+            <div className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#6B7A2F]"></div><div className="h-1.5 w-5/6 bg-white/10 rounded-full"></div></div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    num: "04",
+    title: "Pick the Best Applicants",
+    desc: "Once your campaign is live, qualified candidates apply. Review profiles, compare applicants, pick the best — and book meetings in one click.",
+    mockup: (
+      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-lg items-center justify-center">
+        <div className="flex flex-col gap-2 p-4 rounded-2xl bg-white border border-[#e8e4dc] shadow-xl w-full sm:w-64 z-10 relative">
+          <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[#1a1a1a] text-white rounded-full flex items-center justify-center shadow-lg"><Users size={12} /></div>
+          {[
+            { n: "Zoe Clark", r: "UI/UX Designer", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80" },
+            { n: "Wade Warren", r: "Full Stack Developer", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80" },
+            { n: "Carl Smith", r: "Product Strategist", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&h=80&q=80" }
+          ].map((app, i) => (
+            <div key={i} className="flex items-center justify-between p-2 rounded-xl hover:bg-[#FAF8F4] transition-colors border border-transparent hover:border-[#e8e4dc] group">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-full overflow-hidden relative"><Image src={app.img} alt={app.n} fill className="object-cover" /></div>
+                <div>
+                  <div className="text-xs font-bold text-[#1a1a1a]">{app.n}</div>
+                  <div className="text-[9px] text-[#666]">{app.r}</div>
+                </div>
+              </div>
+              <div className="text-[9px] font-semibold px-2.5 py-1.5 bg-[#f0ece4] text-[#1a1a1a] rounded-lg group-hover:bg-[#1a1a1a] group-hover:text-white transition-colors cursor-pointer">View Profile</div>
+            </div>
+          ))}
+        </div>
+        <div className="p-5 rounded-2xl bg-[#1a1a1a] border border-[#333] shadow-xl w-44 z-0 sm:-ml-6 mt-4 sm:mt-0 transform sm:translate-y-4">
+          <div className="flex items-center gap-2 mb-4 text-xs font-bold text-white justify-center uppercase tracking-widest border-b border-white/10 pb-2">
+            <Calendar size={12} className="text-[#8b893a]" />
+            Book Meeting
+          </div>
+          <div className="grid grid-cols-4 gap-2.5">
+            {Array.from({ length: 16 }).map((_, i) => (
+              <div key={i} className={`w-6 h-6 rounded-lg flex items-center justify-center transition-transform hover:scale-110 cursor-pointer ${i === 6 || i === 10 || i === 11 || i === 14 ? 'bg-[#6B7A2F] text-white shadow-md shadow-[#6B7A2F]/20' : 'bg-white/5 hover:bg-white/10'}`}>
+                {(i === 6 || i === 10 || i === 11 || i === 14) && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex justify-end">
+            <div className="w-6 h-6 rounded-full bg-[#8b893a] flex items-center justify-center text-white shadow-md"><Check size={12} strokeWidth={3} /></div>
+          </div>
+        </div>
+      </div>
+    )
+  },
+  {
+    num: "05",
+    title: "Meet your Candidates",
+    desc: "Take meetings with the top applicants to talk through the project, ask questions, and see how you click. These conversations help you build a real connection and smoothly onboard the right person to your team.",
+    mockup: (
+      <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl border border-[#e8e4dc] bg-black aspect-[16/10] flex group">
+        <div className="absolute top-3 left-4 z-20 flex items-center gap-2 bg-black/40 backdrop-blur-md px-2 py-1 rounded-md text-[9px] text-white font-medium tracking-wider border border-white/10">
+          <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+          REC
+        </div>
+
+        <div className="w-1/2 h-full relative">
+          <Image src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80&w=600" alt="Candidate 1" fill className="object-cover" />
+          <div className="absolute bottom-16 left-3 text-[10px] text-white bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">Alex R.</div>
+        </div>
+        <div className="w-1/2 h-full relative border-l border-white/10">
+          <Image src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600" alt="Candidate 2" fill className="object-cover" />
+          <div className="absolute bottom-16 left-3 text-[10px] text-white bg-black/40 px-2 py-0.5 rounded backdrop-blur-sm">Sam T.</div>
+        </div>
+        <div className="absolute bottom-16 right-4 w-28 h-20 rounded-xl overflow-hidden border-2 border-white/80 shadow-2xl transition-transform group-hover:scale-105">
+          <Image src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300" alt="You" fill className="object-cover" />
+        </div>
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-black/60 backdrop-blur-xl rounded-full px-5 py-2.5 border border-white/10 shadow-2xl">
+          <div className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center cursor-pointer"><Mic size={14} className="text-white" /></div>
+          <div className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center cursor-pointer"><Video size={14} className="text-white" /></div>
+          <div className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center cursor-pointer"><MessageSquare size={14} className="text-white" /></div>
+          <div className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 transition-colors flex items-center justify-center ml-2 cursor-pointer shadow-lg shadow-red-500/20"><Phone size={16} className="text-white fill-white transform rotate-[135deg]" /></div>
+        </div>
+      </div>
+    )
+  }
+];
+
+function HowItWorksSteps() {
+  return (
+    <section className="landing-section relative w-full py-24 lg:py-32 bg-[#FAF8F4] overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#6B7A2F]/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+      <div className="mx-auto max-w-6xl px-6 lg:px-8 relative z-10">
+        <div className="mb-20 text-center">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-block rounded-full bg-[#f0ece4] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#6B7A2F] border border-[#d4d0c8] shadow-sm"
+          >
+            How It Works
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="mt-4 text-4xl font-extrabold tracking-tight text-[#1a1a1a] sm:text-5xl"
+          >
+            Launch your startup in 5 steps
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-4 text-lg text-[#666] max-w-2xl mx-auto font-normal"
+          >
+            From building your profile to meeting your next co-founder, we streamline the entire process of finding the right team.
+          </motion.p>
+        </div>
+
+        <div className="space-y-12 sm:space-y-24 relative">
+          {/* Connecting line between steps (desktop only) */}
+          <div className="hidden lg:block absolute left-1/2 top-10 bottom-10 w-px bg-gradient-to-b from-[#e8e4dc] via-[#d4d0c8] to-[#e8e4dc] -translate-x-1/2 z-0"></div>
+
+          {STEPS.map((step, index) => (
+            <motion.div
+              key={step.num}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className={`flex flex-col ${index % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} items-center gap-10 lg:gap-20 relative z-10`}
+            >
+              {/* Step number dot (desktop only) */}
+              <div className="hidden lg:flex absolute left-1/2 -translate-x-1/2 w-12 h-12 bg-white rounded-full border-4 border-[#FAF8F4] shadow-md items-center justify-center z-20">
+                <div className="w-4 h-4 rounded-full bg-[#6B7A2F]"></div>
+              </div>
+
+              {/* Text Content */}
+              <div className={`flex-1 w-full flex flex-col ${index % 2 === 0 ? "lg:items-end lg:text-right" : "lg:items-start lg:text-left"} items-center text-center`}>
+                <div className={`flex items-center gap-3 mb-4 ${index % 2 === 0 ? "lg:flex-row-reverse" : ""}`}>
+                  <span className="text-5xl sm:text-6xl font-black text-[#6B7A2F]/10">{step.num}</span>
+                  <span className="text-xs font-bold tracking-widest uppercase text-[#8b893a] bg-[#8b893a]/10 px-3 py-1 rounded-full border border-[#8b893a]/20">Step {step.num}</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-[#1a1a1a] mb-4">
+                  {step.title}
+                </h3>
+                <p className="text-[#666] leading-relaxed font-normal text-base sm:text-lg max-w-md">
+                  {step.desc}
+                </p>
+              </div>
+
+              {/* Mockup */}
+              <div className={`flex-1 w-full flex ${index % 2 === 0 ? "lg:justify-start" : "lg:justify-end"} justify-center`}>
+                {step.mockup}
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -870,6 +1131,9 @@ export default function LandingPage() {
       {/* ─── ECOSYSTEM SPIDERWEB DIAGRAM (BELOW COMPUTER) ─── */}
       <FoundersEcosystemWeb />
 
+      {/* ─── HOW IT WORKS STEPS ─── */}
+      <HowItWorksSteps />
+
       {/* ─── NETWORKING SECTION ─── */}
       <section className="landing-section relative z-10 w-full border-t border-[#e8e4dc] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -881,7 +1145,7 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
             >
               <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#d4d0c8] bg-[#f0ece4] text-[#6B7A2F]">
-                <Globe size={28} />
+                <Network size={28} />
               </div>
               <h2 className="text-3xl sm:text-4xl tracking-tight text-[#1a1a1a]">
                 The Network for the Next Generation
@@ -1066,7 +1330,7 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="mt-16 flex justify-center"
           >
-            <Link href={primaryHref} className="landing-btn-primary">
+            <Link href="/signup" className="landing-btn-primary">
               Explore Resources
               <ArrowRight size={18} />
             </Link>

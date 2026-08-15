@@ -264,7 +264,7 @@ export default function OnboardingPage() {
 
     return (
       <main className="relative flex min-h-screen items-center justify-center bg-ink-radial px-6 py-16">
-        <div className="pointer-events-none absolute -top-32 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-gold-500/10 blur-[110px]" />
+        <div className="pointer-events-none absolute -top-32 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-white/5 blur-[110px]" />
 
         <div className="relative z-10 w-full max-w-xl">
           {/* Progress bar */}
@@ -275,7 +275,7 @@ export default function OnboardingPage() {
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
               <motion.div
-                className="h-full bg-gold-gradient"
+                className="h-full bg-white/20"
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.4 }}
               />
@@ -364,7 +364,7 @@ export default function OnboardingPage() {
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink-radial px-4 py-12">
       {/* Ambient glows */}
-      <div className="pointer-events-none absolute -top-32 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-gold-500/10 blur-[110px]" />
+      <div className="pointer-events-none absolute -top-32 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-white/5 blur-[110px]" />
       <motion.div
         style={{ filter: "blur(130px)" }}
         animate={{ x: [0, 60, -40, 30, 0], y: [0, -60, 40, -30, 0] }}
@@ -389,7 +389,7 @@ export default function OnboardingPage() {
               exit={{ opacity: 0, y: -10 }}
               className="mb-6 flex items-center justify-center gap-3"
             >
-              <div className="flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/10 px-4 py-1.5 text-sm font-medium text-gold-300">
+              <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-sm font-medium text-white">
                 <Rocket size={14} />
                 Tell us about your startup
               </div>
@@ -421,7 +421,7 @@ export default function OnboardingPage() {
                 <div
                   key={s}
                   className={`transition-all duration-300 rounded-full ${startupStep >= s
-                    ? "w-6 h-2 bg-gold-400"
+                    ? "w-6 h-2 bg-white"
                     : startupStep === s - 1 || startupStep === 0
                       ? "w-2 h-2 bg-white/20"
                       : "w-2 h-2 bg-white/10"
@@ -444,7 +444,7 @@ export default function OnboardingPage() {
                   exit={{ opacity: 0, y: -12 }}
                   className="flex flex-col items-center text-center w-full pt-8 md:pt-12"
                 >
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-gold-500/30 bg-gold-500/10 text-gold-300 shadow-[0_0_25px_rgba(251,191,36,0.25)]">
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/5 text-white shadow-[0_0_25px_rgba(251,191,36,0.25)]">
                     <Rocket size={30} />
                   </div>
                   <h2 style={textGlow} className="text-3xl font-semibold tracking-tight text-white md:text-4xl">
@@ -484,7 +484,7 @@ export default function OnboardingPage() {
                     placeholder="My Awesome Startup"
                     value={startupForm.projectName}
                     onChange={(e) => updateStartup({ projectName: e.target.value })}
-                    className="mt-10 w-full max-w-md rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-4 px-6 text-center text-xl text-white placeholder:text-gray-400 focus:border-gold-400 focus:outline-none transition-all shadow-xl"
+                    className="mt-10 w-full max-w-md rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-4 px-6 text-center text-xl text-white placeholder:text-gray-400 focus:border-white/40 focus:outline-none transition-all shadow-xl"
                     autoFocus
                   />
 
@@ -494,7 +494,7 @@ export default function OnboardingPage() {
                     maxLength={120}
                     value={startupForm.tagline}
                     onChange={(e) => updateStartup({ tagline: e.target.value })}
-                    className="mt-4 w-full max-w-md rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-3 px-6 text-center text-base text-white placeholder:text-gray-500 focus:border-gold-400 focus:outline-none transition-all shadow-xl"
+                    className="mt-4 w-full max-w-md rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-3 px-6 text-center text-base text-white placeholder:text-gray-500 focus:border-white/40 focus:outline-none transition-all shadow-xl"
                   />
 
                   {/* Category pills */}
@@ -504,7 +504,7 @@ export default function OnboardingPage() {
                         key={cat}
                         onClick={() => updateStartup({ category: cat })}
                         className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${startupForm.category === cat
-                          ? "bg-gold-500 border-gold-400 text-black"
+                          ? "bg-white/20 border-white/40 text-white backdrop-blur-md shadow-[0_4px_12px_rgba(255,255,255,0.05)]"
                           : "bg-white/5 border-white/15 text-gray-300 hover:bg-white/10"
                           }`}
                       >
@@ -554,7 +554,7 @@ export default function OnboardingPage() {
                     placeholder="https://your-startup.com"
                     value={startupForm.website}
                     onChange={(e) => updateStartup({ website: e.target.value })}
-                    className="mt-12 w-full max-w-md rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-4 px-6 text-center text-xl text-white placeholder:text-gray-500 focus:border-gold-400 focus:outline-none transition-all shadow-xl"
+                    className="mt-12 w-full max-w-md rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-4 px-6 text-center text-xl text-white placeholder:text-gray-500 focus:border-white/40 focus:outline-none transition-all shadow-xl"
                     autoFocus
                   />
                   <div className="mt-12 flex w-full max-w-md items-center justify-between">
@@ -603,7 +603,7 @@ export default function OnboardingPage() {
                     onChange={(e) => updateStartup({ projectDescription: e.target.value })}
                     placeholder="What problem are you solving? What makes you different?"
                     maxLength={1000}
-                    className="mt-10 min-h-[160px] w-full max-w-lg resize-none rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-4 px-6 text-base text-white placeholder:text-gray-500 focus:border-gold-400 focus:outline-none transition-all shadow-xl"
+                    className="mt-10 min-h-[160px] w-full max-w-lg resize-none rounded-xl border border-white/20 bg-black/40 backdrop-blur-md py-4 px-6 text-base text-white placeholder:text-gray-500 focus:border-white/40 focus:outline-none transition-all shadow-xl"
                     autoFocus
                   />
                   <p className="mt-1.5 self-end max-w-lg text-xs text-gray-600">
@@ -657,7 +657,7 @@ export default function OnboardingPage() {
                             className="h-12 w-12 rounded-xl object-cover bg-black border border-white/10"
                           />
                         ) : (
-                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-gold-400">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-white">
                             <ImageIcon size={22} />
                           </div>
                         )}
@@ -696,7 +696,7 @@ export default function OnboardingPage() {
                           {({ open }) => (
                             <button
                               onClick={() => open()}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-500/20 border border-gold-400/30 text-sm font-medium text-gold-300 hover:bg-gold-500/30 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-medium text-white hover:bg-white/10 transition-colors"
                             >
                               {startupForm.logoUrl ? "Change" : "Upload"} <UploadCloud size={16} />
                             </button>
@@ -716,7 +716,7 @@ export default function OnboardingPage() {
                             className="h-12 w-20 rounded-lg object-cover bg-black border border-white/10"
                           />
                         ) : (
-                          <div className="flex h-12 w-20 items-center justify-center rounded-lg bg-white/10 text-gold-400">
+                          <div className="flex h-12 w-20 items-center justify-center rounded-lg bg-white/10 text-white">
                             <ImageIcon size={22} />
                           </div>
                         )}
@@ -755,7 +755,7 @@ export default function OnboardingPage() {
                           {({ open }) => (
                             <button
                               onClick={() => open()}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-500/20 border border-gold-400/30 text-sm font-medium text-gold-300 hover:bg-gold-500/30 transition-colors"
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-sm font-medium text-white hover:bg-white/10 transition-colors"
                             >
                               {startupForm.bannerUrl ? "Change" : "Upload"} <UploadCloud size={16} />
                             </button>
@@ -820,7 +820,7 @@ export default function OnboardingPage() {
                                 <Clock size={10} /> {role.type}
                               </span>
                               <span
-                                className={`flex items-center gap-1 text-[11px] ${role.paid ? "text-emerald-400" : "text-gray-500"
+                                className={`flex items-center gap-1 text-[11px] ${role.paid ? "text-white" : "text-gray-500"
                                   }`}
                               >
                                 {role.paid ? <DollarSign size={10} /> : <Ban size={10} />}
@@ -855,7 +855,7 @@ export default function OnboardingPage() {
                       placeholder="Role title  e.g. Frontend Engineer"
                       value={draftRole.title}
                       onChange={(e) => setDraftRole((d) => ({ ...d, title: e.target.value }))}
-                      className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-gold-400 focus:outline-none transition-all"
+                      className="w-full rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-white/40 focus:outline-none transition-all"
                     />
 
                     <div className="flex gap-3 flex-wrap">
@@ -865,7 +865,7 @@ export default function OnboardingPage() {
                             key={t}
                             onClick={() => setDraftRole((d) => ({ ...d, type: t }))}
                             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${draftRole.type === t
-                              ? "bg-gold-500 border-gold-400 text-black"
+                              ? "bg-white/20 border-white/40 text-white backdrop-blur-md shadow-[0_4px_12px_rgba(255,255,255,0.05)]"
                               : "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10"
                               }`}
                           >
@@ -876,7 +876,7 @@ export default function OnboardingPage() {
                       <button
                         onClick={() => setDraftRole((d) => ({ ...d, paid: !d.paid }))}
                         className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${draftRole.paid
-                          ? "bg-emerald-500/20 border-emerald-400/40 text-emerald-300"
+                          ? "bg-white/20 border-white/40 text-white backdrop-blur-md shadow-[0_4px_12px_rgba(255,255,255,0.05)]"
                           : "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10"
                           }`}
                       >
@@ -890,13 +890,13 @@ export default function OnboardingPage() {
                       value={draftRole.description}
                       onChange={(e) => setDraftRole((d) => ({ ...d, description: e.target.value }))}
                       rows={2}
-                      className="w-full resize-none rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-gold-400 focus:outline-none transition-all"
+                      className="w-full resize-none rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-white/40 focus:outline-none transition-all"
                     />
 
                     <button
                       onClick={addRole}
                       disabled={!draftRole.title.trim()}
-                      className="self-end flex items-center gap-1.5 rounded-lg bg-gold-500/20 border border-gold-400/30 px-4 py-2 text-sm font-medium text-gold-300 hover:bg-gold-500/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="self-end flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/20 px-4 py-2 text-sm font-medium text-white hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       <Plus size={14} /> Add Role
                     </button>
@@ -940,11 +940,11 @@ export default function OnboardingPage() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 200, damping: 14 }}
-                    className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-gold-500/20 border border-gold-400/40"
+                    className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white/10 border border-white/30"
                   >
-                    <CheckCircle2 size={30} className="text-gold-400" />
+                    <CheckCircle2 size={30} className="text-white" />
                   </motion.div>
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-500/20 px-4 py-1.5 text-sm font-medium text-gold-300 backdrop-blur-md">
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-md">
                     <Activity size={16} /> Startup Saved!
                   </div>
                   <h3 style={textGlow} className="text-4xl font-semibold text-white">
@@ -1008,7 +1008,7 @@ function OptionGrid({
           >
             <span className="flex w-full items-center justify-between">
               {opt}
-              {isActive && <Check size={15} className="text-gold-300" />}
+              {isActive && <Check size={15} className="text-white" />}
             </span>
           </button>
         );

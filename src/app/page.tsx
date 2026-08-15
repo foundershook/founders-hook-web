@@ -284,13 +284,14 @@ const AVATARS = [
 
 /* Founders Ecosystem Spiderweb Diagram Component */
 function FoundersEcosystemWeb() {
+  const baseCardClass = "flex flex-col lg:flex-row items-center justify-center text-center lg:text-left gap-1.5 lg:gap-3 rounded-xl lg:rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-1.5 lg:p-3 shadow-md hover:shadow-xl transition-all duration-300 w-[85px] sm:w-[120px] lg:w-auto lg:max-w-[240px]";
   const ecosystemNodes = [
     {
       title: "Find Co-founders",
       desc: "Connect with builders who match your vibe",
       icon: Users,
       positionClass: "top-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300",
+      cardClass: baseCardClass,
       floatY: [0, -5, 2, -3, 0],
       floatX: [0, 2.5, -2, 1.5, 0],
       rotate: [0, 0.6, -0.4, 0.3, 0],
@@ -302,8 +303,8 @@ function FoundersEcosystemWeb() {
       title: "Validate Ideas",
       desc: "Test your ideas with real people",
       icon: CheckCircle2,
-      positionClass: "top-10 right-4 lg:right-6 flex items-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      positionClass: "top-4 lg:top-10 right-1 lg:right-6 flex items-center",
+      cardClass: baseCardClass,
       floatY: [0, 4, -3, 2, 0],
       floatX: [0, -3, 2.5, -1.5, 0],
       rotate: [0, -0.7, 0.5, -0.3, 0],
@@ -316,7 +317,7 @@ function FoundersEcosystemWeb() {
       desc: "Access curated tools and templates",
       icon: Briefcase,
       positionClass: "top-1/2 right-0 -translate-y-1/2 flex items-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      cardClass: baseCardClass,
       floatY: [0, -4, 3, -2, 0],
       floatX: [0, 3, -2.5, 2, 0],
       rotate: [0, 0.8, -0.6, 0.4, 0],
@@ -328,8 +329,8 @@ function FoundersEcosystemWeb() {
       title: "Pitch Nights & Events",
       desc: "Showcase and grow with the community",
       icon: Calendar,
-      positionClass: "bottom-10 right-4 lg:right-6 flex items-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      positionClass: "bottom-4 lg:bottom-10 right-1 lg:right-6 flex items-center",
+      cardClass: baseCardClass,
       floatY: [0, 4.5, -2.5, 3, 0],
       floatX: [0, -2.5, 3, -2, 0],
       rotate: [0, -0.6, 0.5, -0.3, 0],
@@ -342,7 +343,7 @@ function FoundersEcosystemWeb() {
       desc: "Learn from founders who've done it",
       icon: UserCheck,
       positionClass: "bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300",
+      cardClass: baseCardClass,
       floatY: [0, 5, -4, 2, 0],
       floatX: [0, -3, 2, -2.5, 0],
       rotate: [0, 0.7, -0.5, 0.3, 0],
@@ -354,8 +355,8 @@ function FoundersEcosystemWeb() {
       title: "Hackathons & Contests",
       desc: "Build, compete and win opportunities",
       icon: Trophy,
-      positionClass: "bottom-10 left-4 lg:left-6 flex items-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      positionClass: "bottom-4 lg:bottom-10 left-1 lg:left-6 flex items-center",
+      cardClass: baseCardClass,
       floatY: [0, -3.5, 4, -2.5, 0],
       floatX: [0, 3, -2, 2.5, 0],
       rotate: [0, -0.8, 0.7, -0.4, 0],
@@ -368,7 +369,7 @@ function FoundersEcosystemWeb() {
       desc: "Expand your network across colleges",
       icon: Share2,
       positionClass: "top-1/2 left-0 -translate-y-1/2 flex items-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      cardClass: baseCardClass,
       floatY: [0, 3.5, -3, 2.5, 0],
       floatX: [0, -3.5, 2.5, -1.8, 0],
       rotate: [0, 0.7, -0.8, 0.5, 0],
@@ -380,8 +381,8 @@ function FoundersEcosystemWeb() {
       title: "Share Ideas",
       desc: "Get feedback and validate your ideas",
       icon: Lightbulb,
-      positionClass: "top-10 left-4 lg:left-6 flex items-center",
-      cardClass: "flex items-center gap-3 rounded-2xl border border-[#e8e4dc] bg-white/95 backdrop-blur-sm p-3 shadow-md hover:shadow-xl transition-all duration-300 max-w-[240px]",
+      positionClass: "top-4 lg:top-10 left-1 lg:left-6 flex items-center",
+      cardClass: baseCardClass,
       floatY: [0, -4.5, 2.5, -3.5, 0],
       floatX: [0, 2.5, -3, 1.8, 0],
       rotate: [0, -0.6, 0.8, -0.5, 0],
@@ -475,7 +476,7 @@ function FoundersEcosystemWeb() {
           {/* SVG Background Octagonal Web Grid */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <svg
-              className="h-[440px] w-[440px] lg:h-[500px] lg:w-[500px]"
+              className="h-[280px] w-[280px] sm:h-[400px] sm:w-[400px] lg:h-[500px] lg:w-[500px]"
               viewBox="0 0 100 100"
             >
               {/* Concentric Octagon Rings */}
@@ -584,8 +585,8 @@ function FoundersEcosystemWeb() {
             </div>
           </motion.div>
 
-          {/* Desktop Floating Node Cards with Subtle Float Motion */}
-          <div className="hidden lg:block absolute inset-0 pointer-events-auto z-10">
+          {/* Floating Node Cards with Subtle Float Motion */}
+          <div className="absolute inset-0 pointer-events-auto z-10">
             {ecosystemNodes.map((node, idx) => {
               const IconComp = node.icon;
               return (
@@ -629,16 +630,16 @@ function FoundersEcosystemWeb() {
                         scale: 1.1,
                         transition: { duration: 0.3 },
                       }}
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#e8e4dc] ${node.iconColor}`}
+                      className={`flex h-6 w-6 lg:h-10 lg:w-10 shrink-0 items-center justify-center rounded-full border border-[#e8e4dc] ${node.iconColor}`}
                     >
-                      <IconComp size={18} />
+                      <IconComp className="h-3 w-3 lg:h-[18px] lg:w-[18px]" />
                     </motion.div>
 
-                    <div className="text-left">
-                      <h3 className="font-bold text-[#1a1a1a] text-sm leading-snug">
+                    <div className="w-full">
+                      <h3 className="font-bold text-[#1a1a1a] text-[9px] sm:text-[10px] lg:text-sm leading-[1.1] lg:leading-snug">
                         {node.title}
                       </h3>
-                      <p className="text-xs text-[#666] font-normal leading-tight">
+                      <p className="hidden lg:block text-xs text-[#666] font-normal leading-tight mt-0.5">
                         {node.desc}
                       </p>
                     </div>
@@ -647,37 +648,6 @@ function FoundersEcosystemWeb() {
               );
             })}
           </div>
-        </div>
-
-        {/* Mobile View: High Contrast Responsive Grid with Gentle Micro-drift */}
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
-          {ecosystemNodes.map((item, idx) => {
-            const IconComp = item.icon;
-            return (
-              <motion.div
-                key={idx}
-                animate={{
-                  y: [0, (idx % 2 === 0 ? -2 : 2), 0],
-                }}
-                transition={{
-                  duration: 4.5 + (idx % 3) * 0.8,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: idx * 0.25,
-                }}
-                whileHover={{ scale: 1.01 }}
-                className="flex items-center gap-4 rounded-xl border border-[#e8e4dc] bg-white p-4 shadow-sm"
-              >
-                <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#d4d0c8] ${item.iconColor}`}>
-                  <IconComp size={18} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-[#1a1a1a] text-sm">{item.title}</h3>
-                  <p className="text-xs text-[#666] font-normal mt-0.5">{item.desc}</p>
-                </div>
-              </motion.div>
-            );
-          })}
         </div>
       </div>
     </section>

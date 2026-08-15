@@ -303,7 +303,7 @@ function FoundersEcosystemWeb() {
       title: "Find Co-founders",
       desc: "Connect with builders who match your vibe",
       icon: Users,
-      positionClass: "top-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
+      positionClass: "top-[12%] lg:top-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
       cardClass: baseCardClass,
       floatY: [0, -5, 2, -3, 0],
       floatX: [0, 2.5, -2, 1.5, 0],
@@ -316,7 +316,7 @@ function FoundersEcosystemWeb() {
       title: "Validate Ideas",
       desc: "Test your ideas with real people",
       icon: CheckCircle2,
-      positionClass: "top-4 lg:top-10 right-1 lg:right-6 flex items-center",
+      positionClass: "top-[16%] lg:top-10 right-[4%] lg:right-6 flex items-center",
       cardClass: baseCardClass,
       floatY: [0, 4, -3, 2, 0],
       floatX: [0, -3, 2.5, -1.5, 0],
@@ -329,7 +329,7 @@ function FoundersEcosystemWeb() {
       title: "Resources & Tools",
       desc: "Access curated tools and templates",
       icon: Briefcase,
-      positionClass: "top-1/2 right-0 -translate-y-1/2 flex items-center",
+      positionClass: "top-1/2 right-[2%] lg:right-0 -translate-y-1/2 flex items-center",
       cardClass: baseCardClass,
       floatY: [0, -4, 3, -2, 0],
       floatX: [0, 3, -2.5, 2, 0],
@@ -342,7 +342,7 @@ function FoundersEcosystemWeb() {
       title: "Pitch Nights & Events",
       desc: "Showcase and grow with the community",
       icon: Calendar,
-      positionClass: "bottom-4 lg:bottom-10 right-1 lg:right-6 flex items-center",
+      positionClass: "bottom-[16%] lg:bottom-10 right-[4%] lg:right-6 flex items-center",
       cardClass: baseCardClass,
       floatY: [0, 4.5, -2.5, 3, 0],
       floatX: [0, -2.5, 3, -2, 0],
@@ -355,7 +355,7 @@ function FoundersEcosystemWeb() {
       title: "Mentorship & Guidance",
       desc: "Learn from founders who've done it",
       icon: UserCheck,
-      positionClass: "bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
+      positionClass: "bottom-[12%] lg:bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center text-center",
       cardClass: baseCardClass,
       floatY: [0, 5, -4, 2, 0],
       floatX: [0, -3, 2, -2.5, 0],
@@ -368,7 +368,7 @@ function FoundersEcosystemWeb() {
       title: "Hackathons & Contests",
       desc: "Build, compete and win opportunities",
       icon: Trophy,
-      positionClass: "bottom-4 lg:bottom-10 left-1 lg:left-6 flex items-center",
+      positionClass: "bottom-[16%] lg:bottom-10 left-[4%] lg:left-6 flex items-center",
       cardClass: baseCardClass,
       floatY: [0, -3.5, 4, -2.5, 0],
       floatX: [0, 3, -2, 2.5, 0],
@@ -381,7 +381,7 @@ function FoundersEcosystemWeb() {
       title: "Build Network",
       desc: "Expand your network across colleges",
       icon: Share2,
-      positionClass: "top-1/2 left-0 -translate-y-1/2 flex items-center",
+      positionClass: "top-1/2 left-[2%] lg:left-0 -translate-y-1/2 flex items-center",
       cardClass: baseCardClass,
       floatY: [0, 3.5, -3, 2.5, 0],
       floatX: [0, -3.5, 2.5, -1.8, 0],
@@ -394,7 +394,7 @@ function FoundersEcosystemWeb() {
       title: "Share Ideas",
       desc: "Get feedback and validate your ideas",
       icon: Lightbulb,
-      positionClass: "top-4 lg:top-10 left-1 lg:left-6 flex items-center",
+      positionClass: "top-[16%] lg:top-10 left-[4%] lg:left-6 flex items-center",
       cardClass: baseCardClass,
       floatY: [0, -4.5, 2.5, -3.5, 0],
       floatX: [0, 2.5, -3, 1.8, 0],
@@ -599,7 +599,7 @@ function FoundersEcosystemWeb() {
           </motion.div>
 
           {/* Floating Node Cards with Subtle Float Motion */}
-          <div className="absolute inset-0 pointer-events-auto z-10">
+          <div className="absolute inset-0 pointer-events-auto z-10 max-lg:animate-[spin_40s_linear_infinite]">
             {ecosystemNodes.map((node, idx) => {
               const IconComp = node.icon;
               return (
@@ -607,31 +607,32 @@ function FoundersEcosystemWeb() {
                   key={idx}
                   className={`absolute ${node.positionClass}`}
                 >
-                  <motion.div
-                    animate={{
-                      y: node.floatY,
-                      x: node.floatX,
-                      rotate: node.rotate,
-                    }}
-                    transition={{
-                      duration: node.duration,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: node.delay,
-                    }}
-                    whileHover={{
-                      scale: 1.04,
-                      y: -3,
-                      transition: { duration: 0.2 },
-                    }}
-                    className={node.cardClass}
-                  >
-                    {/* Animated Icon Circle with Gentle Micro-Pulse */}
+                  <div className="max-lg:animate-[spin_40s_linear_infinite_reverse]">
                     <motion.div
                       animate={{
-                        rotate: [0, 2, -2, 1, 0],
-                        scale: [1, 1.03, 0.98, 1.02, 1],
+                        y: node.floatY,
+                        x: node.floatX,
+                        rotate: node.rotate,
                       }}
+                      transition={{
+                        duration: node.duration,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: node.delay,
+                      }}
+                      whileHover={{
+                        scale: 1.04,
+                        y: -3,
+                        transition: { duration: 0.2 },
+                      }}
+                      className={node.cardClass}
+                    >
+                      {/* Animated Icon Circle with Gentle Micro-Pulse */}
+                      <motion.div
+                        animate={{
+                          rotate: [0, 2, -2, 1, 0],
+                          scale: [1, 1.03, 0.98, 1.02, 1],
+                        }}
                       transition={{
                         duration: node.duration * 0.9,
                         repeat: Infinity,
@@ -657,6 +658,7 @@ function FoundersEcosystemWeb() {
                       </p>
                     </div>
                   </motion.div>
+                  </div>
                 </div>
               );
             })}

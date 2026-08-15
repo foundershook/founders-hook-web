@@ -294,19 +294,19 @@ export default function OnboardingPage() {
                 <QuestionBlock title={currentQuestion.text}>
                   {(currentQuestion.type === "single_choice" ||
                     currentQuestion.type === "multiple_choice") && (
-                    <OptionGrid
-                      options={currentQuestion.options || []}
-                      selected={
-                        currentQuestion.type === "multiple_choice"
-                          ? answers[currentQuestion._id] || []
-                          : answers[currentQuestion._id]
-                          ? [answers[currentQuestion._id]]
-                          : []
-                      }
-                      multi={currentQuestion.type === "multiple_choice"}
-                      onToggle={handleToggle}
-                    />
-                  )}
+                      <OptionGrid
+                        options={currentQuestion.options || []}
+                        selected={
+                          currentQuestion.type === "multiple_choice"
+                            ? answers[currentQuestion._id] || []
+                            : answers[currentQuestion._id]
+                              ? [answers[currentQuestion._id]]
+                              : []
+                        }
+                        multi={currentQuestion.type === "multiple_choice"}
+                        onToggle={handleToggle}
+                      />
+                    )}
                   {currentQuestion.type === "text" && (
                     <textarea
                       value={answers[currentQuestion._id] || ""}
@@ -420,13 +420,12 @@ export default function OnboardingPage() {
               {[1, 2, 3, 4, 5].map((s) => (
                 <div
                   key={s}
-                  className={`transition-all duration-300 rounded-full ${
-                    startupStep >= s
-                      ? "w-6 h-2 bg-gold-400"
-                      : startupStep === s - 1 || startupStep === 0
+                  className={`transition-all duration-300 rounded-full ${startupStep >= s
+                    ? "w-6 h-2 bg-gold-400"
+                    : startupStep === s - 1 || startupStep === 0
                       ? "w-2 h-2 bg-white/20"
                       : "w-2 h-2 bg-white/10"
-                  }`}
+                    }`}
                 />
               ))}
             </div>
@@ -452,7 +451,7 @@ export default function OnboardingPage() {
                     Tell us about your startup
                   </h2>
                   <p className="mt-4 max-w-md text-sm text-mist-400 leading-relaxed">
-                    We&apos;re collecting startups now so the platform is alive from day one. 
+                    We&apos;re collecting startups now so the platform is alive from day one.
                     Takes about 2 minutes — and your startup will be featured at launch!
                   </p>
 
@@ -462,12 +461,6 @@ export default function OnboardingPage() {
                       className="btn-gold !px-8 !py-3"
                     >
                       Set Up My Startup <ArrowRight size={16} />
-                    </button>
-                    <button
-                      onClick={() => router.push("/waitlist-success")}
-                      className="text-sm text-mist-500 hover:text-mist-300 transition-colors"
-                    >
-                      Skip for now
                     </button>
                   </div>
                 </motion.div>
@@ -510,11 +503,10 @@ export default function OnboardingPage() {
                       <button
                         key={cat}
                         onClick={() => updateStartup({ category: cat })}
-                        className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${
-                          startupForm.category === cat
-                            ? "bg-gold-500 border-gold-400 text-black"
-                            : "bg-white/5 border-white/15 text-gray-300 hover:bg-white/10"
-                        }`}
+                        className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${startupForm.category === cat
+                          ? "bg-gold-500 border-gold-400 text-black"
+                          : "bg-white/5 border-white/15 text-gray-300 hover:bg-white/10"
+                          }`}
                       >
                         {cat}
                       </button>
@@ -604,7 +596,7 @@ export default function OnboardingPage() {
                   className="flex flex-col items-center text-center w-full max-w-2xl"
                 >
                   <h3 style={textGlow} className="text-3xl font-medium text-white md:text-4xl">
-                    Describe your Startup
+                    Describe your Startup/Idea
                   </h3>
                   <textarea
                     value={startupForm.projectDescription}
@@ -828,9 +820,8 @@ export default function OnboardingPage() {
                                 <Clock size={10} /> {role.type}
                               </span>
                               <span
-                                className={`flex items-center gap-1 text-[11px] ${
-                                  role.paid ? "text-emerald-400" : "text-gray-500"
-                                }`}
+                                className={`flex items-center gap-1 text-[11px] ${role.paid ? "text-emerald-400" : "text-gray-500"
+                                  }`}
                               >
                                 {role.paid ? <DollarSign size={10} /> : <Ban size={10} />}
                                 {role.paid ? "Paid" : "Unpaid"}
@@ -873,11 +864,10 @@ export default function OnboardingPage() {
                           <button
                             key={t}
                             onClick={() => setDraftRole((d) => ({ ...d, type: t }))}
-                            className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${
-                              draftRole.type === t
-                                ? "bg-gold-500 border-gold-400 text-black"
-                                : "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10"
-                            }`}
+                            className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${draftRole.type === t
+                              ? "bg-gold-500 border-gold-400 text-black"
+                              : "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10"
+                              }`}
                           >
                             {t}
                           </button>
@@ -885,11 +875,10 @@ export default function OnboardingPage() {
                       </div>
                       <button
                         onClick={() => setDraftRole((d) => ({ ...d, paid: !d.paid }))}
-                        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${
-                          draftRole.paid
-                            ? "bg-emerald-500/20 border-emerald-400/40 text-emerald-300"
-                            : "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10"
-                        }`}
+                        className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all border ${draftRole.paid
+                          ? "bg-emerald-500/20 border-emerald-400/40 text-emerald-300"
+                          : "bg-white/5 border-white/15 text-gray-400 hover:bg-white/10"
+                          }`}
                       >
                         {draftRole.paid ? <DollarSign size={11} /> : <Ban size={11} />}
                         {draftRole.paid ? "Paid" : "Unpaid"}

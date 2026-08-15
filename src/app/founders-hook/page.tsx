@@ -165,9 +165,9 @@ export default function FoundersHookPage() {
             WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
           }}
         />
-        <div className="relative z-10 mx-auto max-w-4xl px-6 pb-20 pt-16 lg:pt-10 lg:px-10">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-10 lg:px-10">
           {/* ── Header ── */}
-          <div className="mb-10 border-b border-ink-700/80 pb-8">
+          <div className="mb-10 border-b border-ink-700/80 pb-8 flex flex-col items-start text-left">
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -201,7 +201,7 @@ export default function FoundersHookPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="mb-8 flex flex-wrap gap-2"
+            className="mb-8 flex flex-wrap justify-start gap-2"
           >
             {TABS.map((tab) => (
               <button

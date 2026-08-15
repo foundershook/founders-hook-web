@@ -792,7 +792,7 @@ export default function LandingPage() {
             className="landing-badge"
           >
             <span className="landing-badge-dot" />
-            <span>Built by Student Founders. For Student Founders.</span>
+            <span>What if. It works?</span>
           </motion.div>
 
           <motion.h1
@@ -1074,8 +1074,7 @@ export default function LandingPage() {
 
       {/* ─── FOOTER ─── */}
       <footer className="landing-section relative z-10 border-t border-[#e8e4dc] py-8 text-center text-xs text-[#999] font-normal">
-        © {new Date().getFullYear()} Founders Hook. Built for founders, by
-        founders.
+        © {new Date().getFullYear()} Founders Hook. What if it works?
       </footer>
     </main>
   );

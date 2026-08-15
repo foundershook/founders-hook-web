@@ -645,7 +645,7 @@ body {
 
 .mug-handle {
   position: absolute;
-  right: -15px;
+  left: 64px;
   top: 15px;
   width: 21px;
   height: 36px;

@@ -272,7 +272,7 @@ function DeskAccessories() {
             <div className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md border border-[#FAF8F4]/50 p-0.5 overflow-hidden">
               <div className="relative h-full w-full rounded-full overflow-hidden">
                 <Image
-                  src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg"
+                  src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786784397/foundershook_2_djiwvw.jpg"
                   alt="Logo"
                   fill
                   className="object-cover"

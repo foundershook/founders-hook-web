@@ -807,7 +807,20 @@ body {
   }
 
   .landing-nav {
-    padding: 1rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .landing-nav-logo {
+    gap: 0.4rem;
+  }
+
+  .landing-nav-logo-text {
+    font-size: 1.15rem;
+  }
+
+  .landing-nav-cta {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
   }
 
   .landing-hero {

@@ -72,7 +72,7 @@ function KeyboardRow({ keys, hasWideKey }: { keys: number; hasWideKey?: boolean 
 }
 
 /* iMac Launch Countdown Timer (Target: 24 August 2026, 6:00 PM IST) */
-const LAUNCH_TARGET_DATE_MS = new Date("2026-08-20T18:00:00+05:30").getTime();
+const LAUNCH_TARGET_DATE_MS = new Date("2026-08-24T18:00:00+05:30").getTime();
 
 function MacLaunchTimer() {
   const [timeLeft, setTimeLeft] = useState({
@@ -124,7 +124,7 @@ function MacLaunchTimer() {
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div className="relative h-full w-full flex flex-col justify-between p-3 sm:p-5 select-none overflow-hidden font-sans">
+    <div className="relative h-full w-full flex flex-col justify-between p-2 sm:p-5 select-none overflow-hidden font-sans">
       {/* Top macOS Browser / Window Bar */}
       <div className="flex items-center justify-between z-10">
         <div className="flex items-center gap-1.5">
@@ -132,7 +132,7 @@ function MacLaunchTimer() {
           <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] shadow-sm inline-block" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f] shadow-sm inline-block" />
         </div>
-        <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[10px] sm:text-xs font-medium text-white/80 backdrop-blur-md border border-white/10">
+        <div className="flex items-center gap-1 sm:gap-1.5 rounded-full bg-white/10 px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-medium text-white/80 backdrop-blur-md border border-white/10">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8b893a] opacity-75" />
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#b6b44c]" />
@@ -145,65 +145,67 @@ function MacLaunchTimer() {
       </div>
 
       {/* Main Countdown Display Area */}
-      <div className="my-auto z-10 flex flex-col items-center text-center px-1">
+      <div className="my-auto z-10 flex flex-col items-center text-center px-0.5 sm:px-1">
         {/* Launch Pill */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-[#8b893a]/40 bg-[#8b893a]/15 px-3 py-1 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#d8d672] backdrop-blur-md mb-2 sm:mb-3 shadow-sm">
-          <Sparkles size={13} className="text-[#e2e078] animate-pulse" />
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#8b893a]/40 bg-[#8b893a]/15 px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold uppercase tracking-wider text-[#d8d672] backdrop-blur-md mb-1 sm:mb-3 shadow-sm">
+          <Sparkles size={10} className="text-[#e2e078] animate-pulse sm:hidden" />
+          <Sparkles size={13} className="text-[#e2e078] animate-pulse hidden sm:block" />
           <span>Platform Launch Countdown</span>
         </div>
 
         {/* Big Countdown Timer Grid */}
-        <div className="grid grid-cols-4 gap-1.5 sm:gap-3 w-full max-w-[420px] my-1 sm:my-2">
+        <div className="grid grid-cols-4 gap-1 sm:gap-3 w-full max-w-[420px] my-0.5 sm:my-2">
           {/* Days */}
-          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
+          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
               {timeLeft.mounted ? pad(timeLeft.days) : "--"}
             </span>
-            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
               Days
             </span>
           </div>
 
           {/* Hours */}
-          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
+          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
               {timeLeft.mounted ? pad(timeLeft.hours) : "--"}
             </span>
-            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
               Hours
             </span>
           </div>
 
           {/* Minutes */}
-          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
+          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
               {timeLeft.mounted ? pad(timeLeft.minutes) : "--"}
             </span>
-            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
               Mins
             </span>
           </div>
 
           {/* Seconds */}
-          <div className="flex flex-col items-center justify-center rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-2 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#e8e4dc] tabular-nums">
+          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
+            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#e8e4dc] tabular-nums">
               {timeLeft.mounted ? pad(timeLeft.seconds) : "--"}
             </span>
-            <span className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0.5">
+            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
               Secs
             </span>
           </div>
         </div>
 
         {/* Target Time Callout */}
-        <div className="mt-2 flex items-center justify-center gap-1.5 text-[11px] sm:text-xs font-medium text-[#FAF8F4]/90 bg-black/40 px-3 py-1 rounded-full border border-white/10">
-          <Calendar size={13} className="text-[#8b893a]" />
-          <span>20 August 2026 • 6:00 PM IST</span>
+        <div className="mt-1 sm:mt-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[8px] sm:text-xs font-medium text-[#FAF8F4]/90 bg-black/40 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/10">
+          <Calendar size={10} className="text-[#8b893a] sm:hidden" />
+          <Calendar size={13} className="text-[#8b893a] hidden sm:block" />
+          <span>24 August 2026 • 6:00 PM IST</span>
         </div>
       </div>
 
       {/* Bottom Bar: Access Status */}
-      <div className="z-10 flex items-center justify-between pt-1 border-t border-white/10 text-[10px] sm:text-xs text-white/70">
+      <div className="z-10 flex items-center justify-between pt-0.5 sm:pt-1 border-t border-white/10 text-[8px] sm:text-xs text-white/70">
         <div className="flex items-center gap-1.5">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
           <span>Waitlist Applications Active</span>
@@ -1406,7 +1408,10 @@ export default function LandingPage() {
               <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#d4d0c8] bg-[#f0ece4] text-[#6B7A2F]">
                 <Network size={28} />
               </div>
-              <h2 className="text-3xl sm:text-4xl tracking-tight text-[#1a1a1a]">
+              <h2
+                style={{ fontFamily: "'Inter', sans-serif" }}
+                className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1a1a1a]"
+              >
                 The Network for the Next Generation
               </h2>
               <p className="mt-6 text-base leading-relaxed text-[#666] font-normal">
@@ -1437,13 +1442,16 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="relative aspect-square max-h-[500px] w-full overflow-hidden rounded-2xl border border-[#e8e4dc] lg:h-[500px] shadow-lg"
+              className="relative aspect-[1206/1179] w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl border border-[#e8e4dc] shadow-lg bg-[#FAF8F4]"
             >
               <Image
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800"
-                alt="Students networking"
+                src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786967516/1_gppfwv.jpg"
+                alt="The Network for the Next Generation"
                 fill
-                className="object-cover transition-transform duration-700 hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 540px"
+                priority
+                unoptimized
+                className="object-cover rounded-2xl transition-transform duration-700 hover:scale-[1.02]"
               />
             </motion.div>
           </div>
@@ -1459,13 +1467,16 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6 }}
-              className="order-2 relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#e8e4dc] lg:order-1 lg:h-[500px] shadow-lg"
+              className="order-2 relative aspect-[1206/1179] w-full max-w-[540px] mx-auto overflow-hidden rounded-2xl border border-[#e8e4dc] lg:order-1 shadow-lg bg-[#FAF8F4]"
             >
               <Image
-                src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800"
-                alt="Founders discussing ideas"
+                src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786967516/2_ixtp4f.jpg"
+                alt="Meaningful Interactions"
                 fill
-                className="object-cover transition-transform duration-700 hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 540px"
+                priority
+                unoptimized
+                className="object-cover rounded-2xl transition-transform duration-700 hover:scale-[1.02]"
               />
             </motion.div>
             <motion.div
@@ -1478,7 +1489,10 @@ export default function LandingPage() {
               <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#d4d0c8] bg-[#f0ece4] text-[#6B7A2F]">
                 <MessageSquare size={28} />
               </div>
-              <h2 className="text-3xl sm:text-4xl tracking-tight text-[#1a1a1a]">
+              <h2
+                style={{ fontFamily: "'Inter', sans-serif" }}
+                className="text-3xl sm:text-4xl font-bold tracking-tight text-[#1a1a1a]"
+              >
                 Meaningful Interactions
               </h2>
               <p className="mt-6 text-base leading-relaxed text-[#666] font-normal">

@@ -1232,7 +1232,7 @@ export default function LandingPage() {
             height={36}
             className="landing-nav-logo-icon"
           />
-          <span className="landing-nav-logo-text">Founders Hook</span>
+          <span className="landing-nav-logo-text whitespace-nowrap">Founders Hook</span>
         </Link>
 
         <nav className="landing-nav-links">
@@ -1315,7 +1315,6 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="landing-badge"
           >
-            <span className="landing-badge-dot" />
             <span>What if. It works?</span>
           </motion.div>
 

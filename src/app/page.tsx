@@ -301,10 +301,10 @@ function DeskAccessories() {
 
 /* Avatar Stack for social proof */
 const AVATARS = [
-  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&h=80&q=80",
-  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&h=80&q=80",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=80",
-  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&h=80&q=80",
+  "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=80&h=80&q=80",
+  "https://images.unsplash.com/photo-1534308143481-c55f00be8bd7?auto=format&fit=crop&w=80&h=80&q=80",
+  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=80&h=80&q=80",
+  "https://images.unsplash.com/photo-1555952517-2e8e729e0b44?auto=format&fit=crop&w=80&h=80&q=80",
 ];
 
 /* Founders Ecosystem Spiderweb Diagram Component */
@@ -1370,7 +1370,7 @@ export default function LandingPage() {
               ))}
             </div>
             <span className="landing-social-text">
-              {stats ? `${stats.founders.toLocaleString()}+` : "1000+"} founders
+              500+ founders
               joining the waitlist
             </span>
           </motion.div>

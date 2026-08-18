@@ -149,9 +149,9 @@ export default function KnowledgeHubPage() {
       <main className="relative min-w-0 flex-1 overflow-y-auto">
         {/* Background Image Overlay restricted to header */}
         <div
-          className="absolute top-0 left-0 right-0 h-72 z-0 pointer-events-none opacity-50"
+          className="absolute top-0 left-0 right-0 h-[400px] z-0 pointer-events-none opacity-50"
           style={{
-            backgroundImage: "url('YOUR_CLOUDINARY_IMAGE_URL_HERE')",
+            backgroundImage: "url('https://res.cloudinary.com/t7efuhnd/image/upload/v1787058158/jonathan-cooper-PxHVkcgN1sg-unsp_onspzm.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -159,9 +159,9 @@ export default function KnowledgeHubPage() {
             WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
           }}
         />
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-12 lg:px-10">
+        <div className="relative z-10 w-full px-6 pb-28 pt-16 lg:pt-12 lg:px-10">
           {/* Header */}
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-ink-700/60 pb-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between pb-8">
             <div>
               <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-white">
                 <BookOpen size={14} />
@@ -202,24 +202,8 @@ export default function KnowledgeHubPage() {
             </div>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="mt-6 flex snap-x gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`snap-start rounded-full px-4 py-2 text-xs font-medium transition-all ${
-                  selectedCategory === cat
-                    ? "bg-white text-white shadow-sm"
-                    : "border border-ink-700/60 bg-ink-850 text-sand-400 hover:border-white/50 hover:text-white"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
           {/* Posts Grid */}
+          <div className="mt-12">
           {loading ? (
             <div className="flex items-center justify-center gap-3 py-24 text-sand-400">
               <Loader2 size={24} className="animate-spin text-white" />
@@ -288,9 +272,10 @@ export default function KnowledgeHubPage() {
                     </div>
                   </div>
                 );
-              })}
-            </div>
-          )}
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </main>
 

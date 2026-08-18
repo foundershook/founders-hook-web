@@ -261,7 +261,7 @@ export default function ProfilePage() {
       <Sidebar user={sidebarUser} />
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">
-        <section className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-20 lg:pt-16 lg:px-10">
+        <section className="relative z-10 w-full px-6 pb-28 pt-20 lg:pt-16 lg:px-10">
           
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
@@ -270,6 +270,7 @@ export default function ProfilePage() {
                 {/* 2. Update your Cloudinary Widget to auto-save immediately */}
   <CldUploadWidget 
     uploadPreset="founders_hook_users" 
+    options={{ folder: "users-profile-pic", multiple: false, maxFiles: 1 }}
     onSuccess={async (result) => {
       if (result.info && typeof result.info === 'object' && 'secure_url' in result.info) {
         const newPicUrl = result.info.secure_url;

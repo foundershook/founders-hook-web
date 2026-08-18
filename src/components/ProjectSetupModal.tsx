@@ -398,7 +398,7 @@ export default function ProjectSetupModal({
                       )}
                       <CldUploadWidget
                         uploadPreset="founders_hook_users"
-                        options={{ cropping: true, croppingAspectRatio: 1, showSkipCropButton: false, multiple: false, maxFiles: 1, clientAllowedFormats: ["png", "jpeg", "jpg", "webp"] }}
+                        options={{ folder: "startups-logo", cropping: true, croppingAspectRatio: 1, showSkipCropButton: false, multiple: false, maxFiles: 1, clientAllowedFormats: ["png", "jpeg", "jpg", "webp"] }}
                         onSuccess={(res) => {
                           if (res.info && typeof res.info === "object") {
                             const url = (res.info as Record<string, string>).secure_url;
@@ -440,7 +440,7 @@ export default function ProjectSetupModal({
                       )}
                       <CldUploadWidget
                         uploadPreset="founders_hook_users"
-                        options={{ cropping: true, croppingAspectRatio: 3, showSkipCropButton: false, multiple: false, maxFiles: 1, clientAllowedFormats: ["png", "jpeg", "jpg", "webp"] }}
+                        options={{ folder: "startups-banner", cropping: true, croppingAspectRatio: 3, showSkipCropButton: false, multiple: false, maxFiles: 1, clientAllowedFormats: ["png", "jpeg", "jpg", "webp"] }}
                         onSuccess={(res) => {
                           if (res.info && typeof res.info === "object") {
                             const url = (res.info as Record<string, string>).secure_url;

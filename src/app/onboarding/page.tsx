@@ -679,6 +679,7 @@ export default function OnboardingPage() {
                         <CldUploadWidget
                           uploadPreset="founders_hook_users"
                           options={{
+                            folder: "startups-logo",
                             cropping: true,
                             croppingAspectRatio: 1,
                             showSkipCropButton: false,
@@ -738,6 +739,7 @@ export default function OnboardingPage() {
                         <CldUploadWidget
                           uploadPreset="founders_hook_users"
                           options={{
+                            folder: "startups-banner",
                             cropping: true,
                             croppingAspectRatio: 3,
                             showSkipCropButton: false,

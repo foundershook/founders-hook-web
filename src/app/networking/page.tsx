@@ -192,9 +192,9 @@ export default function NetworkingPage() {
       <main className="relative min-w-0 flex-1 overflow-y-auto">
         {/* Background Image Overlay restricted to header */}
         <div
-          className="absolute top-0 left-0 right-0 h-72 z-0 pointer-events-none opacity-50"
+          className="absolute top-0 left-0 right-0 h-[400px] z-0 pointer-events-none opacity-50"
           style={{
-            backgroundImage: "url('YOUR_CLOUDINARY_IMAGE_URL_HERE')",
+            backgroundImage: "url('https://res.cloudinary.com/t7efuhnd/image/upload/v1787056856/m-accelerator-yTsy3PYFPtc-unsplash_k9gga1.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -202,10 +202,10 @@ export default function NetworkingPage() {
             WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
           }}
         />
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-28 pt-16 lg:pt-10 lg:px-10">
+        <div className="relative z-10 w-full px-6 pb-28 pt-16 lg:pt-10 lg:px-10">
 
           {/* ── Header ───────────────────────────────────────────────── */}
-          <div className="mb-8 border-b border-ink-700/60 pb-8">
+          <div className="mb-8 pb-8">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-white">
               <Network size={13} /> Platform Community
             </div>
@@ -236,8 +236,9 @@ export default function NetworkingPage() {
           </div>
 
           {/* ── Grid ────────────────────────────────────────────────── */}
-          {loading ? (
-            <div className="flex flex-col items-center justify-center gap-4 py-32 text-sand-400">
+          <div className="mt-12">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-32 text-sand-400">
               <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/30 bg-white/10">
                 <Loader2 size={22} className="animate-spin text-white" />
               </div>
@@ -280,6 +281,7 @@ export default function NetworkingPage() {
               </div>
             </>
           )}
+          </div>
         </div>
       </main>
     </div>

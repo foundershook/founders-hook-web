@@ -206,17 +206,17 @@ export default function ProfilePage() {
     fetchMyStartups();
   }, [router, fetchFollowStats]);
 
-// 1. Update your save function to pass the user ID
+  // 1. Update your save function to pass the user ID
   const handleSaveProfile = async () => {
     setIsSaving(true);
     try {
       const res = await fetch("/api/profile/bio", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           userId: user._id || user.id, // Pass ID to backend
-          bio, 
-          profilePic 
+          bio,
+          profilePic
         }),
       });
 
@@ -262,39 +262,39 @@ export default function ProfilePage() {
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">
         <section className="relative z-10 w-full px-6 pb-28 pt-20 lg:pt-16 lg:px-10">
-          
+
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
-              
+
               <div className="flex flex-col items-center gap-3 sm:items-start">
                 {/* 2. Update your Cloudinary Widget to auto-save immediately */}
-  <CldUploadWidget 
-    uploadPreset="founders_hook_users" 
-    options={{ folder: "users-profile-pic", multiple: false, maxFiles: 1 }}
-    onSuccess={async (result) => {
-      if (result.info && typeof result.info === 'object' && 'secure_url' in result.info) {
-        const newPicUrl = result.info.secure_url;
-        setProfilePic(newPicUrl); // Update UI instantly
+                <CldUploadWidget
+                  uploadPreset="founders_hook_users"
+                  options={{ folder: "users-profile-pic", multiple: false, maxFiles: 1 }}
+                  onSuccess={async (result) => {
+                    if (result.info && typeof result.info === 'object' && 'secure_url' in result.info) {
+                      const newPicUrl = result.info.secure_url;
+                      setProfilePic(newPicUrl); // Update UI instantly
 
-        // AUTO-SAVE to MongoDB so it doesn't disappear on refresh
-        try {
-          await fetch("/api/profile/bio", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-              userId: user._id || user.id,
-              bio: bio, 
-              profilePic: newPicUrl 
-            }),
-          });
-        } catch (error) {
-          console.error("Failed to auto-save image to database", error);
-        }
-      }
-    }}
-  >
+                      // AUTO-SAVE to MongoDB so it doesn't disappear on refresh
+                      try {
+                        await fetch("/api/profile/bio", {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            userId: user._id || user.id,
+                            bio: bio,
+                            profilePic: newPicUrl
+                          }),
+                        });
+                      } catch (error) {
+                        console.error("Failed to auto-save image to database", error);
+                      }
+                    }
+                  }}
+                >
                   {({ open }) => (
-                    <div 
+                    <div
                       onClick={() => open()}
                       className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-2xl border border-slate-200 shadow-sm"
                     >
@@ -372,7 +372,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.5fr)_1fr] gap-6 border-b border-ink-700/50 pb-8">
-            
+
             <section className="rounded-2xl border border-ink-700/50 bg-ink-900 p-6 h-full flex flex-col justify-between shadow-sm">
               {isEditingBio ? (
                 <div className="flex-1 flex flex-col gap-4">
@@ -407,7 +407,7 @@ export default function ProfilePage() {
                   <p className="flex-1 text-base leading-relaxed text-sand-200 whitespace-pre-wrap">
                     {bio || "You haven't written a bio yet. Tell the community what you are building!"}
                   </p>
-                  
+
                   <div className="mt-6 flex flex-wrap items-center gap-3">
                     <button
                       onClick={() => setIsEditingBio(true)}
@@ -416,7 +416,7 @@ export default function ProfilePage() {
                       <Pencil size={16} />
                       Edit Bio
                     </button>
-                    
+
                     <button
                       disabled
                       className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg border border-ink-700/50 bg-ink-850 text-sand-600 cursor-not-allowed"
@@ -460,7 +460,7 @@ export default function ProfilePage() {
                 </p>
               )}
             </section>
-            
+
           </div>
 
           {/* ── My Projects Section ── */}

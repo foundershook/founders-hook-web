@@ -39,7 +39,7 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
         )}
 
         {/* Cover image */}
-        <div className="relative h-28 w-full overflow-hidden bg-ink-800">
+        <div className="relative h-32 w-full bg-ink-800">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={startup.coverImage}
@@ -47,10 +47,10 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
             className="h-full w-full object-cover"
           />
           {/* Reduced gradient overlay so the banner is clearer */}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink-850/80 via-ink-850/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink-850 via-ink-850/30 to-transparent" />
 
           {/* Icon badge over image bottom-left */}
-          <span className="absolute -bottom-4 left-3 flex h-9 w-9 items-center justify-center rounded-lg border border-ink-700/60 bg-ink-800 text-base shadow-card overflow-hidden">
+          <span className="absolute -bottom-6 left-4 flex h-12 w-12 items-center justify-center rounded-lg border border-ink-700/60 bg-ink-800 text-xl shadow-card overflow-hidden">
             {startup.icon?.startsWith("http") ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={startup.icon} alt={startup.name} className="h-full w-full object-cover" />
@@ -61,23 +61,23 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
         </div>
 
         {/* Body */}
-        <div className="flex flex-1 flex-col p-3 pt-7">
-          <h3 className="font-bold text-sm text-sand-100 leading-tight">
+        <div className="flex flex-1 flex-col p-4 pt-8">
+          <h3 className="font-bold text-base text-sand-100 leading-tight">
             {startup.name}
           </h3>
-          <p className="mt-1 line-clamp-2 flex-1 text-[11px] text-sand-400 leading-relaxed">
+          <p className="mt-1.5 line-clamp-2 flex-1 text-xs text-sand-400 leading-relaxed">
             {startup.tagline}
           </p>
 
           {/* Category pill */}
-          <span className="mt-2.5 inline-block w-fit rounded-full border border-ink-700/60 bg-ink-800 px-2.5 py-0.5 text-[10px] font-medium text-sand-400">
+          <span className="mt-3 inline-block w-fit rounded-full border border-ink-700/60 bg-ink-800 px-3 py-1 text-[11px] font-medium text-sand-400">
             {startup.category}
           </span>
 
           {/* Footer */}
           <div className="mt-3 flex items-center justify-between border-t border-ink-700/50 pt-2.5">
             {/* Member avatars + count */}
-            <div className="flex items-center gap-1.5 text-[11px] text-sand-600">
+            <div className="flex items-center gap-1.5 text-xs text-sand-600">
               <div className="flex -space-x-1.5">
                 {startup.members.slice(0, 3).map((m, idx) => (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -85,12 +85,12 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
                     key={m._id || `member-${idx}`}
                     src={m.avatarUrl}
                     alt={m.name}
-                    className="h-5 w-5 rounded-full border border-ink-850 object-cover"
+                    className="h-6 w-6 rounded-full border border-ink-850 object-cover"
                   />
                 ))}
               </div>
               <span className="flex items-center gap-0.5 font-medium text-sand-600">
-                <Users size={10} /> {startup.members.length}
+                <Users size={12} /> {startup.members.length}
               </span>
             </div>
 
@@ -101,16 +101,16 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
                   e.stopPropagation();
                   setApplyOpen(true);
                 }}
-                className="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-ink-950 hover:bg-sand-200 transition-colors"
+                className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-ink-950 hover:bg-sand-200 transition-colors"
               >
-                Apply <ArrowRight size={11} />
+                Apply <ArrowRight size={12} />
               </button>
             ) : (
               <button
                 onClick={(e) => e.stopPropagation()}
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-ink-800 text-sand-400 hover:bg-white/10 hover:text-sand-100 transition-colors"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-800 text-sand-400 hover:bg-white/10 hover:text-sand-100 transition-colors"
               >
-                <ArrowRight size={12} />
+                <ArrowRight size={14} />
               </button>
             )}
           </div>

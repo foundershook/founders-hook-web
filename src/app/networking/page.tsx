@@ -225,7 +225,7 @@ export default function NetworkingPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by name, username, or bio…"
-                className="field-input pl-11 pr-10"
+                className="w-full rounded-full border border-white/10 bg-white/5 backdrop-blur-md pl-11 pr-10 py-2.5 text-sm text-white placeholder:text-sand-400 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/30 transition-all shadow-sm"
               />
               {query && (
                 <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-sand-600 hover:text-sand-300 transition-colors">

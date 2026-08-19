@@ -181,7 +181,7 @@ export default function FoundersPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search founders or projects…"
-                className="field-input pl-11 pr-4"
+                className="w-full rounded-full border border-white/10 bg-white/5 backdrop-blur-md pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-sand-400 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/30 transition-all shadow-sm"
               />
             </div>
           </div>

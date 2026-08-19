@@ -95,7 +95,7 @@ export default function FeedPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search for founders or startups..."
-                  className="h-9 w-full rounded-full border border-ink-700 bg-ink-850 pl-9 pr-4 text-base text-sand-200 placeholder:text-sand-600 outline-none transition-colors focus:border-white/50 focus:ring-1 focus:ring-white/10 sm:w-64 sm:text-xs"
+                  className="h-9 w-full rounded-full border border-white/10 bg-white/5 backdrop-blur-md pl-9 pr-4 text-base text-white placeholder:text-sand-400 outline-none transition-all focus:border-white/30 focus:ring-1 focus:ring-white/20 sm:w-64 sm:text-xs shadow-sm"
                 />
               </div>
 
@@ -123,7 +123,7 @@ export default function FeedPage() {
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-[260px] w-full animate-pulse rounded-2xl bg-ink-850"
+                    className="h-[290px] w-full animate-pulse rounded-2xl bg-ink-850"
                   />
                 ))}
               </div>

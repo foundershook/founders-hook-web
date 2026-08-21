@@ -8,7 +8,14 @@ import { verifySession, SESSION_COOKIE } from "@/lib/auth";
 
 const ApplySchema = z.object({
   roleId: z.string().min(1),
-  message: z.string().max(600).optional().default(""),
+  name: z.string().optional().default(""),
+  gender: z.string().optional().default(""),
+  mobile: z.string().optional().default(""),
+  email: z.string().optional().default(""),
+  experience: z.string().optional().default(""),
+  resumeUrl: z.string().optional().default(""),
+  resumeName: z.string().optional().default(""),
+  message: z.string().max(1000).optional().default(""),
 });
 
 export async function POST(
@@ -48,6 +55,13 @@ export async function POST(
       startup: startup._id,
       roleId: parsed.data.roleId,
       applicant: session.userId,
+      name: parsed.data.name,
+      gender: parsed.data.gender,
+      mobile: parsed.data.mobile,
+      email: parsed.data.email,
+      experience: parsed.data.experience,
+      resumeUrl: parsed.data.resumeUrl,
+      resumeName: parsed.data.resumeName,
       message: parsed.data.message,
     });
     return NextResponse.json({ application }, { status: 201 });

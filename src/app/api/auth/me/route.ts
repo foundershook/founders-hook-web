@@ -17,6 +17,7 @@ export async function GET() {
       id: user._id.toString(),
       name: user.name,
       username: user.username,
+      email: user.email || "",
       avatarUrl: user.avatarUrl,
       bio: user.bio || "",
       onboardingAnswers: user.onboardingAnswers || {},

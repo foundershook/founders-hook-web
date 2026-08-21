@@ -11,13 +11,17 @@ import {
   XCircle,
   Clock,
   Inbox,
-  ShieldAlert,
   Loader2,
   Quote,
   FileText,
   Eye,
   Check,
   X,
+  Mail,
+  Phone,
+  User,
+  Briefcase,
+  ExternalLink,
 } from "lucide-react";
 
 type Me = {
@@ -32,10 +36,17 @@ type Me = {
 // ── Founder's view application type ──
 interface FounderApplicationItem {
   _id: string;
-  applicant: { _id: string; name: string; username: string; avatarUrl: string };
+  applicant: { _id: string; name: string; username: string; avatarUrl: string; email?: string };
   startup: { _id: string; name: string; icon: string };
   roleTitle: string;
   roleType: string;
+  name?: string;
+  gender?: string;
+  mobile?: string;
+  email?: string;
+  experience?: string;
+  resumeUrl?: string;
+  resumeName?: string;
   message: string;
   status: "Pending" | "Accepted" | "Rejected";
   createdAt: string;
@@ -47,6 +58,13 @@ interface ApplicantApplicationItem {
   startup: { _id: string; name: string; icon: string };
   roleTitle: string;
   roleType: string;
+  name?: string;
+  gender?: string;
+  mobile?: string;
+  email?: string;
+  experience?: string;
+  resumeUrl?: string;
+  resumeName?: string;
   message: string;
   status: "Pending" | "Accepted" | "Rejected";
   createdAt: string;
@@ -508,6 +526,55 @@ export default function FoundersHookPage() {
                                 </span>
                               </div>
 
+                              {/* Candidate Profile Details & Resume */}
+                              <div className="mb-4 rounded-xl border border-ink-800 bg-ink-900/80 p-3.5 space-y-2.5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                  {app.email && (
+                                    <div className="flex items-center gap-2 text-sand-300">
+                                      <Mail size={13} className="text-sand-500 shrink-0" />
+                                      <span className="truncate">{app.email}</span>
+                                    </div>
+                                  )}
+                                  {app.mobile && (
+                                    <div className="flex items-center gap-2 text-sand-300">
+                                      <Phone size={13} className="text-sand-500 shrink-0" />
+                                      <span>{app.mobile}</span>
+                                    </div>
+                                  )}
+                                  {app.gender && (
+                                    <div className="flex items-center gap-2 text-sand-300">
+                                      <User size={13} className="text-sand-500 shrink-0" />
+                                      <span>Gender: {app.gender}</span>
+                                    </div>
+                                  )}
+                                  {app.experience && (
+                                    <div className="flex items-center gap-2 text-sand-300">
+                                      <Briefcase size={13} className="text-sand-500 shrink-0" />
+                                      <span>Exp: {app.experience}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* PDF Resume Link */}
+                                {app.resumeUrl && (
+                                  <div className="border-t border-ink-800 pt-2 flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 truncate">
+                                      <FileText size={15} className="shrink-0" />
+                                      <span className="truncate">{app.resumeName || "Candidate_Resume.pdf"}</span>
+                                    </div>
+                                    <a
+                                      href={app.resumeUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      download={app.resumeName || "Resume.pdf"}
+                                      className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 transition-colors shrink-0"
+                                    >
+                                      <ExternalLink size={12} /> View / Download PDF
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+
                               {/* Message */}
                               {app.message && (
                                 <div className="relative rounded-xl border border-ink-800 bg-ink-850 p-4">
@@ -709,6 +776,35 @@ export default function FoundersHookPage() {
                             {timeAgo(app.createdAt)}
                           </span>
                         </div>
+
+                        {/* Applicant submitted details & resume */}
+                        {(app.email || app.mobile || app.resumeUrl || app.experience) && (
+                          <div className="mt-4 flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-ink-800 bg-ink-900/60 px-4 py-2.5 text-xs">
+                            <div className="flex flex-wrap items-center gap-3 text-sand-300">
+                              {app.mobile && (
+                                <span className="flex items-center gap-1.5">
+                                  <Phone size={13} className="text-sand-500" /> {app.mobile}
+                                </span>
+                              )}
+                              {app.experience && (
+                                <span className="flex items-center gap-1.5">
+                                  <Briefcase size={13} className="text-sand-500" /> {app.experience}
+                                </span>
+                              )}
+                            </div>
+                            {app.resumeUrl && (
+                              <a
+                                href={app.resumeUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download={app.resumeName || "Resume.pdf"}
+                                className="inline-flex items-center gap-1.5 font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
+                              >
+                                <FileText size={14} /> {app.resumeName || "View Resume (PDF)"}
+                              </a>
+                            )}
+                          </div>
+                        )}
 
                         {/* Application message if any */}
                         {app.message && (

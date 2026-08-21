@@ -33,6 +33,13 @@ export async function GET(req: NextRequest) {
             startup: { _id: any; name: string; icon: string; openRoles: any[] };
             roleId: any;
             applicant: any;
+            name?: string;
+            gender?: string;
+            mobile?: string;
+            email?: string;
+            experience?: string;
+            resumeUrl?: string;
+            resumeName?: string;
             message: string;
             status: string;
             createdAt: Date;
@@ -55,6 +62,13 @@ export async function GET(req: NextRequest) {
           },
           roleTitle: roleInfo?.title || "Unknown Role",
           roleType: roleInfo?.type || "Internship",
+          name: app.name || "",
+          gender: app.gender || "",
+          mobile: app.mobile || "",
+          email: app.email || "",
+          experience: app.experience || "",
+          resumeUrl: app.resumeUrl || "",
+          resumeName: app.resumeName || "",
           message: app.message || "",
           status: app.status,
           createdAt: app.createdAt,
@@ -86,14 +100,21 @@ export async function GET(req: NextRequest) {
     // Fetch applications
     const rawApplications = await Application.find(filter)
       .sort({ createdAt: -1 })
-      .populate("applicant", "name username avatarUrl")
+      .populate("applicant", "name username avatarUrl email")
       .populate("startup", "name icon")
       .lean<
         {
           _id: any;
           startup: { _id: any; name: string; icon: string };
           roleId: any;
-          applicant: { _id: any; name: string; username: string; avatarUrl: string };
+          applicant: { _id: any; name: string; username: string; avatarUrl: string; email?: string };
+          name?: string;
+          gender?: string;
+          mobile?: string;
+          email?: string;
+          experience?: string;
+          resumeUrl?: string;
+          resumeName?: string;
           message: string;
           status: string;
           createdAt: Date;
@@ -119,11 +140,19 @@ export async function GET(req: NextRequest) {
       return {
         _id: app._id.toString(),
         applicant: {
-          _id: app.applicant._id.toString(),
-          name: app.applicant.name,
-          username: app.applicant.username,
-          avatarUrl: app.applicant.avatarUrl,
+          _id: app.applicant?._id?.toString() || "",
+          name: app.name || app.applicant?.name || "Candidate",
+          username: app.applicant?.username || "user",
+          avatarUrl: app.applicant?.avatarUrl || "",
+          email: app.email || app.applicant?.email || "",
         },
+        name: app.name || app.applicant?.name || "",
+        gender: app.gender || "",
+        mobile: app.mobile || "",
+        email: app.email || app.applicant?.email || "",
+        experience: app.experience || "",
+        resumeUrl: app.resumeUrl || "",
+        resumeName: app.resumeName || "",
         startup: {
           _id: startupId,
           name: app.startup?.name || "Unknown",

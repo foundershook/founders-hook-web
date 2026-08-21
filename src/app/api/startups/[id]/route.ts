@@ -25,17 +25,17 @@ export async function GET(
 }
 
 const OpenRoleInput = z.object({
-  title: z.string().min(2),
+  title: z.string().min(1, "Role title is required"),
   type: z.enum(["Internship", "Full-time", "Part-time"]).default("Internship"),
   description: z.string().optional().default(""),
   paid: z.boolean().optional().default(false),
 });
 
 const UpdateStartupSchema = z.object({
-  name: z.string().min(2).max(60).optional(),
-  tagline: z.string().min(4).max(120).optional(),
+  name: z.string().min(1).max(60).optional(),
+  tagline: z.string().min(1).max(120).optional(),
   description: z.string().max(1000).optional(),
-  category: z.string().min(2).optional(),
+  category: z.string().min(1).optional(),
   logoUrl: z.string().optional(),
   bannerUrl: z.string().optional(),
   openRoles: z.array(OpenRoleInput).optional(),

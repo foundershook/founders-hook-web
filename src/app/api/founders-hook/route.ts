@@ -13,6 +13,58 @@ export async function GET(req: NextRequest) {
 
     await connectToDatabase();
 
+    const { searchParams } = new URL(req.url);
+    const view = searchParams.get("view");
+
+    // ── Applicant view: return the current user's own applications ──
+    if (view === "my-applications") {
+      const statusFilter = searchParams.get("status");
+      const filter: Record<string, unknown> = { applicant: user._id };
+      if (statusFilter && ["Pending", "Accepted", "Rejected"].includes(statusFilter)) {
+        filter.status = statusFilter;
+      }
+
+      const rawApplications = await Application.find(filter)
+        .sort({ createdAt: -1 })
+        .populate("startup", "_id name icon openRoles")
+        .lean<
+          {
+            _id: any;
+            startup: { _id: any; name: string; icon: string; openRoles: any[] };
+            roleId: any;
+            applicant: any;
+            message: string;
+            status: string;
+            createdAt: Date;
+          }[]
+        >();
+
+      const applications = rawApplications.map((app) => {
+        const startupData = app.startup;
+        const roleId = app.roleId?.toString() || "";
+        const roleInfo = startupData?.openRoles?.find(
+          (r: any) => r._id.toString() === roleId
+        );
+
+        return {
+          _id: app._id.toString(),
+          startup: {
+            _id: startupData?._id?.toString() || "",
+            name: startupData?.name || "Unknown",
+            icon: startupData?.icon || "🚀",
+          },
+          roleTitle: roleInfo?.title || "Unknown Role",
+          roleType: roleInfo?.type || "Internship",
+          message: app.message || "",
+          status: app.status,
+          createdAt: app.createdAt,
+        };
+      });
+
+      return NextResponse.json({ applications });
+    }
+
+    // ── Founder view (default): return applications for startups the user founded ──
     // Find all startups owned by this user
     const myStartups = await Startup.find({ founder: user._id })
       .select("_id name icon openRoles")
@@ -25,7 +77,6 @@ export async function GET(req: NextRequest) {
     const startupIds = myStartups.map((s) => s._id);
 
     // Optional status filter
-    const { searchParams } = new URL(req.url);
     const statusFilter = searchParams.get("status");
     const filter: Record<string, unknown> = { startup: { $in: startupIds } };
     if (statusFilter && ["Pending", "Accepted", "Rejected"].includes(statusFilter)) {

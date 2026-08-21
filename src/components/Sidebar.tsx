@@ -29,7 +29,7 @@ const NAV_ITEMS = [
 export default function Sidebar({
   user,
 }: {
-  user: { name: string; username: string; avatarUrl: string; isFounder?: boolean } | null;
+  user: { name: string; username: string; avatarUrl: string; isFounder?: boolean; hasApplied?: boolean } | null;
 }) {
   const pathname = usePathname();
   const router   = useRouter();

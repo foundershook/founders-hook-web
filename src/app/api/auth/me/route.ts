@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
+import Application from "@/models/Application";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -9,6 +10,7 @@ export async function GET() {
 
   await connectToDatabase();
   const founderCheck = await Startup.exists({ founder: user._id });
+  const applicationCheck = await Application.exists({ applicant: user._id });
 
   return NextResponse.json({
     user: {
@@ -20,6 +22,7 @@ export async function GET() {
       onboardingAnswers: user.onboardingAnswers || {},
       onboardingComplete: user.onboardingComplete,
       isFounder: !!founderCheck,
+      hasApplied: !!applicationCheck,
     },
   });
 }

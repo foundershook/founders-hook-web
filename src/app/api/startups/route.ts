@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
 import { verifySession, SESSION_COOKIE } from "@/lib/auth";
+import { analyzeWebsite } from "@/lib/analyzeWebsite";
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
@@ -47,6 +48,7 @@ const CreateStartupSchema = z.object({
   icon: z.string().optional().default("🚀"),
   logoUrl: z.string().optional().default(""),
   bannerUrl: z.string().optional().default(""),
+  website: z.string().optional().default(""),
   openRoles: z.array(OpenRoleInput).optional().default([]),
 });
 
@@ -78,7 +80,24 @@ export async function POST(req: NextRequest) {
     // Use uploaded Cloudinary URL if provided, else picsum placeholder
     icon: parsed.data.logoUrl || "🚀",
     coverImage: parsed.data.bannerUrl || fallbackCover,
+    website: parsed.data.website || "",
   });
+
+  // Fire-and-forget AI analysis — runs in background, doesn't block the response
+  if (parsed.data.website) {
+    void (async () => {
+      try {
+        const insights = await analyzeWebsite(parsed.data.website!);
+        if (insights) {
+          await Startup.findByIdAndUpdate(startup._id, {
+            $set: { aiInsights: { ...insights, analysedAt: new Date() } },
+          });
+        }
+      } catch (err) {
+        console.warn("[POST /api/startups] Background analysis failed:", err);
+      }
+    })();
+  }
 
   return NextResponse.json({ startup }, { status: 201 });
 }

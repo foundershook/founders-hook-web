@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, Users, Sparkles, Globe } from "lucide-react";
 import ApplyModal from "./ApplyModal";
 import StartupDetailModal from "./StartupDetailModal";
+
+export type AiInsights = {
+  about: string;
+  problem: string;
+  solution: string;
+  analysedAt?: string;
+};
 
 export type StartupDTO = {
   _id: string;
@@ -13,6 +20,8 @@ export type StartupDTO = {
   category: string;
   icon: string;
   coverImage: string;
+  website?: string;
+  aiInsights?: AiInsights;
   featured?: boolean;
   members: { _id: string; name: string; avatarUrl: string }[];
   openRoles: { _id: string; title: string; type: string; description?: string }[];
@@ -21,6 +30,9 @@ export type StartupDTO = {
 export default function StartupCard({ startup }: { startup: StartupDTO }) {
   const [applyOpen, setApplyOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
+
+  const hasInsights = !!startup.aiInsights;
+  const hasPendingInsights = !hasInsights && !!startup.website;
 
   return (
     <>
@@ -73,6 +85,39 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
           <span className="mt-3 inline-block w-fit rounded-full border border-ink-700/60 bg-ink-800 px-3 py-1 text-[11px] font-medium text-sand-400">
             {startup.category}
           </span>
+
+          {/* ── AI Insights strip ── */}
+          {hasInsights && startup.aiInsights && (
+            <div className="mt-3 rounded-xl border border-cyan-500/20 bg-cyan-950/30 p-3 space-y-2">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Sparkles size={11} className="text-cyan-400 shrink-0" />
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-400">
+                  AI Analysis
+                </span>
+              </div>
+
+              <InsightRow emoji="🚀" label="About" text={startup.aiInsights.about} />
+              <InsightRow emoji="🔍" label="Problem" text={startup.aiInsights.problem} />
+              <InsightRow emoji="💡" label="Solution" text={startup.aiInsights.solution} />
+            </div>
+          )}
+
+          {/* Pending analysis shimmer */}
+          {hasPendingInsights && (
+            <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">
+              <Globe size={11} className="shrink-0 text-sand-600" />
+              <span className="text-[10px] text-sand-600 italic">AI analysis pending…</span>
+              <span className="ml-auto flex gap-0.5">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className="h-1 w-1 rounded-full bg-sand-700 animate-pulse"
+                    style={{ animationDelay: `${i * 200}ms` }}
+                  />
+                ))}
+              </span>
+            </div>
+          )}
 
           {/* Footer */}
           <div className="mt-3 flex items-center justify-between border-t border-ink-700/50 pt-2.5">
@@ -127,5 +172,26 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
         />
       )}
     </>
+  );
+}
+
+// ── Small sub-component for a single insight row ─────────────────────────────
+function InsightRow({
+  emoji,
+  label,
+  text,
+}: {
+  emoji: string;
+  label: string;
+  text: string;
+}) {
+  return (
+    <div className="flex gap-1.5">
+      <span className="text-[11px] shrink-0 leading-relaxed">{emoji}</span>
+      <div className="min-w-0">
+        <span className="text-[10px] font-semibold text-cyan-300/80">{label}: </span>
+        <span className="text-[10px] text-sand-400 leading-relaxed line-clamp-2">{text}</span>
+      </div>
+    </div>
   );
 }

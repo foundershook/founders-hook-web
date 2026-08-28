@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
 import { verifySession, SESSION_COOKIE } from "@/lib/auth";
+import { analyzeWebsite } from "@/lib/analyzeWebsite";
 
 export async function GET(
   _req: NextRequest,
@@ -38,6 +39,7 @@ const UpdateStartupSchema = z.object({
   category: z.string().min(1).optional(),
   logoUrl: z.string().optional(),
   bannerUrl: z.string().optional(),
+  website: z.string().optional(),
   openRoles: z.array(OpenRoleInput).optional(),
 });
 
@@ -56,13 +58,19 @@ export async function PATCH(
 
   await connectToDatabase();
 
-  const existing = await Startup.findById(id).lean() as { founder: { toString(): string } } | null;
+  const existing = await Startup.findById(id).lean() as {
+    founder: { toString(): string };
+    website?: string;
+  } | null;
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   if (existing.founder.toString() !== session.userId) {
-    return NextResponse.json({ error: "Forbidden – only the founder can edit this startup" }, { status: 403 });
+    return NextResponse.json(
+      { error: "Forbidden – only the founder can edit this startup" },
+      { status: 403 }
+    );
   }
 
   const body = await req.json();
@@ -92,6 +100,26 @@ export async function PATCH(
     .populate("founder", "name username avatarUrl")
     .populate("members", "name username avatarUrl")
     .lean();
+
+  // Re-trigger AI analysis if the website URL changed
+  const newWebsite = parsed.data.website;
+  const websiteChanged =
+    newWebsite !== undefined && newWebsite !== (existing.website ?? "");
+
+  if (websiteChanged && newWebsite) {
+    void (async () => {
+      try {
+        const insights = await analyzeWebsite(newWebsite);
+        if (insights) {
+          await Startup.findByIdAndUpdate(id, {
+            $set: { aiInsights: { ...insights, analysedAt: new Date() } },
+          });
+        }
+      } catch (err) {
+        console.warn("[PATCH /api/startups/[id]] Background analysis failed:", err);
+      }
+    })();
+  }
 
   return NextResponse.json({ startup: updated });
 }

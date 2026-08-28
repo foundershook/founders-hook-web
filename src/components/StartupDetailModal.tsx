@@ -11,13 +11,18 @@ import {
   Loader2,
   Star,
   Pencil,
+  Sparkles,
+  Globe,
+  RefreshCw,
 } from "lucide-react";
-import type { StartupDTO } from "./StartupCard";
+import type { StartupDTO, AiInsights } from "./StartupCard";
 import ApplyModal from "./ApplyModal";
 import ProjectSetupModal, { type ProjectSetupInitialData } from "./ProjectSetupModal";
 
 type FullStartup = StartupDTO & {
   description: string;
+  website?: string;
+  aiInsights?: AiInsights;
   founder?: { _id: string; name: string; username: string; avatarUrl: string };
 };
 
@@ -42,6 +47,7 @@ export default function StartupDetailModal({
   const [editOpen, setEditOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [meId, setMeId] = useState<string | null>(null);
+  const [reanalysing, setReanalysing] = useState(false);
 
   // Fetch current user id
   useEffect(() => {
@@ -81,6 +87,26 @@ export default function StartupDetailModal({
     setApplyOpen(true);
   }
 
+  async function handleReanalyse() {
+    if (!startup || reanalysing) return;
+    setReanalysing(true);
+    try {
+      const res = await fetch(`/api/startups/${startupId}/analyze`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setStartup((prev) =>
+          prev ? { ...prev, aiInsights: data.aiInsights } : prev
+        );
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setReanalysing(false);
+    }
+  }
+
   // When ApplyModal opens, pass a startup with pre-selected role first
   const startupForApply = startup
     ? {
@@ -102,6 +128,7 @@ export default function StartupDetailModal({
     ? {
         projectName: startup.name,
         tagline: startup.tagline,
+        website: startup.website ?? "",
         projectDescription: startup.description ?? "",
         category: startup.category,
         logoUrl: startup.icon?.startsWith("http") ? startup.icon : "",
@@ -202,6 +229,20 @@ export default function StartupDetailModal({
                   </div>
                 </div>
 
+                {/* Website link */}
+                {startup.website && (
+                  <a
+                    href={startup.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="mb-3 flex w-fit items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] text-slate-500 hover:text-purple-600 hover:border-purple-200 transition-colors"
+                  >
+                    <Globe size={11} />
+                    {startup.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                  </a>
+                )}
+
                 {/* Tagline */}
                 <p className="text-sm font-medium text-slate-700">
                   {startup.tagline}
@@ -213,6 +254,84 @@ export default function StartupDetailModal({
                     {startup.description}
                   </p>
                 )}
+
+                {/* ── AI Analysis section ── */}
+                <div className="mt-5">
+                  {startup.aiInsights ? (
+                    <div className="rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50 to-sky-50 p-4">
+                      {/* Header row */}
+                      <div className="mb-3 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <Sparkles size={14} className="text-cyan-500" />
+                          <span className="text-xs font-semibold uppercase tracking-widest text-cyan-600">
+                            AI Analysis
+                          </span>
+                        </div>
+                        {isFounder && (
+                          <button
+                            onClick={handleReanalyse}
+                            disabled={reanalysing}
+                            title="Re-run analysis"
+                            className="flex items-center gap-1 rounded-full border border-cyan-200 bg-white px-2.5 py-1 text-[10px] font-medium text-cyan-600 transition hover:bg-cyan-50 disabled:opacity-50"
+                          >
+                            <RefreshCw
+                              size={10}
+                              className={reanalysing ? "animate-spin" : ""}
+                            />
+                            {reanalysing ? "Analysing…" : "Refresh"}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Three insight cards */}
+                      <div className="space-y-2.5">
+                        <AiCard
+                          emoji="🚀"
+                          label="What is it?"
+                          text={startup.aiInsights.about}
+                          accentClass="border-cyan-200 bg-white"
+                        />
+                        <AiCard
+                          emoji="🔍"
+                          label="Problem"
+                          text={startup.aiInsights.problem}
+                          accentClass="border-amber-100 bg-white"
+                        />
+                        <AiCard
+                          emoji="💡"
+                          label="Solution"
+                          text={startup.aiInsights.solution}
+                          accentClass="border-emerald-100 bg-white"
+                        />
+                      </div>
+
+                      {startup.aiInsights.analysedAt && (
+                        <p className="mt-2.5 text-right text-[9px] text-slate-400">
+                          Analysed{" "}
+                          {new Date(startup.aiInsights.analysedAt).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  ) : startup.website ? (
+                    /* Website set but analysis pending */
+                    <div className="flex items-center gap-2 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3">
+                      <Sparkles size={14} className="text-slate-400 shrink-0" />
+                      <p className="text-xs text-slate-400 italic">
+                        AI analysis is being generated — check back in a moment.
+                      </p>
+                      {isFounder && (
+                        <button
+                          onClick={handleReanalyse}
+                          disabled={reanalysing}
+                          className="ml-auto shrink-0 flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-medium text-slate-500 hover:text-purple-600 hover:border-purple-200 transition"
+                        >
+                          <RefreshCw size={10} className={reanalysing ? "animate-spin" : ""} />
+                          {reanalysing ? "Running…" : "Run now"}
+                        </button>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
 
                 {/* ── Team ── */}
                 {startup.members.length > 0 && (
@@ -322,5 +441,32 @@ export default function StartupDetailModal({
         />
       )}
     </AnimatePresence>
+  );
+}
+
+// ── AI insight card ──────────────────────────────────────────────────────────
+function AiCard({
+  emoji,
+  label,
+  text,
+  accentClass,
+}: {
+  emoji: string;
+  label: string;
+  text: string;
+  accentClass: string;
+}) {
+  return (
+    <div className={`rounded-xl border p-3 ${accentClass}`}>
+      <div className="flex items-start gap-2">
+        <span className="text-base leading-none shrink-0 mt-0.5">{emoji}</span>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+            {label}
+          </p>
+          <p className="text-xs leading-relaxed text-slate-700">{text}</p>
+        </div>
+      </div>
+    </div>
   );
 }

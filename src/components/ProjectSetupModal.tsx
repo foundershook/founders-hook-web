@@ -142,6 +142,7 @@ export default function ProjectSetupModal({
           category: formData.category,
           logoUrl: formData.logoUrl || undefined,
           bannerUrl: formData.bannerUrl || undefined,
+          website: formData.website.trim() || undefined,
           openRoles: finalRoles,
         }),
       });

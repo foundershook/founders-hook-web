@@ -7,6 +7,13 @@ export interface IOpenRole {
   paid: boolean;
 }
 
+export interface IAiInsights {
+  about: string;
+  problem: string;
+  solution: string;
+  analysedAt: Date;
+}
+
 export interface IStartup {
   _id: mongoose.Types.ObjectId;
   name: string;
@@ -15,6 +22,8 @@ export interface IStartup {
   category: string;
   icon: string;
   coverImage: string;
+  website?: string;
+  aiInsights?: IAiInsights;
   founder: mongoose.Types.ObjectId;
   members: mongoose.Types.ObjectId[];
   openRoles: IOpenRole[];
@@ -36,6 +45,16 @@ const OpenRoleSchema = new Schema<IOpenRole>(
   { _id: true }
 );
 
+const AiInsightsSchema = new Schema<IAiInsights>(
+  {
+    about: { type: String, default: "" },
+    problem: { type: String, default: "" },
+    solution: { type: String, default: "" },
+    analysedAt: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+
 const StartupSchema = new Schema<IStartup>(
   {
     name: { type: String, required: true, trim: true },
@@ -47,6 +66,8 @@ const StartupSchema = new Schema<IStartup>(
       type: String,
       default: "https://picsum.photos/seed/startup/800/500",
     },
+    website: { type: String, default: "" },
+    aiInsights: { type: AiInsightsSchema, default: undefined },
     founder: { type: Schema.Types.ObjectId, ref: "User", required: true },
     members: [{ type: Schema.Types.ObjectId, ref: "User" }],
     openRoles: [OpenRoleSchema],

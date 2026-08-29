@@ -21,7 +21,8 @@ import {
   Menu,
   ChevronLeft,
   ExternalLink,
-  MessageSquare
+  MessageSquare,
+  Video,
 } from "lucide-react";
 
 type Me = {
@@ -48,6 +49,8 @@ interface Message {
   conversation: string;
   sender: any;
   content: string;
+  type?: "text" | "meet";
+  meetUrl?: string;
   createdAt: string;
 }
 
@@ -64,9 +67,11 @@ export default function FoundersHookPage() {
   
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [startingMeet, setStartingMeet] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
+
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -165,6 +170,34 @@ export default function FoundersHookPage() {
       setSending(false);
     }
   };
+
+  const handleStartMeet = async () => {
+    if (!activeConversationId || startingMeet) return;
+    
+    // Open new tab immediately on user click to prevent popup blocking
+    const meetWindow = window.open("https://meet.google.com/new", "_blank");
+    setStartingMeet(true);
+
+    try {
+      const res = await fetch(`/api/conversations/${activeConversationId}/meet`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (meetWindow && data.meetUrl && data.meetUrl !== "https://meet.google.com/new") {
+          meetWindow.location.href = data.meetUrl;
+        }
+        fetchMessages();
+        fetchConversations();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setStartingMeet(false);
+    }
+  };
+
 
   const handleUpdateStatus = async (appId: string, status: "Accepted" | "Rejected") => {
     if (updatingStatus) return;
@@ -366,22 +399,39 @@ export default function FoundersHookPage() {
                     </div>
                   </div>
                   
-                  {/* Status Indicator / Actions in Header */}
-                  {activeConvo.type === "application" && activeConvo.application && (
-                    <div className="flex items-center gap-3">
-                      {/* Badge */}
-                      <span className={`hidden sm:inline-flex px-2.5 py-1 text-xs font-bold rounded-md border ${
-                        activeConvo.application.status === "Accepted" ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" :
-                        activeConvo.application.status === "Rejected" ? "border-red-500/30 bg-red-500/15 text-red-300" :
-                        "border-amber-500/30 bg-amber-500/15 text-amber-300"
-                      }`}>
-                        {activeConvo.application.status}
-                      </span>
-                      <button className="text-sand-400 hover:text-sand-200 p-2 rounded-full hover:bg-ink-800 transition">
-                        <MoreVertical size={18} />
-                      </button>
-                    </div>
-                  )}
+                  {/* Header Actions: Meet Button & Status */}
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    {/* Google Meet Button */}
+                    <button
+                      onClick={handleStartMeet}
+                      disabled={startingMeet}
+                      title="Start a Google Meet and invite participant"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-ink-950 font-bold text-xs rounded-lg shadow-md shadow-emerald-500/20 transition transform active:scale-95 disabled:opacity-50"
+                    >
+                      {startingMeet ? (
+                        <Loader2 size={14} className="animate-spin text-ink-950" />
+                      ) : (
+                        <Video size={14} className="text-ink-950 fill-ink-950" />
+                      )}
+                      <span>Meet</span>
+                    </button>
+
+                    {/* Application Status Badge */}
+                    {activeConvo.type === "application" && activeConvo.application && (
+                      <>
+                        <span className={`hidden sm:inline-flex px-2.5 py-1 text-xs font-bold rounded-md border ${
+                          activeConvo.application.status === "Accepted" ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" :
+                          activeConvo.application.status === "Rejected" ? "border-red-500/30 bg-red-500/15 text-red-300" :
+                          "border-amber-500/30 bg-amber-500/15 text-amber-300"
+                        }`}>
+                          {activeConvo.application.status}
+                        </span>
+                        <button className="text-sand-400 hover:text-sand-200 p-2 rounded-full hover:bg-ink-800 transition">
+                          <MoreVertical size={18} />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {/* Application Details Panel (Optional info bar) */}
@@ -442,6 +492,7 @@ export default function FoundersHookPage() {
                   {messages.map((msg, i) => {
                     const isMe = msg.sender._id === me?.id;
                     const showAvatar = !isMe && (i === 0 || messages[i-1].sender._id !== msg.sender._id);
+                    const isMeet = msg.type === "meet" || msg.content.includes("📹");
 
                     return (
                       <div key={msg._id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
@@ -453,15 +504,51 @@ export default function FoundersHookPage() {
                               )}
                             </div>
                           )}
-                          <div className={`
-                            px-4 py-2.5 text-sm shadow-sm
-                            ${isMe 
-                              ? "bg-emerald-600 text-white rounded-2xl rounded-br-sm" 
-                              : "bg-ink-800 border border-ink-700 text-sand-200 rounded-2xl rounded-bl-sm"
-                            }
-                          `}>
-                            {msg.content}
-                          </div>
+
+                          {isMeet ? (
+                            <div className="bg-gradient-to-br from-ink-900 via-ink-850 to-ink-900 border border-emerald-500/40 p-4 rounded-2xl shadow-xl shadow-emerald-950/40 max-w-xs sm:max-w-sm">
+                              <div className="flex items-center gap-3 mb-3">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+                                  <Video size={20} />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="relative flex h-2 w-2">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                                      Google Meet
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-sand-200 font-medium truncate mt-0.5">
+                                    {isMe ? "You started a video call" : `${msg.sender?.name || "Host"} invited you to meet`}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <a
+                                href={msg.meetUrl || "https://meet.google.com/new"}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-ink-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95 cursor-pointer"
+                              >
+                                <Video size={14} className="fill-ink-950" />
+                                <span>Join Google Meet</span>
+                                <ExternalLink size={12} className="opacity-70" />
+                              </a>
+                            </div>
+                          ) : (
+                            <div className={`
+                              px-4 py-2.5 text-sm shadow-sm
+                              ${isMe 
+                                ? "bg-emerald-600 text-white rounded-2xl rounded-br-sm" 
+                                : "bg-ink-800 border border-ink-700 text-sand-200 rounded-2xl rounded-bl-sm"
+                              }
+                            `}>
+                              {msg.content}
+                            </div>
+                          )}
                         </div>
                       </div>
                     );

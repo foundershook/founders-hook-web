@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import IncomingCallNotifier from "@/components/IncomingCallNotifier";
 
 export const metadata: Metadata = {
   title: "Founders Hook — The Exclusive Network for Startup Founders",
@@ -28,7 +29,9 @@ export default function RootLayout({
       </head>
       <body className="bg-ink-950 text-sand-200 antialiased">
         {children}
+        <IncomingCallNotifier />
       </body>
     </html>
   );
 }
+

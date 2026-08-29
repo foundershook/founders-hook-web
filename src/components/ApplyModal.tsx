@@ -4,15 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
-  Check,
   FileText,
   Trash2,
   Loader2,
   User,
   Mail,
   Phone,
-  Briefcase,
-  Sparkles,
   Paperclip,
   Send,
   Building2,
@@ -24,15 +21,6 @@ import {
 import type { StartupDTO } from "./StartupCard";
 
 const GENDER_OPTIONS = ["Male", "Female", "Other", "Prefer not to say"] as const;
-
-const EXPERIENCE_OPTIONS = [
-  "Fresher (0 years)",
-  "1 year",
-  "2 years",
-  "3 years",
-  "4 years",
-  "5+ years",
-] as const;
 
 export default function ApplyModal({
   startup,
@@ -46,7 +34,6 @@ export default function ApplyModal({
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [gender, setGender] = useState<string>("Male");
-  const [experience, setExperience] = useState<string>("Fresher (0 years)");
   const [message, setMessage] = useState("");
   const [showSenderDetails, setShowSenderDetails] = useState(false);
 
@@ -72,7 +59,6 @@ export default function ApplyModal({
           if (d.user.email && !email) setEmail(d.user.email);
           if (d.user.mobile && !mobile) setMobile(d.user.mobile);
           if (d.user.gender && !gender) setGender(d.user.gender);
-          if (d.user.experience && !experience) setExperience(d.user.experience);
         }
       })
       .catch(() => {});
@@ -136,23 +122,6 @@ export default function ApplyModal({
     }
   }
 
-  function applyTemplate(type: "standard" | "projects" | "pitch") {
-    const roleTitle = selectedRole?.title || "Role";
-    if (type === "standard") {
-      setMessage(
-        `Dear ${startup.name} Team,\n\nI am writing to express my strong interest in the ${roleTitle} position. With my background in this domain and strong enthusiasm for your mission, I am eager to contribute directly to your team's success.\n\nPlease find my resume attached for your review. Looking forward to discussing how my skills align with your vision.`
-      );
-    } else if (type === "projects") {
-      setMessage(
-        `Hi ${startup.name} Founders,\n\nI came across ${startup.name} and love what you are building. I have hands-on experience delivering end-to-end projects and solving core challenges in this space. I would love to bring my technical skills and builder mindset to the ${roleTitle} role.\n\nI've attached my resume and would welcome a conversation.`
-      );
-    } else if (type === "pitch") {
-      setMessage(
-        `Hey ${startup.name} Team!\n\nSuper excited about your company. I bring a strong background with fast execution speed and relevant experience. I am ready to hit the ground running for the ${roleTitle} role.\n\nLooking forward to connecting!`
-      );
-    }
-  }
-
   async function submit() {
     if (!name.trim()) {
       setError("Please enter your full name in the Sender section");
@@ -183,7 +152,6 @@ export default function ApplyModal({
           gender,
           mobile: mobile.trim(),
           email: email.trim(),
-          experience,
           resumeUrl,
           resumeName,
           message: message.trim(),
@@ -203,8 +171,6 @@ export default function ApplyModal({
     }
   }
 
-  const cleanCompanyName = startup.name.toLowerCase().replace(/[^a-z0-9]/g, "");
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-5 backdrop-blur-md overflow-y-auto">
       <motion.div
@@ -220,8 +186,8 @@ export default function ApplyModal({
           <div className="flex items-center gap-2 text-xs font-semibold text-white/90">
             <Mail size={14} className="text-amber-400" />
             <span>Compose Application</span>
-            <span className="hidden sm:inline-block rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/60 font-mono">
-              to @{cleanCompanyName}
+            <span className="hidden sm:inline-block rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/60 font-medium">
+              for {startup.name}
             </span>
           </div>
 
@@ -390,13 +356,10 @@ export default function ApplyModal({
                       ) : (
                         <Building2 size={12} className="text-amber-400" />
                       )}
-                      <span className="text-xs font-semibold text-white truncate max-w-[150px]">
+                      <span className="text-xs font-semibold text-white truncate max-w-[200px]">
                         {startup.name}
                       </span>
                     </div>
-                    <span className="text-xs text-white/50 truncate font-mono">
-                      &lt;hiring@{cleanCompanyName}.foundershook.com&gt;
-                    </span>
                   </div>
                 </div>
 
@@ -427,60 +390,12 @@ export default function ApplyModal({
                         className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
                       />
                     </div>
-
-                    {/* Inline Experience Tag */}
-                    <div className="flex items-center gap-1.5 bg-[#181822] border border-white/10 rounded-lg px-2.5 py-1 text-xs">
-                      <Briefcase size={12} className="text-amber-400 shrink-0" />
-                      <span className="text-[11px] text-white/50 shrink-0">Exp:</span>
-                      <select
-                        value={experience}
-                        onChange={(e) => setExperience(e.target.value)}
-                        className="bg-transparent text-xs text-white focus:outline-none cursor-pointer font-medium"
-                      >
-                        {EXPERIENCE_OPTIONS.map((exp) => (
-                          <option key={exp} value={exp} className="bg-[#181822] text-white">
-                            {exp}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Email Body Writing Canvas */}
               <div className="p-4 sm:p-5 flex flex-col flex-1">
-                {/* Quick Pitch Starters Bar */}
-                <div className="mb-3 flex items-center justify-between flex-wrap gap-2">
-                  <div className="flex items-center gap-1.5 text-[11px] text-white/50">
-                    <Sparkles size={13} className="text-amber-400" />
-                    <span>Quick Pitch Templates:</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <button
-                      type="button"
-                      onClick={() => applyTemplate("standard")}
-                      className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-[11px] text-white/70 hover:text-white border border-white/5 transition-all"
-                    >
-                      💼 Professional Intro
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyTemplate("projects")}
-                      className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-[11px] text-white/70 hover:text-white border border-white/5 transition-all"
-                    >
-                      🚀 Projects & Skills
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => applyTemplate("pitch")}
-                      className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 text-[11px] text-white/70 hover:text-white border border-white/5 transition-all"
-                    >
-                      ⚡ Fast Pitch
-                    </button>
-                  </div>
-                </div>
-
                 {/* Body Textarea */}
                 <div className="relative flex-1">
                   <textarea
@@ -576,20 +491,7 @@ export default function ApplyModal({
             {/* Email Dispatch Footer Toolbar */}
             <div className="border-t border-white/10 bg-[#121217] px-4 py-3 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <label
-                  htmlFor="email-resume-input"
-                  className={`flex items-center gap-1.5 text-xs text-white/60 hover:text-white cursor-pointer px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-colors ${
-                    resumeUrl ? "text-emerald-400 font-medium" : ""
-                  }`}
-                  title="Attach Resume PDF"
-                >
-                  <Paperclip size={14} className={resumeUrl ? "text-emerald-400" : "text-white/60"} />
-                  <span className="hidden sm:inline">
-                    {resumeUrl ? "Resume Attached" : "Attach File"}
-                  </span>
-                </label>
-
-                <span className="text-[11px] text-white/30 font-mono">
+                <span className="text-[11px] text-white/40 font-mono">
                   {message.length}/1000 chars
                 </span>
               </div>
@@ -628,5 +530,6 @@ export default function ApplyModal({
     </div>
   );
 }
+
 
 

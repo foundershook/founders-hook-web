@@ -7,6 +7,8 @@ export interface IMessage {
   content: string;
   type?: "text" | "meet";
   meetUrl?: string;
+  meetStatus?: "active" | "ended";
+  endedAt?: Date;
   readBy: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
@@ -19,6 +21,8 @@ const MessageSchema = new Schema<IMessage>(
     content: { type: String, required: true },
     type: { type: String, enum: ["text", "meet"], default: "text" },
     meetUrl: { type: String },
+    meetStatus: { type: String, enum: ["active", "ended"], default: "active" },
+    endedAt: { type: Date },
     readBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }

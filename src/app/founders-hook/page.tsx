@@ -23,6 +23,7 @@ import {
   ExternalLink,
   MessageSquare,
   Video,
+  VideoOff,
 } from "lucide-react";
 
 type Me = {
@@ -51,8 +52,11 @@ interface Message {
   content: string;
   type?: "text" | "meet";
   meetUrl?: string;
+  meetStatus?: "active" | "ended";
+  endedAt?: string;
   createdAt: string;
 }
+
 
 export default function FoundersHookPage() {
   const [me, setMe] = useState<Me | null>(null);
@@ -188,8 +192,29 @@ export default function FoundersHookPage() {
         if (meetWindow && data.meetUrl && data.meetUrl !== "https://meet.google.com/new") {
           meetWindow.location.href = data.meetUrl;
         }
+        const createdMessageId = data.message?._id;
         fetchMessages();
         fetchConversations();
+
+        // Monitor when the Google Meet tab is closed to automatically end the call
+        if (meetWindow) {
+          const checkTimer = setInterval(async () => {
+            if (meetWindow.closed) {
+              clearInterval(checkTimer);
+              try {
+                await fetch(`/api/conversations/${activeConversationId}/meet`, {
+                  method: "PATCH",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ messageId: createdMessageId }),
+                });
+                fetchMessages();
+                fetchConversations();
+              } catch (err) {
+                console.error("Failed to update ended call status:", err);
+              }
+            }
+          }, 1500);
+        }
       }
     } catch (e) {
       console.error(e);
@@ -197,6 +222,29 @@ export default function FoundersHookPage() {
       setStartingMeet(false);
     }
   };
+
+  const handleJoinMeet = (meetUrl: string, messageId?: string) => {
+    const meetWindow = window.open(meetUrl || "https://meet.google.com/new", "_blank");
+    if (meetWindow && activeConversationId) {
+      const checkTimer = setInterval(async () => {
+        if (meetWindow.closed) {
+          clearInterval(checkTimer);
+          try {
+            await fetch(`/api/conversations/${activeConversationId}/meet`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ messageId }),
+            });
+            fetchMessages();
+            fetchConversations();
+          } catch (err) {
+            console.error("Failed to update ended call status:", err);
+          }
+        }
+      }, 1500);
+    }
+  };
+
 
 
   const handleUpdateStatus = async (appId: string, status: "Accepted" | "Rejected") => {
@@ -506,38 +554,57 @@ export default function FoundersHookPage() {
                           )}
 
                           {isMeet ? (
-                            <div className="bg-gradient-to-br from-ink-900 via-ink-850 to-ink-900 border border-emerald-500/40 p-4 rounded-2xl shadow-xl shadow-emerald-950/40 max-w-xs sm:max-w-sm">
-                              <div className="flex items-center gap-3 mb-3">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
-                                  <Video size={20} />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="relative flex h-2 w-2">
-                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                    </span>
-                                    <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
-                                      Google Meet
-                                    </span>
+                            msg.meetStatus === "ended" || msg.content.includes("ended") ? (
+                              <div className="bg-ink-900/60 border border-ink-800/80 p-3.5 rounded-2xl shadow-sm max-w-xs sm:max-w-sm">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-xl bg-ink-800/80 border border-ink-700/60 flex items-center justify-center text-sand-400 shrink-0">
+                                    <VideoOff size={18} />
                                   </div>
-                                  <p className="text-xs text-sand-200 font-medium truncate mt-0.5">
-                                    {isMe ? "You started a video call" : `${msg.sender?.name || "Host"} invited you to meet`}
-                                  </p>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="h-2 w-2 rounded-full bg-sand-500"></span>
+                                      <span className="text-[10px] font-bold text-sand-400 uppercase tracking-wider">
+                                        Google Meet Ended
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-sand-300 font-medium truncate mt-0.5">
+                                      Video call finished
+                                    </p>
+                                  </div>
                                 </div>
                               </div>
+                            ) : (
+                              <div className="bg-gradient-to-br from-ink-900 via-ink-850 to-ink-900 border border-emerald-500/40 p-4 rounded-2xl shadow-xl shadow-emerald-950/40 max-w-xs sm:max-w-sm">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+                                    <Video size={20} />
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                      </span>
+                                      <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+                                        Google Meet
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-sand-200 font-medium truncate mt-0.5">
+                                      {isMe ? "You started a video call" : `${msg.sender?.name || "Host"} invited you to meet`}
+                                    </p>
+                                  </div>
+                                </div>
 
-                              <a
-                                href={msg.meetUrl || "https://meet.google.com/new"}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-ink-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95 cursor-pointer"
-                              >
-                                <Video size={14} className="fill-ink-950" />
-                                <span>Join Google Meet</span>
-                                <ExternalLink size={12} className="opacity-70" />
-                              </a>
-                            </div>
+                                <button
+                                  onClick={() => handleJoinMeet(msg.meetUrl || "https://meet.google.com/new", msg._id)}
+                                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-ink-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95 cursor-pointer"
+                                >
+                                  <Video size={14} className="fill-ink-950" />
+                                  <span>Join Google Meet</span>
+                                  <ExternalLink size={12} className="opacity-70" />
+                                </button>
+                              </div>
+                            )
                           ) : (
                             <div className={`
                               px-4 py-2.5 text-sm shadow-sm

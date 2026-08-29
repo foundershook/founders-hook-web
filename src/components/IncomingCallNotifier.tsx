@@ -21,6 +21,7 @@ interface IncomingCall {
 
 // Gentle Web Audio API Chime for incoming call notification
 function playCallChime() {
+  if (typeof window === "undefined") return;
   try {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContextClass) return;
@@ -57,12 +58,18 @@ function playCallChime() {
 }
 
 export default function IncomingCallNotifier() {
+  const [mounted, setMounted] = useState(false);
   const [incomingCall, setIncomingCall] = useState<IncomingCall | null>(null);
   const dismissedCallIds = useRef<Set<string>>(new Set());
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Initialize dismissed calls from sessionStorage
   useEffect(() => {
+    if (!mounted) return;
     try {
       const stored = sessionStorage.getItem("fh_dismissed_calls");
       if (stored) {
@@ -154,12 +161,34 @@ export default function IncomingCallNotifier() {
   const handleJoinCall = () => {
     if (!incomingCall) return;
     const url = incomingCall.meetUrl || "https://meet.google.com/new";
-    window.open(url, "_blank");
-    dismissCall(incomingCall.messageId);
+    const convoId = incomingCall.conversationId;
+    const msgId = incomingCall.messageId;
+    const meetWindow = window.open(url, "_blank");
+    dismissCall(msgId);
+
+    if (meetWindow && convoId) {
+      const checkTimer = setInterval(async () => {
+        if (meetWindow.closed) {
+          clearInterval(checkTimer);
+          try {
+            await fetch(`/api/conversations/${convoId}/meet`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ messageId: msgId }),
+            });
+          } catch (err) {
+            console.error("Failed to mark call ended:", err);
+          }
+        }
+      }, 1500);
+    }
   };
+
+  if (!mounted) return null;
 
   return (
     <AnimatePresence>
+
       {incomingCall && (
         <motion.div
           initial={{ opacity: 0, y: 50, scale: 0.9 }}

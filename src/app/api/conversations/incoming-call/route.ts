@@ -31,6 +31,7 @@ export async function GET() {
       conversation: { $in: convoIds },
       sender: { $ne: user._id },
       type: "meet",
+      meetStatus: { $ne: "ended" },
       createdAt: { $gte: threeMinutesAgo },
     })
       .sort({ createdAt: -1 })

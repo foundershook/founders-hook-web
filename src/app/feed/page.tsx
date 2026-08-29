@@ -64,9 +64,9 @@ export default function FeedPage() {
       <div className="relative flex-1 overflow-y-auto pb-16 lg:pb-0">
         {/* Background Image Overlay restricted to header */}
         <div
-          className="absolute top-0 left-0 right-0 h-72 z-0 pointer-events-none opacity-50"
+          className="absolute top-0 left-0 right-0 h-[460px] z-0 pointer-events-none opacity-70"
           style={{
-            backgroundImage: "url('https://res.cloudinary.com/t7efuhnd/image/upload/v1786473992/ebenezer42-planet-6092940_gyiiif.jpg')",
+            backgroundImage: "url('https://res.cloudinary.com/t7efuhnd/image/upload/v1788013553/feed_bg_duc1kb.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -111,7 +111,7 @@ export default function FeedPage() {
           </div>
 
           {/* ── DISCOVER STARTUPS ── */}
-          <section className="mt-20">
+          <section className="mt-48 sm:mt-56">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-bold text-base text-sand-100">
                 Discover Impactful Startups

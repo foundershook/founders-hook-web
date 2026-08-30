@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   X,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
@@ -37,6 +38,7 @@ interface PublicUser {
   username: string;
   avatarUrl: string;
   bio: string;
+  skills?: string[];
   createdAt: string;
   followerCount: number;
   followingCount: number;
@@ -343,9 +345,33 @@ export default function UserProfilePage() {
 
             {/* Bio */}
             <section className="flex h-full flex-col justify-between rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-xl">
-              <p className="flex-1 text-base leading-relaxed text-mist-200 whitespace-pre-wrap">
-                {profile.bio || "This user hasn't written a bio yet."}
-              </p>
+              <div>
+                <p className="text-base leading-relaxed text-mist-200 whitespace-pre-wrap">
+                  {profile.bio || "This user hasn't written a bio yet."}
+                </p>
+
+                {/* Skills list */}
+                {profile.skills && profile.skills.length > 0 && (
+                  <div className="mt-5 border-t border-white/10 pt-4">
+                    <div className="mb-2.5 flex items-center gap-1.5">
+                      <Sparkles size={13} className="text-gold-300" />
+                      <span className="text-xs font-semibold uppercase tracking-wider text-mist-400">
+                        Skills & Expertise
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="inline-flex items-center rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-medium text-mist-200 shadow-sm"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </section>
 
             {/* Profile details */}
@@ -360,8 +386,25 @@ export default function UserProfilePage() {
                 </div>
               </div>
 
-              {answerEntries.length > 0 ? (
+              {answerEntries.length > 0 || (profile.skills && profile.skills.length > 0) ? (
                 <dl className="space-y-4">
+                  {profile.skills && profile.skills.length > 0 && (
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-mist-500">
+                        Skills
+                      </dt>
+                      <dd className="mt-1 flex flex-wrap gap-1.5">
+                        {profile.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-xs text-mist-300"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </dd>
+                    </div>
+                  )}
                   {answerEntries.slice(0, 6).map(([question, answer]) => (
                     <div key={question}>
                       <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-mist-500">

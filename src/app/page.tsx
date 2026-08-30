@@ -1213,7 +1213,7 @@ export default function LandingPage() {
   }, []);
 
   const primaryHref = loggedIn ? "/feed" : "/signup";
-  const primaryLabel = loggedIn ? "Go to Feed" : "Join Waitlist";
+  const primaryLabel = loggedIn ? "Already Registered" : "Join Waitlist";
 
   return (
     <main className="landing-page">

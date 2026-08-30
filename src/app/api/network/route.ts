@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     // Fetch all users
     const users = await User.find(searchFilter)
-      .select("name username avatarUrl bio onboardingAnswers createdAt followers following")
+      .select("name username avatarUrl bio skills onboardingAnswers createdAt followers following")
       .sort({ createdAt: -1 })
       .limit(200)
       .lean<{
@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
         username: string;
         avatarUrl: string;
         bio: string;
+        skills?: string[];
         createdAt: Date;
         followers: any[];
         following: any[];
@@ -43,9 +44,8 @@ export async function GET(req: NextRequest) {
       }[]>();
 
     // Find which users are founders (have at least one startup)
-    const allUserIds = users.map((u) => u._id);
-    const startups = await Startup.find({ founder: { $in: allUserIds } })
-      .select("_id name tagline category icon coverImage founder")
+    const startups = await Startup.find({})
+      .select("_id name tagline category icon founder")
       .lean();
 
     const founderIdSet = new Set(startups.map((s: any) => s.founder.toString()));
@@ -82,6 +82,7 @@ export async function GET(req: NextRequest) {
         username: user.username,
         avatarUrl: user.avatarUrl,
         bio: user.bio || "",
+        skills: user.skills || [],
         createdAt: user.createdAt,
         followerCount,
         followingCount,

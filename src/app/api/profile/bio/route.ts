@@ -8,7 +8,7 @@ export async function PUT(req: Request) {
     await connectToDatabase();
 
     const body = await req.json();
-    let { userId, bio, profilePic } = body;
+    let { userId, bio, profilePic, skills } = body;
 
     if (!userId) {
       const currentUser = await getCurrentUser();
@@ -27,7 +27,8 @@ export async function PUT(req: Request) {
         $set: { 
           ...(bio !== undefined && { bio }),
           // FIX: Map the incoming profilePic to the database's avatarUrl field
-          ...(profilePic !== undefined && { avatarUrl: profilePic }) 
+          ...(profilePic !== undefined && { avatarUrl: profilePic }),
+          ...(skills !== undefined && { skills }) 
         }
       },
       { new: true } 

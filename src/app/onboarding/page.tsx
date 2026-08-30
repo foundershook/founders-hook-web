@@ -74,6 +74,22 @@ const CATEGORIES = [
 
 const ROLE_TYPES: RoleType[] = ["Internship", "Part-time", "Full-time"];
 
+const PRESET_SKILLS = [
+  "UI/UX",
+  "Frontend",
+  "Backend",
+  "Full Stack",
+  "Mobile Dev",
+  "AI / ML",
+  "Product Management",
+  "DevOps",
+  "Data Science",
+  "Marketing & Growth",
+  "Blockchain / Web3",
+  "Cybersecurity",
+  "Sales & Business",
+];
+
 // Startup setup has 6 steps: 0=intro, 1=name+tagline+category, 2=website,
 // 3=description, 4=media, 5=roles, 6=done
 const STARTUP_TOTAL_STEPS = 6;
@@ -89,6 +105,8 @@ export default function OnboardingPage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [profilePic, setProfilePic] = useState("");
   const [bio, setBio] = useState("");
+  const [skills, setSkills] = useState<string[]>([]);
+  const [customSkill, setCustomSkill] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileError, setProfileError] = useState("");
 
@@ -100,7 +118,7 @@ export default function OnboardingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [answers, setAnswers] = useState<Record<string, any>>({});
 
-  // ── Phase state ────────────────────────────────────────────────────────────
+  // ── Phase state ────────────────────────────────────────────────────
   // "profile"   → add profile pic and write bio
   // "questions" → answer the questionnaire
   // "startup"   → fill in startup details
@@ -149,6 +167,9 @@ export default function OnboardingPage() {
             setCurrentUser(userData.user);
             if (userData.user.avatarUrl) setProfilePic(userData.user.avatarUrl);
             if (userData.user.bio) setBio(userData.user.bio);
+            if (userData.user.skills && Array.isArray(userData.user.skills)) {
+              setSkills(userData.user.skills);
+            }
           }
         }
       } catch {
@@ -161,6 +182,21 @@ export default function OnboardingPage() {
   }, []);
 
   // ── Profile helpers ────────────────────────────────────────────────────────
+  function toggleSkill(skill: string) {
+    setSkills((prev) =>
+      prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
+    );
+  }
+
+  function handleAddCustomSkill(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const trimmed = customSkill.trim();
+    if (trimmed && !skills.includes(trimmed)) {
+      setSkills((prev) => [...prev, trimmed]);
+      setCustomSkill("");
+    }
+  }
+
   async function handleProfileSubmit() {
     setProfileSaving(true);
     setProfileError("");
@@ -172,6 +208,7 @@ export default function OnboardingPage() {
           userId: currentUser?.id || currentUser?._id,
           bio: bio.trim(),
           profilePic: profilePic || undefined,
+          skills,
         }),
       });
 
@@ -319,31 +356,23 @@ export default function OnboardingPage() {
   // ── Profile Setup phase ────────────────────────────────────────────────────
   if (phase === "profile") {
     return (
-      <main className="relative flex min-h-screen items-center justify-center bg-ink-radial px-6 py-16">
+      <main className="relative flex min-h-screen items-center justify-center bg-ink-radial px-4 sm:px-6 py-12">
         <div className="pointer-events-none absolute -top-32 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-white/5 blur-[110px]" />
 
-        <div className="relative z-10 w-full max-w-xl">
-          {/* Header step badge */}
-          <div className="mb-6 flex items-center justify-center">
-            <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs sm:text-sm font-medium text-white shadow-sm">
-              <User size={14} className="text-sand-300" />
-              Step 1 of 3: Profile Setup
-            </div>
-          </div>
-
-          <div className="rounded-3xl border border-white/10 bg-ink-900/80 p-8 shadow-card backdrop-blur-xl sm:p-10">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-sand-100 sm:text-3xl tracking-tight">
-                Welcome{currentUser?.name ? `, ${currentUser.name.split(" ")[0]}` : ""}! 🎉
+        <div className="relative z-10 w-full max-w-lg">
+          <div className="rounded-3xl border border-white/10 bg-ink-900/80 p-6 sm:p-8 shadow-card backdrop-blur-xl">
+            <div className="text-center mb-6">
+              <h1 className="text-xl sm:text-2xl font-bold text-sand-100 tracking-tight">
+                Welcome{currentUser?.name ? `, ${currentUser.name.split(" ")[0]}` : ""}!
               </h1>
-              <p className="mt-2 text-xs sm:text-sm text-sand-400 max-w-md mx-auto leading-relaxed">
-                Add your profile picture and write a bio so founders and teammates can connect with you.
+              <p className="mt-1 text-xs text-sand-400">
+                Set up your profile to connect with founders and teammates.
               </p>
             </div>
 
-            {/* Profile Picture Uploader */}
-            <div className="flex flex-col items-center justify-center mb-8">
-              <div className="relative mb-3">
+            {/* 1. Add Photo in the middle */}
+            <div className="flex flex-col items-center justify-center mb-6">
+              <div className="relative">
                 <CldUploadWidget
                   uploadPreset="founders_hook_users"
                   options={{
@@ -365,30 +394,32 @@ export default function OnboardingPage() {
                   {({ open }) => (
                     <div
                       onClick={() => open()}
-                      className="group relative h-28 w-28 sm:h-32 sm:w-32 cursor-pointer overflow-hidden rounded-full border-2 border-white/20 bg-ink-800 shadow-xl transition-all hover:border-white/50 hover:scale-105"
+                      className="group relative h-24 w-24 sm:h-28 sm:w-28 cursor-pointer overflow-hidden rounded-full border-2 border-dashed border-white/25 hover:border-white/60 bg-white/5 transition-all hover:scale-105 shadow-md flex items-center justify-center"
                       title="Upload Profile Picture"
                     >
                       {profilePic ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={profilePic}
-                          alt="Profile preview"
+                          alt="Profile"
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full w-full flex-col items-center justify-center text-sand-400 bg-white/5">
-                          <User size={36} className="text-sand-500 mb-1" />
-                          <span className="text-[11px] font-medium text-sand-400">Add Photo</span>
+                        <div className="flex flex-col items-center justify-center text-sand-400">
+                          <Camera size={24} className="text-sand-400 mb-1 group-hover:text-white transition-colors" />
+                          <span className="text-[10px] font-semibold tracking-wider text-sand-400 group-hover:text-white uppercase">
+                            Add Photo
+                          </span>
                         </div>
                       )}
 
-                      {/* Hover Camera Overlay */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 backdrop-blur-xs transition-opacity group-hover:opacity-100 text-white">
-                        <Camera size={22} className="mb-1" />
-                        <span className="text-[10px] font-semibold tracking-wider uppercase">
-                          {profilePic ? "Change" : "Upload"}
-                        </span>
-                      </div>
+                      {/* Hover Camera Overlay if pic exists */}
+                      {profilePic && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100 text-white">
+                          <Camera size={18} className="mb-0.5" />
+                          <span className="text-[9px] font-semibold uppercase tracking-wider">Change</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </CldUploadWidget>
@@ -397,88 +428,128 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={() => setProfilePic("")}
-                    className="absolute -top-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 transition-colors shadow-sm"
+                    className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 transition-colors shadow-sm"
                     title="Remove Photo"
                   >
-                    <Trash2 size={13} />
+                    <Trash2 size={11} />
                   </button>
                 )}
               </div>
-
-              <div className="flex items-center gap-2">
-                <CldUploadWidget
-                  uploadPreset="founders_hook_users"
-                  options={{
-                    folder: "users-profile-pic",
-                    cropping: true,
-                    croppingAspectRatio: 1,
-                    showSkipCropButton: false,
-                    multiple: false,
-                    maxFiles: 1,
-                    clientAllowedFormats: ["png", "jpeg", "jpg", "webp"],
-                  }}
-                  onSuccess={(res) => {
-                    if (res.info && typeof res.info === "object") {
-                      const url = (res.info as Record<string, string>).secure_url;
-                      if (url) setProfilePic(url);
-                    }
-                  }}
-                >
-                  {({ open }) => (
-                    <button
-                      type="button"
-                      onClick={() => open()}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs font-medium text-sand-200 hover:bg-white/15 hover:text-white transition-colors"
-                    >
-                      <UploadCloud size={13} />
-                      {profilePic ? "Change photo" : "Upload photo"}
-                    </button>
-                  )}
-                </CldUploadWidget>
-              </div>
-              <p className="mt-1.5 text-[11px] text-sand-500">
-                Square 1:1 format • Saved to users-profile-pic
-              </p>
             </div>
 
-            {/* Bio Textarea */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
+            {/* 2. Small Bio Textbox */}
+            <div className="mb-5">
+              <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wider text-sand-400">
-                  Your Bio
+                  Bio
                 </label>
-                <span className="text-[11px] text-sand-500 font-mono">
-                  {bio.length}/500
+                <span className="text-[10px] text-sand-500 font-mono">
+                  {bio.length}/250
                 </span>
               </div>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                maxLength={500}
-                rows={4}
-                placeholder="Tell us about yourself, what you study or build, your skills, or what you're looking forward to working on..."
-                className="w-full rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-sand-200 placeholder-sand-600 outline-none transition focus:border-white/30 focus:ring-1 focus:ring-white/20 resize-none leading-relaxed"
+                maxLength={250}
+                rows={2}
+                placeholder="A brief intro about yourself and what you're building..."
+                className="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs sm:text-sm text-sand-200 placeholder-sand-600 outline-none transition focus:border-white/30 focus:ring-1 focus:ring-white/20 resize-none leading-relaxed"
               />
             </div>
 
+            {/* 3. Selectable Skills Boxes */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold uppercase tracking-wider text-sand-400">
+                  Skills
+                </label>
+                {skills.length > 0 && (
+                  <span className="text-[10px] text-sand-400">
+                    {skills.length} selected
+                  </span>
+                )}
+              </div>
+
+              {/* Skill selectable boxes */}
+              <div className="flex flex-wrap gap-2">
+                {PRESET_SKILLS.map((skill) => {
+                  const isSelected = skills.includes(skill);
+                  return (
+                    <button
+                      key={skill}
+                      type="button"
+                      onClick={() => toggleSkill(skill)}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs transition-all ${
+                        isSelected
+                          ? "border border-white bg-white text-ink-950 font-semibold shadow-sm scale-[1.02]"
+                          : "border border-white/10 bg-white/5 text-sand-300 hover:border-white/20 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      {isSelected && <Check size={12} className="shrink-0" />}
+                      <span>{skill}</span>
+                    </button>
+                  );
+                })}
+
+                {/* Custom added skills */}
+                {skills
+                  .filter((s) => !PRESET_SKILLS.includes(s))
+                  .map((skill) => (
+                    <button
+                      key={skill}
+                      type="button"
+                      onClick={() => toggleSkill(skill)}
+                      className="flex items-center gap-1.5 rounded-lg border border-white bg-white text-ink-950 font-semibold px-3 py-1.5 text-xs shadow-sm scale-[1.02]"
+                    >
+                      <Check size={12} className="shrink-0" />
+                      <span>{skill}</span>
+                    </button>
+                  ))}
+              </div>
+
+              {/* Custom Skill Input */}
+              <div className="mt-2.5 flex items-center gap-2">
+                <input
+                  type="text"
+                  value={customSkill}
+                  onChange={(e) => setCustomSkill(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddCustomSkill();
+                    }
+                  }}
+                  placeholder="+ Add other skill (e.g. Python, Figma)..."
+                  className="flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-sand-200 placeholder-sand-600 outline-none transition focus:border-white/30"
+                />
+                {customSkill.trim() && (
+                  <button
+                    type="button"
+                    onClick={handleAddCustomSkill}
+                    className="rounded-lg bg-white/10 border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
+                  >
+                    Add
+                  </button>
+                )}
+              </div>
+            </div>
+
             {profileError && (
-              <p className="mb-5 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              <p className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-300">
                 {profileError}
               </p>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
-              <button
-                type="button"
-                onClick={handleProfileSubmit}
-                disabled={profileSaving}
-                className="btn-white w-full !py-3 !px-6 text-sm font-semibold rounded-full shadow-glow flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-              >
-                {profileSaving ? "Saving details..." : "Continue to Questionnaire"}
-                <ArrowRight size={16} />
-              </button>
-            </div>
+            {/* Action Button */}
+            <button
+              type="button"
+              onClick={handleProfileSubmit}
+              disabled={profileSaving}
+              className="btn-white w-full !py-2.5 !px-6 text-sm font-semibold rounded-full shadow-glow flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+            >
+              {profileSaving ? "Saving..." : "Continue"}
+              <ArrowRight size={15} />
+            </button>
           </div>
         </div>
       </main>
@@ -498,7 +569,7 @@ export default function OnboardingPage() {
           {/* Progress bar */}
           <div className="mb-8">
             <div className="mb-2 flex justify-between text-xs text-mist-500">
-              <span>Step 2 of 3: Questionnaire ({qStep + 1} of {questions.length})</span>
+              <span>Question {qStep + 1} of {questions.length}</span>
               <span>{Math.round(progress)}%</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">

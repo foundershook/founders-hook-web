@@ -17,6 +17,7 @@ import {
   Rocket,
   Users,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { CldUploadWidget } from "next-cloudinary";
@@ -404,9 +405,33 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col justify-between">
-                  <p className="flex-1 text-base leading-relaxed text-sand-200 whitespace-pre-wrap">
-                    {bio || "You haven't written a bio yet. Tell the community what you are building!"}
-                  </p>
+                  <div>
+                    <p className="text-base leading-relaxed text-sand-200 whitespace-pre-wrap">
+                      {bio || "You haven't written a bio yet. Tell the community what you are building!"}
+                    </p>
+
+                    {/* Skills list */}
+                    {user?.skills && user.skills.length > 0 && (
+                      <div className="mt-5 border-t border-ink-700/40 pt-4">
+                        <div className="mb-2.5 flex items-center gap-1.5">
+                          <Sparkles size={13} className="text-sand-300" />
+                          <span className="text-xs font-semibold uppercase tracking-wider text-sand-400">
+                            Skills & Expertise
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {user.skills.map((skill: string) => (
+                            <span
+                              key={skill}
+                              className="inline-flex items-center rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-xs font-medium text-sand-200 shadow-sm"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   <div className="mt-6 flex flex-wrap items-center gap-3">
                     <button
@@ -441,8 +466,25 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {answerEntries.length > 0 ? (
+              {answerEntries.length > 0 || (user?.skills && user.skills.length > 0) ? (
                 <dl className="space-y-4">
+                  {user?.skills && user.skills.length > 0 && (
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-sand-400">
+                        Skills
+                      </dt>
+                      <dd className="mt-1 flex flex-wrap gap-1.5">
+                        {user.skills.map((skill: string) => (
+                          <span
+                            key={skill}
+                            className="inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-xs text-sand-300"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </dd>
+                    </div>
+                  )}
                   {answerEntries.slice(0, 6).map(([question, answer]) => (
                     <div key={question}>
                       <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-sand-400">

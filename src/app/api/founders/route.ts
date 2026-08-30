@@ -21,13 +21,14 @@ export async function GET(req: NextRequest) {
 
     // 2. Query users collection matching those founder IDs (include social arrays)
     const founders = await User.find({ _id: { $in: founderIds } })
-      .select("name username avatarUrl bio onboardingAnswers createdAt followers following")
+      .select("name username avatarUrl bio skills onboardingAnswers createdAt followers following")
       .lean<{
         _id: any;
         name: string;
         username: string;
         avatarUrl: string;
         bio: string;
+        skills?: string[];
         createdAt: Date;
         followers: any[];
         following: any[];
@@ -56,6 +57,7 @@ export async function GET(req: NextRequest) {
         username: founder.username,
         avatarUrl: founder.avatarUrl,
         bio: founder.bio || "",
+        skills: founder.skills || [],
         createdAt: founder.createdAt,
         followerCount,
         followingCount,

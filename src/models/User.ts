@@ -8,6 +8,7 @@ export interface IUser extends Document {
   passwordHash: string;
   avatarUrl: string;
   bio: string;
+  skills: string[];
   
   onboardingAnswers: Map<string, any>; 
   
@@ -54,6 +55,10 @@ const UserSchema = new Schema<IUser>(
       default: "",
       trim: true,
       maxlength: 1200,
+    },
+    skills: {
+      type: [String],
+      default: [],
     },
     
     // Dynamic answers map

@@ -20,6 +20,7 @@ export async function GET() {
       email: user.email || "",
       avatarUrl: user.avatarUrl,
       bio: user.bio || "",
+      skills: user.skills || [],
       onboardingAnswers: user.onboardingAnswers || {},
       onboardingComplete: user.onboardingComplete,
       isFounder: !!founderCheck,

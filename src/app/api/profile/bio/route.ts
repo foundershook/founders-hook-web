@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb"; 
 import User from "@/models/User";
+import { getCurrentUser } from "@/lib/auth";
 
 export async function PUT(req: Request) {
   try {
     await connectToDatabase();
 
     const body = await req.json();
-    const { userId, bio, profilePic } = body;
+    let { userId, bio, profilePic } = body;
+
+    if (!userId) {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+        userId = currentUser._id;
+      }
+    }
 
     if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });

@@ -3,10 +3,9 @@
 import ProjectSetupModal from "@/components/ProjectSetupModal";
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Search, Bell, Plus, ChevronRight } from "lucide-react";
+import { Search, Bell, Plus } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
-import PostCard, { PostDTO } from "@/components/PostCard";
 
 type Me = {
   id: string;
@@ -28,7 +27,6 @@ function greeting() {
 export default function FeedPage() {
   const [me, setMe] = useState<Me | null>(null);
   const [startups, setStartups] = useState<StartupDTO[]>([]);
-  const [posts, setPosts] = useState<PostDTO[]>([]);
   const [query, setQuery] = useState("");
   const [loadingStartups, setLoadingStartups] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
@@ -45,7 +43,6 @@ export default function FeedPage() {
   useEffect(() => {
     fetch("/api/auth/me").then((r) => r.json()).then((d) => setMe(d.user));
     loadStartups();
-    fetch("/api/posts").then((r) => r.json()).then((d) => setPosts(d.posts || []));
   }, [loadStartups]);
 
   useEffect(() => {
@@ -64,14 +61,14 @@ export default function FeedPage() {
       <div className="relative flex-1 overflow-y-auto pb-16 lg:pb-0">
         {/* Background Image Overlay restricted to header */}
         <div
-          className="absolute top-0 left-0 right-0 h-[460px] z-0 pointer-events-none opacity-70"
+          className="absolute top-0 left-0 right-0 h-[520px] z-0 pointer-events-none opacity-100"
           style={{
-            backgroundImage: "url('https://res.cloudinary.com/t7efuhnd/image/upload/v1788013553/feed_bg_duc1kb.jpg')",
+            backgroundImage: "url('https://res.cloudinary.com/t7efuhnd/image/upload/v1788014566/ChatGPT_Image_Aug_29_2026_08_11_28_PM_dx3g7n.png')",
             backgroundSize: "cover",
-            backgroundPosition: "center",
+            backgroundPosition: "center center",
             backgroundRepeat: "no-repeat",
-            maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)"
+            maskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%)"
           }}
         />
 
@@ -80,10 +77,10 @@ export default function FeedPage() {
           {/* ── HEADER ── */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="font-bold text-2xl sm:text-[1.75rem] tracking-tight text-sand-100">
+              <h1 className="font-bold text-2xl sm:text-[1.75rem] tracking-tight text-sand-100 drop-shadow-md">
                 {greeting()}, {me?.name ? me.name.split(" ")[0] : "there"} 👋
               </h1>
-              <p className="mt-0.5 text-sm text-sand-400">
+              <p className="mt-0.5 text-sm text-sand-300 drop-shadow-sm">
                 Let&apos;s build something impactful today.
               </p>
             </div>
@@ -97,6 +94,7 @@ export default function FeedPage() {
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search for founders or startups..."
                   className="h-9 w-full rounded-full border border-white/10 bg-white/5 backdrop-blur-md pl-9 pr-4 text-base text-white placeholder:text-sand-400 outline-none transition-all focus:border-white/30 focus:ring-1 focus:ring-white/20 sm:w-64 sm:text-xs shadow-sm"
+                  style={{ fontFamily: "'Calibri', sans-serif" }}
                 />
               </div>
 
@@ -111,65 +109,42 @@ export default function FeedPage() {
           </div>
 
           {/* ── DISCOVER STARTUPS ── */}
-          <section className="mt-48 sm:mt-56">
+          <section className="mt-64 sm:mt-72 lg:mt-80" style={{ fontFamily: "'Calibri', sans-serif" }}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="font-bold text-base text-sand-100">
                 Discover Impactful Startups
               </h2>
             </div>
 
-            {loadingStartups ? (
-              /* Skeleton grid */
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-1">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-[290px] w-full animate-pulse rounded-2xl bg-ink-850"
-                  />
-                ))}
-              </div>
-            ) : startups.length === 0 ? (
-              <EmptyState
-                title="No startups yet"
-                subtitle="Be the first founder to publish an idea."
-                actionLabel="Publish a startup"
-                onAction={() => setCreateOpen(true)}
-              />
-            ) : (
-              /* Grid expanding downwards */
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-2">
-                {startups.map((s) => (
-                  <div key={s._id} className="w-full">
-                    <StartupCard startup={s} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* ── KNOWLEDGE HUB ── */}
-          <section className="mt-9">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-bold text-base text-sand-100">
-                Knowledge Hub
-              </h2>
-              <button className="flex items-center gap-1 text-xs font-semibold text-white hover:text-sand-100 transition-colors">
-                View all <ChevronRight size={13} />
-              </button>
+            <div>
+              {loadingStartups ? (
+                /* Skeleton grid */
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-1">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-[290px] w-full animate-pulse rounded-2xl bg-ink-850"
+                    />
+                  ))}
+                </div>
+              ) : startups.length === 0 ? (
+                <EmptyState
+                  title="No startups yet"
+                  subtitle="Be the first founder to publish an idea."
+                  actionLabel="Publish a startup"
+                  onAction={() => setCreateOpen(true)}
+                />
+              ) : (
+                /* Grid expanding downwards */
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-2">
+                  {startups.map((s) => (
+                    <div key={s._id} className="w-full h-full">
+                      <StartupCard startup={s} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {posts.length === 0 ? (
-              <EmptyState
-                title="Nothing here yet"
-                subtitle="Founder tips and guides will show up here as they're published."
-              />
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-2">
-                {posts.map((p) => (
-                  <PostCard key={p._id} post={p} />
-                ))}
-              </div>
-            )}
           </section>
         </main>
       </div>

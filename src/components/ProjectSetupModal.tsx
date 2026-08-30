@@ -429,7 +429,7 @@ export default function ProjectSetupModal({
                       )}
                       <div className="text-left">
                         <p className="font-medium text-gray-200 text-sm">Cover Banner</p>
-                        <p className="text-xs text-gray-500">Wide, 3:1 ratio recommended</p>
+                        <p className="text-xs text-cyan-400 font-medium">3:1 aspect ratio (recommended: 1200×400px)</p>
                       </div>
                     </div>
 

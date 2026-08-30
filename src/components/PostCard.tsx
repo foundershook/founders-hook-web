@@ -34,7 +34,7 @@ export default function PostCard({ post }: { post: PostDTO }) {
     <motion.div
       whileHover={{ y: -2 }}
       className="flex w-56 shrink-0 snap-start flex-col rounded-2xl border border-ink-700/70 bg-ink-850 p-3.5"
-      style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+      style={{ fontFamily: "'Calibri', sans-serif" }}
     >
       {/* Category + bookmark */}
       <div className="flex items-start justify-between gap-2">

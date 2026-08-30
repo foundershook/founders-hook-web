@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, AtSign, Lock, Mail, User } from "lucide-react";
+import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -15,6 +15,7 @@ export default function SignupPage() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -132,13 +133,21 @@ export default function SignupPage() {
               <Lock size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-mist-500" />
               <input
                 required
-                type="password"
+                type={showPassword ? "text" : "password"}
                 minLength={6}
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
                 placeholder="At least 6 characters"
-                className="field-input pl-11"
+                className="field-input pl-11 pr-11"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-mist-500 transition-colors hover:text-mist-300 focus:outline-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 

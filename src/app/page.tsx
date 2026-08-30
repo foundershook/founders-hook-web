@@ -1324,8 +1324,8 @@ export default function LandingPage() {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="landing-heading"
           >
-            Meet Your Next{" "}
-            <span className="landing-heading-accent">Co-founder.</span>
+            Get your{" "}
+            <span className="landing-heading-accent">Early Access, Now!</span>
           </motion.h1>
 
           <motion.p

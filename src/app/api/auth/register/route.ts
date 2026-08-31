@@ -104,6 +104,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "A user with this email or username already exists." }, { status: 409 });
     }
 
-    return NextResponse.json({ error: "An unexpected error occurred during registration. Please try again." }, { status: 500 });
+    return NextResponse.json({ error: `Registration error: ${error.message || error}` }, { status: 500 });
   }
 }

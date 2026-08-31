@@ -6,6 +6,8 @@ import { ArrowRight, Users, Sparkles, Globe } from "lucide-react";
 import ApplyModal from "./ApplyModal";
 import StartupDetailModal from "./StartupDetailModal";
 
+import { StartupBanner, StartupLogo } from "./StartupMedia";
+
 export type AiInsights = {
   about: string;
   problem: string;
@@ -51,22 +53,23 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
 
         {/* Cover image */}
         <div className="relative h-32 w-full shrink-0 bg-ink-800 border-b border-ink-700/80">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={startup.coverImage}
-            alt=""
+          <StartupBanner
+            coverImage={startup.coverImage}
+            name={startup.name}
+            category={startup.category}
+            id={startup._id}
             className="h-full w-full object-cover"
           />
 
           {/* Icon badge over image bottom-left */}
-          <span className="absolute -bottom-6 left-4 flex h-12 w-12 items-center justify-center rounded-lg border border-ink-700/60 bg-ink-800 text-xl shadow-card overflow-hidden">
-            {startup.icon?.startsWith("http") ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={startup.icon} alt={startup.name} className="h-full w-full object-cover" />
-            ) : (
-              startup.icon || "🚀"
-            )}
-          </span>
+          <StartupLogo
+            icon={startup.icon}
+            name={startup.name}
+            category={startup.category}
+            id={startup._id}
+            size="lg"
+            className="absolute -bottom-6 left-4"
+          />
         </div>
 
         {/* Body */}

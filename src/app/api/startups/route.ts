@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
 import { verifySession, SESSION_COOKIE } from "@/lib/auth";
 import { analyzeWebsite } from "@/lib/analyzeWebsite";
+import { getDefaultStartupIcon } from "@/lib/startupDefaults";
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
@@ -71,15 +72,17 @@ export async function POST(req: NextRequest) {
 
   await connectToDatabase();
 
-  const fallbackCover = `https://picsum.photos/seed/${encodeURIComponent(parsed.data.name)}/800/500`;
+  const assignedIcon =
+    parsed.data.logoUrl ||
+    parsed.data.icon ||
+    getDefaultStartupIcon(parsed.data.name, parsed.data.category);
 
   const startup = await Startup.create({
     ...parsed.data,
     founder: session.userId,
     members: [session.userId],
-    // Use uploaded Cloudinary URL if provided, else picsum placeholder
-    icon: parsed.data.logoUrl || "🚀",
-    coverImage: parsed.data.bannerUrl || fallbackCover,
+    icon: assignedIcon,
+    coverImage: parsed.data.bannerUrl || "",
     website: parsed.data.website || "",
   });
 

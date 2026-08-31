@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Users, Search, Rocket, CalendarDays, Loader2, UserPlus, UserCheck } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupDetailModal from "@/components/StartupDetailModal";
+import { StartupLogo } from "@/components/StartupMedia";
 
 interface StartupItem {
   _id: string;
@@ -304,18 +305,13 @@ export default function FoundersPage() {
                             className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-ink-800 bg-ink-900 p-2.5 transition-colors hover:border-white/50 hover:bg-white/5"
                           >
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-ink-700/60 bg-ink-850 text-sm overflow-hidden">
-                                {startup.icon?.startsWith("http") ? (
-                                  /* eslint-disable-next-line @next/next/no-img-element */
-                                  <img
-                                    src={startup.icon}
-                                    alt={startup.name}
-                                    className="h-full w-full object-cover"
-                                  />
-                                ) : (
-                                  startup.icon || "🚀"
-                                )}
-                              </span>
+                              <StartupLogo
+                                icon={startup.icon}
+                                name={startup.name}
+                                category={startup.category}
+                                id={startup._id}
+                                size="sm"
+                              />
                               <div className="min-w-0">
                                 <p className="truncate text-xs font-semibold text-sand-100">
                                   {startup.name}

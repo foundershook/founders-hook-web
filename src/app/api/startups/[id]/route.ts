@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
 import { verifySession, SESSION_COOKIE } from "@/lib/auth";
 import { analyzeWebsite } from "@/lib/analyzeWebsite";
+import { getDefaultStartupIcon } from "@/lib/startupDefaults";
 
 export async function GET(
   _req: NextRequest,
@@ -58,13 +59,18 @@ export async function PATCH(
 
   await connectToDatabase();
 
-  const existing = await Startup.findById(id).lean() as {
+  const existing = (await Startup.findById(id).lean()) as {
+    name?: string;
+    category?: string;
     founder: { toString(): string };
     website?: string;
   } | null;
   if (!existing) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
+
+  const existingName = existing.name || "";
+  const existingCategory = existing.category || "";
 
   if (existing.founder.toString() !== session.userId) {
     return NextResponse.json(
@@ -86,13 +92,13 @@ export async function PATCH(
 
   // Map logoUrl / bannerUrl → icon / coverImage
   if (parsed.data.logoUrl !== undefined) {
-    update.icon = parsed.data.logoUrl || "🚀";
+    update.icon =
+      parsed.data.logoUrl ||
+      getDefaultStartupIcon(parsed.data.name || existingName, parsed.data.category || existingCategory, id);
     delete update.logoUrl;
   }
   if (parsed.data.bannerUrl !== undefined) {
-    if (parsed.data.bannerUrl) {
-      update.coverImage = parsed.data.bannerUrl;
-    }
+    update.coverImage = parsed.data.bannerUrl || "";
     delete update.bannerUrl;
   }
 

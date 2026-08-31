@@ -4,6 +4,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Plus, Trash2 } from "lucide-react";
 
+import { DEFAULT_ICONS } from "@/lib/startupDefaults";
+
 const CATEGORIES = [
   "Artificial Intelligence",
   "Climate Tech",
@@ -17,7 +19,7 @@ const CATEGORIES = [
   "Other",
 ];
 
-const ICONS = ["🚀", "🌱", "🧠", "🛡️", "✈️", "💡", "📈", "🩺", "🎓", "🛒"];
+const ICONS = DEFAULT_ICONS;
 
 type Role = { title: string; type: "Internship" | "Full-time" | "Part-time" };
 

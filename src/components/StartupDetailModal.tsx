@@ -18,6 +18,7 @@ import {
 import type { StartupDTO, AiInsights } from "./StartupCard";
 import ApplyModal from "./ApplyModal";
 import ProjectSetupModal, { type ProjectSetupInitialData } from "./ProjectSetupModal";
+import { StartupBanner, StartupLogo } from "./StartupMedia";
 
 type FullStartup = StartupDTO & {
   description: string;
@@ -194,10 +195,11 @@ export default function StartupDetailModal({
             <>
               {/* ── Banner ── */}
               <div className="relative h-44 w-full overflow-hidden rounded-t-2xl bg-ink-850 border-b border-ink-700/80">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={startup.coverImage}
-                  alt={startup.name}
+                <StartupBanner
+                  coverImage={startup.coverImage}
+                  name={startup.name}
+                  category={startup.category}
+                  id={startup._id}
                   className="h-full w-full object-cover"
                 />
 
@@ -213,14 +215,14 @@ export default function StartupDetailModal({
               <div className="relative px-6 pb-0 pt-0">
                 {/* Icon sits on the banner edge */}
                 <div className="-mt-7 mb-3 flex items-end gap-4">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl border-2 border-ink-700 bg-ink-800 text-3xl shadow-card overflow-hidden">
-                    {startup.icon?.startsWith("http") ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={startup.icon} alt={startup.name} className="h-full w-full object-cover" />
-                    ) : (
-                      startup.icon || "🚀"
-                    )}
-                  </span>
+                  <StartupLogo
+                    icon={startup.icon}
+                    name={startup.name}
+                    category={startup.category}
+                    id={startup._id}
+                    size="xl"
+                    className="border-2 border-ink-700 shadow-card"
+                  />
                   <div className="pb-1">
                     <h2 className="font-bold text-xl leading-tight text-sand-100">
                       {startup.name}

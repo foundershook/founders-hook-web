@@ -19,6 +19,7 @@ import {
   Clock,
 } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
+import { StartupLogo, StartupBanner } from "./StartupMedia";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -381,13 +382,19 @@ export default function ProjectSetupModal({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={formData.logoUrl} alt="Logo preview" className="h-12 w-12 rounded-xl object-cover bg-black border border-white/10" />
                       ) : (
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-cyan-400">
-                          <ImageIcon size={22} />
-                        </div>
+                        <StartupLogo
+                          icon=""
+                          name={formData.projectName || "Startup"}
+                          category={formData.category}
+                          size="lg"
+                          className="h-12 w-12 rounded-xl border border-white/15"
+                        />
                       )}
                       <div className="text-left">
                         <p className="font-medium text-gray-200 text-sm">Startup Logo</p>
-                        <p className="text-xs text-gray-500">Square, min 200×200px</p>
+                        <p className="text-xs text-gray-500">
+                          {formData.logoUrl ? "Custom logo uploaded" : "Default icon assigned (or upload custom)"}
+                        </p>
                       </div>
                     </div>
 
@@ -423,13 +430,18 @@ export default function ProjectSetupModal({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={formData.bannerUrl} alt="Banner preview" className="h-12 w-20 rounded-lg object-cover bg-black border border-white/10" />
                       ) : (
-                        <div className="flex h-12 w-20 items-center justify-center rounded-lg bg-white/10 text-cyan-400">
-                          <ImageIcon size={22} />
-                        </div>
+                        <StartupBanner
+                          coverImage=""
+                          name={formData.projectName || "Startup"}
+                          category={formData.category}
+                          className="h-12 w-20 rounded-lg object-cover border border-white/15 shrink-0"
+                        />
                       )}
                       <div className="text-left">
                         <p className="font-medium text-gray-200 text-sm">Cover Banner</p>
-                        <p className="text-xs text-cyan-400 font-medium">3:1 aspect ratio (recommended: 1200×400px)</p>
+                        <p className="text-xs text-cyan-400 font-medium">
+                          {formData.bannerUrl ? "Custom banner uploaded" : "Default themed banner assigned (3:1 ratio)"}
+                        </p>
                       </div>
                     </div>
 

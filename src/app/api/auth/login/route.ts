@@ -20,6 +20,13 @@ export async function POST(req: NextRequest) {
     }
 
     const { identifier, password } = parsed.data;
+
+    if (!process.env.MONGODB_URI) {
+      return NextResponse.json({ 
+        error: "Database configuration error: MONGODB_URI is not set. Please create a .env or .env.local file in the project root." 
+      }, { status: 500 });
+    }
+
     await connectToDatabase();
 
     const user = await User.findOne({
@@ -58,8 +65,8 @@ export async function POST(req: NextRequest) {
     });
 
     return res;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Login error:", err);
-    return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 500 });
+    return NextResponse.json({ error: `Login error: ${err.message || err}` }, { status: 500 });
   }
 }

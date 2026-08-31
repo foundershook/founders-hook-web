@@ -8,6 +8,7 @@ import {
   LogOut,
   UserRound,
   Users,
+  UsersRound,
   BookOpen,
   Network,
   Anchor,
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { label: "Profile",       icon: UserRound, href: "/profile" },
   { label: "Founders",      icon: Users,    href: "/founders" },
   { label: "Founders Hook", icon: Anchor,   href: "/founders-hook" },
+  { label: "Team",           icon: UsersRound, href: "/team" },
   { label: "Networking",    icon: Network,  href: "/networking" },
   { label: "Knowledge Hub", icon: BookOpen, href: "/knowledge-hub" },
 ];

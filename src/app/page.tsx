@@ -71,8 +71,8 @@ function KeyboardRow({ keys, hasWideKey }: { keys: number; hasWideKey?: boolean 
   );
 }
 
-/* iMac Launch Countdown Timer (Target: 5 September 2026, 6:00 PM IST) */
-const LAUNCH_TARGET_DATE_MS = new Date("2026-09-05T18:00:00+05:30").getTime();
+/* iMac Launch Countdown Timer (Target: 7 September 2026, 6:00 PM IST) */
+const LAUNCH_TARGET_DATE_MS = new Date("2026-09-07T18:00:00+05:30").getTime();
 
 function MacLaunchTimer() {
   const [timeLeft, setTimeLeft] = useState({
@@ -200,7 +200,7 @@ function MacLaunchTimer() {
         <div className="mt-1 sm:mt-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[8px] sm:text-xs font-medium text-[#FAF8F4]/90 bg-black/40 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/10">
           <Calendar size={10} className="text-[#8b893a] sm:hidden" />
           <Calendar size={13} className="text-[#8b893a] hidden sm:block" />
-          <span>5 September 2026 • 6:00 PM IST</span>
+          <span>7 September 2026 • 6:00 PM IST</span>
         </div>
       </div>
 

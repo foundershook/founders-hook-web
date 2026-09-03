@@ -115,9 +115,9 @@ export function subscribeConversations(
           application: data.application,
           startup: data.startup,
           activeMeet: data.activeMeet || null,
-          lastMessageAt: data.lastMessageAt || null,
-          lastMessagePreview: data.lastMessagePreview || "",
-          createdAt: data.createdAt,
+          lastMessageAt: data.lastMessageAt || data.application?.createdAt || data.createdAt || null,
+          lastMessagePreview: data.lastMessagePreview || (data.application?.roleTitle ? `Applied for ${data.application.roleTitle}` : ""),
+          createdAt: data.createdAt || data.application?.createdAt || null,
           updatedAt: data.updatedAt,
         };
       });

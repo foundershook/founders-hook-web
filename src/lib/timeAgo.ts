@@ -1,5 +1,7 @@
-export function timeAgo(date: string | Date): string {
+export function timeAgo(date?: string | Date | null): string {
+  if (!date) return "";
   const then = new Date(date).getTime();
+  if (isNaN(then) || then === 0) return "";
   const seconds = Math.max(0, Math.floor((Date.now() - then) / 1000));
 
   const units: [number, string][] = [

@@ -254,7 +254,9 @@ export default function Sidebar({
               <span className="block truncate text-sm font-bold text-sand-100">
                 {user?.name || "Guest"}
               </span>
-              <span className="block truncate text-xs text-white/80 font-medium">Founder</span>
+              <span className="block truncate text-xs text-white/80 font-medium">
+                {user?.isFounder ? "Founder" : "Candidate"}
+              </span>
             </span>
             <ChevronDown size={14} className="hidden shrink-0 text-sand-600 xl:block" />
           </button>

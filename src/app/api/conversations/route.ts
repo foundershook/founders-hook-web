@@ -16,9 +16,12 @@ export async function GET(request: Request) {
     const myStartups = await Startup.find({ founder: user._id });
     const myStartupIds = myStartups.map((s) => s._id);
 
-    // Find all applications where current user is applicant OR startup founder
+    // Fetch applications where current user is applicant OR startup founder
     const apps = await Application.find({
-      $or: [{ applicant: user._id }, { startup: { $in: myStartupIds } }],
+      $or: [
+        { applicant: user._id },
+        ...(myStartupIds.length > 0 ? [{ startup: { $in: myStartupIds } }] : []),
+      ],
     })
       .populate("startup", "name icon coverImage founder openRoles")
       .populate("applicant", "name username avatarUrl email mobile gender experience resumeUrl resumeName message status createdAt")
@@ -57,6 +60,7 @@ export async function GET(request: Request) {
           name: startup?.name || "Startup",
           icon: startup?.icon || null,
           coverImage: startup?.coverImage || null,
+          founder: startup?.founder ? startup.founder.toString() : null,
         },
         application: {
           _id: app._id.toString(),

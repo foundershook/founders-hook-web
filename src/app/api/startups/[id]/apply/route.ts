@@ -52,19 +52,38 @@ export async function POST(
   }
 
   try {
-    const application = await Application.create({
+    let application = await Application.findOne({
       startup: startup._id,
       roleId: parsed.data.roleId,
       applicant: session.userId,
-      name: parsed.data.name,
-      gender: parsed.data.gender,
-      mobile: parsed.data.mobile,
-      email: parsed.data.email,
-      experience: parsed.data.experience,
-      resumeUrl: parsed.data.resumeUrl,
-      resumeName: parsed.data.resumeName,
-      message: parsed.data.message,
     });
+
+    if (application) {
+      application.name = parsed.data.name || application.name;
+      application.gender = parsed.data.gender || application.gender;
+      application.mobile = parsed.data.mobile || application.mobile;
+      application.email = parsed.data.email || application.email;
+      application.experience = parsed.data.experience || application.experience;
+      application.resumeUrl = parsed.data.resumeUrl || application.resumeUrl;
+      application.resumeName = parsed.data.resumeName || application.resumeName;
+      application.message = parsed.data.message || application.message;
+      application.status = "Pending";
+      await application.save();
+    } else {
+      application = await Application.create({
+        startup: startup._id,
+        roleId: parsed.data.roleId,
+        applicant: session.userId,
+        name: parsed.data.name,
+        gender: parsed.data.gender,
+        mobile: parsed.data.mobile,
+        email: parsed.data.email,
+        experience: parsed.data.experience,
+        resumeUrl: parsed.data.resumeUrl,
+        resumeName: parsed.data.resumeName,
+        message: parsed.data.message,
+      });
+    }
 
     const applicantUser = await User.findById(session.userId).select("name username avatarUrl email mobile");
 
@@ -88,6 +107,7 @@ export async function POST(
         _id: startup._id.toString(),
         name: startup.name || "Startup",
         icon: startup.icon || "🚀",
+        founder: startup.founder ? startup.founder.toString() : null,
       },
       application: {
         _id: application._id.toString(),

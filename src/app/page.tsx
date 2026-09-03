@@ -1213,7 +1213,7 @@ export default function LandingPage() {
   }, []);
 
   const primaryHref = loggedIn ? "/feed" : "/signup";
-  const primaryLabel = loggedIn ? "Already Registered" : "Join Waitlist";
+  const primaryLabel = loggedIn ? "Already Registered" : "Register your startup";
 
   return (
     <main className="landing-page">
@@ -1350,7 +1350,7 @@ export default function LandingPage() {
               <ArrowRight size={15} />
             </Link>
             <Link href="/feed" className="landing-btn-secondary">
-              Explore Community
+              Join Startups
             </Link>
           </motion.div>
 

@@ -9,8 +9,6 @@ import {
   Anchor,
   Send,
   MoreVertical,
-  CheckCircle,
-  XCircle,
   Clock,
   User,
   Briefcase,
@@ -87,6 +85,7 @@ function ApplicationEmailCard({
   resumeUrl,
   resumeName,
   createdAt,
+  isMe = false,
 }: {
   senderName: string;
   senderEmail?: string | null;
@@ -96,18 +95,25 @@ function ApplicationEmailCard({
   resumeUrl?: string | null;
   resumeName?: string | null;
   createdAt?: string | null;
+  isMe?: boolean;
 }) {
   return (
     <div 
       style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
-      className="w-full max-w-2xl mx-auto my-4 rounded-2xl bg-gradient-to-b from-ink-900 via-ink-900/95 to-ink-950 border border-emerald-500/25 overflow-hidden shadow-2xl backdrop-blur-md"
+      className={`w-full max-w-lg lg:max-w-xl rounded-2xl overflow-hidden shadow-2xl backdrop-blur-md border transition-all ${
+        isMe
+          ? "rounded-br-sm bg-gradient-to-b from-ink-900 via-ink-900/95 to-ink-950 border-emerald-500/35"
+          : "rounded-bl-sm bg-gradient-to-b from-ink-900 via-ink-900/95 to-ink-950 border-ink-700/80"
+      }`}
     >
       {/* Email Header Bar */}
-      <div className="bg-ink-950/90 px-5 py-4 border-b border-ink-800/80 flex flex-col gap-2.5">
+      <div className={`px-5 py-3.5 border-b flex flex-col gap-2.5 ${
+        isMe ? "bg-emerald-950/30 border-emerald-500/20" : "bg-ink-950/90 border-ink-800/80"
+      }`}>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
-            <Mail size={15} />
-            <span>Job Application Email</span>
+            <Briefcase size={15} />
+            <span>{isMe ? "Job Application (Sent)" : "Job Application (Received)"}</span>
           </div>
           {createdAt && (
             <span className="text-[11px] text-sand-500">
@@ -120,11 +126,8 @@ function ApplicationEmailCard({
           <div className="flex items-baseline gap-2">
             <span className="text-sand-500 font-semibold w-12 shrink-0">From:</span>
             <span className="font-bold text-sand-100">
-              {senderName}
+              {isMe ? `You (${senderName})` : senderName}
             </span>
-            {senderEmail && (
-              <span className="text-sand-400 text-[11px]">&lt;{senderEmail}&gt;</span>
-            )}
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-sand-500 font-semibold w-12 shrink-0">Role:</span>
@@ -135,25 +138,25 @@ function ApplicationEmailCard({
           <div className="flex items-baseline gap-2">
             <span className="text-sand-500 font-semibold w-12 shrink-0">To:</span>
             <span className="text-sand-300 font-medium">
-              {startupName || "Hiring Team"}
+              {isMe ? startupName : `You (${startupName})`}
             </span>
           </div>
         </div>
       </div>
 
       {/* Email Body */}
-      <div className="px-6 py-5 text-xs sm:text-sm text-sand-200 leading-relaxed space-y-4">
+      <div className="px-5 py-4 text-xs sm:text-sm text-sand-200 leading-relaxed space-y-3.5">
         {message ? (
           <div 
             style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
-            className="whitespace-pre-wrap text-sand-100 bg-ink-950/40 p-4 rounded-xl border border-ink-800/60 leading-relaxed"
+            className="whitespace-pre-wrap text-sand-100 bg-ink-950/50 p-3.5 rounded-xl border border-ink-800/60 leading-relaxed text-xs sm:text-sm"
           >
             {message}
           </div>
         ) : (
           <p 
             style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
-            className="text-sand-400 italic"
+            className="text-sand-400 italic text-xs"
           >
             No cover message provided.
           </p>
@@ -161,7 +164,7 @@ function ApplicationEmailCard({
 
         {/* Attached Resume */}
         {resumeUrl && (
-          <div className="pt-3 border-t border-ink-800/70">
+          <div className="pt-2.5 border-t border-ink-800/70">
             <span className="text-xs font-semibold text-sand-400 block mb-2">
               📎 Attached Resume:
             </span>
@@ -169,10 +172,10 @@ function ApplicationEmailCard({
               href={resumeUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-ink-850 hover:bg-emerald-500/15 border border-ink-700/80 hover:border-emerald-500/30 text-sand-200 hover:text-emerald-300 font-medium text-xs transition shadow-sm group"
+              className="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-ink-850 hover:bg-emerald-500/15 border border-ink-700/80 hover:border-emerald-500/30 text-sand-200 hover:text-emerald-300 font-medium text-xs transition shadow-sm group"
             >
               <div className="p-1 rounded bg-red-500/15 text-red-400 group-hover:text-red-300">
-                <FileText size={16} />
+                <FileText size={15} />
               </div>
               <span className="font-semibold truncate max-w-xs">{resumeName || "Resume.pdf"}</span>
               <ExternalLink size={13} className="text-sand-400 group-hover:text-emerald-300 ml-1 shrink-0" />
@@ -198,7 +201,6 @@ export default function FoundersHookPage() {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [startingMeet, setStartingMeet] = useState(false);
-  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
 
@@ -362,27 +364,6 @@ export default function FoundersHookPage() {
     }
   };
 
-
-
-  const handleUpdateStatus = async (appId: string, status: "Accepted" | "Rejected") => {
-    if (updatingStatus) return;
-    setUpdatingStatus(true);
-    try {
-      const res = await fetch(`/api/founders-hook/${appId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      if (res.ok) {
-        syncConversations();
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setUpdatingStatus(false);
-    }
-  };
-
   if (meLoading) {
     return (
       <div className="flex min-h-screen bg-ink-950 text-sand-200" style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}>
@@ -397,18 +378,23 @@ export default function FoundersHookPage() {
   const activeConvo = conversations.find((c) => c._id === activeConversationId);
 
   // Helper to get chat title/avatar
-  const getChatMetadata = (convo: Conversation) => {
+  const getChatMetadata = (convo: Conversation): {
+    title: string;
+    subtitle: string;
+    isStartup: boolean;
+    startup: any;
+    avatar: string | null;
+    iconText: string;
+  } => {
     if (convo.type === "application") {
-      // If I'm the applicant, show startup info. If I'm the founder, show applicant info.
       const isApplicant =
         convo.application?.applicant?._id === me?.id ||
-        convo.application?.applicant === me?.id ||
-        (convo.participants?.includes(me?.id || "") && convo.startup?.founder !== me?.id);
+        convo.application?.applicant === me?.id;
 
       if (isApplicant) {
         return {
           title: convo.startup?.name || "Startup",
-          subtitle: "", // Requirement 1: Removed "Application: sde"
+          subtitle: `Application: ${convo.application?.roleTitle || "Role"}`,
           isStartup: true,
           startup: convo.startup,
           avatar: convo.startup?.icon?.startsWith("http") ? convo.startup.icon : null,
@@ -419,12 +405,15 @@ export default function FoundersHookPage() {
           convo.application?.name ||
           convo.application?.applicant?.name ||
           "Applicant";
+        const role = convo.application?.roleTitle || "Role";
+        const startupName = convo.startup?.name ? ` • ${convo.startup.name}` : "";
+
         return {
           title: applicantName,
-          subtitle: `Applied for ${convo.application?.roleTitle || "Role"}`,
+          subtitle: `Candidate for ${role}${startupName}`,
           isStartup: false,
           startup: null,
-          avatar: convo.application?.applicant?.avatarUrl,
+          avatar: convo.application?.applicant?.avatarUrl || null,
           iconText: applicantName.charAt(0).toUpperCase(),
         };
       }
@@ -609,44 +598,38 @@ export default function FoundersHookPage() {
                   
                   {/* Header Actions: Meet Button & Status */}
                   <div className="flex items-center gap-2 sm:gap-3">
-                    {/* Google Meet Button */}
-                    <button
-                      onClick={handleStartMeet}
-                      disabled={startingMeet}
-                      title="Start a Google Meet and invite participant"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-ink-950 font-bold text-xs rounded-lg shadow-md shadow-emerald-500/20 transition transform active:scale-95 disabled:opacity-50"
-                    >
-                      {startingMeet ? (
-                        <Loader2 size={14} className="animate-spin text-ink-950" />
-                      ) : (
-                        <Video size={14} className="text-ink-950 fill-ink-950" />
-                      )}
-                      <span>Meet</span>
-                    </button>
+                    {/* Google Meet Button - Founder only */}
+                    {activeConvo.type === "application" && activeConvo.application?.applicant?._id !== me?.id && (
+                      <button
+                        onClick={handleStartMeet}
+                        disabled={startingMeet}
+                        title="Start a Google Meet and invite participant"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-ink-950 font-bold text-xs rounded-lg shadow-md shadow-emerald-500/20 transition transform active:scale-95 disabled:opacity-50"
+                      >
+                        {startingMeet ? (
+                          <Loader2 size={14} className="animate-spin text-ink-950" />
+                        ) : (
+                          <Video size={14} className="text-ink-950 fill-ink-950" />
+                        )}
+                        <span>Meet</span>
+                      </button>
+                    )}
 
-                    {/* Application Status Badge */}
-                    {activeConvo.type === "application" && activeConvo.application && (
-                      <>
-                        <span className={`hidden sm:inline-flex px-2.5 py-1 text-xs font-bold rounded-md border ${
-                          activeConvo.application.status === "Accepted" ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" :
-                          activeConvo.application.status === "Rejected" ? "border-red-500/30 bg-red-500/15 text-red-300" :
-                          "border-amber-500/30 bg-amber-500/15 text-amber-300"
-                        }`}>
-                          {activeConvo.application.status}
-                        </span>
-                        <button className="text-sand-400 hover:text-sand-200 p-2 rounded-full hover:bg-ink-800 transition">
-                          <MoreVertical size={18} />
-                        </button>
-                      </>
+                    {/* More Options */}
+                    {activeConvo.type === "application" && (
+                      <button className="text-sand-400 hover:text-sand-200 p-2 rounded-full hover:bg-ink-800 transition">
+                        <MoreVertical size={18} />
+                      </button>
                     )}
                   </div>
                 </div>
 
-                {/* Application Details Panel (Resume & Quick Actions) */}
-                {activeConvo.type === "application" && activeConvo.application && (
-                  <div className="bg-ink-900/50 border-b border-ink-800/50 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-sand-300">
-                      {(activeConvo.application.resumeUrl || activeConvo.application.applicant?.resumeUrl) && (
+                {/* Application Details Panel (Resume Quick Access) */}
+                {activeConvo.type === "application" &&
+                  activeConvo.application &&
+                  (activeConvo.application.resumeUrl || activeConvo.application.applicant?.resumeUrl) && (
+                    <div className="bg-ink-900/50 border-b border-ink-800/50 px-6 py-2.5 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 text-xs text-sand-300">
                         <a
                           href={activeConvo.application.resumeUrl || activeConvo.application.applicant?.resumeUrl}
                           target="_blank"
@@ -655,68 +638,68 @@ export default function FoundersHookPage() {
                         >
                           <Paperclip size={13} /> View Resume
                         </a>
-                      )}
-                    </div>
-                    {/* Action buttons if Pending and current user is the recipient / founder */}
-                    {activeConvo.application.status === "Pending" && activeConvo.application.applicant?._id !== me?.id && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleUpdateStatus(activeConvo.application._id, "Accepted")}
-                          disabled={updatingStatus}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 rounded-md text-xs font-semibold transition cursor-pointer disabled:opacity-50"
-                        >
-                          <CheckCircle size={14} /> Accept
-                        </button>
-                        <button
-                          onClick={() => handleUpdateStatus(activeConvo.application._id, "Rejected")}
-                          disabled={updatingStatus}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-md text-xs font-semibold transition cursor-pointer disabled:opacity-50"
-                        >
-                          <XCircle size={14} /> Reject
-                        </button>
                       </div>
-                    )}
-                  </div>
+                    </div>
                 )}
 
                 {/* Chat History */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar">
                   {/* Fallback structured email application message for conversations without an application_card message */}
                   {activeConvo.type === "application" &&
-                    !messages.some((m) => m.type === "application_card") && (
-                      <div className="w-full flex justify-center mb-6">
-                        <ApplicationEmailCard
-                          senderName={
-                            activeConvo.application?.name ||
-                            activeConvo.application?.applicant?.name ||
-                            "Applicant"
-                          }
-                          senderEmail={
-                            activeConvo.application?.email ||
-                            activeConvo.application?.applicant?.email
-                          }
-                          roleTitle={activeConvo.application?.roleTitle || "Role"}
-                          startupName={activeConvo.startup?.name || "Startup"}
-                          message={activeConvo.application?.message}
-                          resumeUrl={
-                            activeConvo.application?.resumeUrl ||
-                            activeConvo.application?.applicant?.resumeUrl
-                          }
-                          resumeName={
-                            activeConvo.application?.resumeName ||
-                            activeConvo.application?.applicant?.resumeName ||
-                            "resume.pdf"
-                          }
-                          createdAt={activeConvo.application?.createdAt || activeConvo.lastMessageAt}
-                        />
-                      </div>
-                    )}
+                    !messages.some((m) => m.type === "application_card") && (() => {
+                      const isApplicant =
+                        String(activeConvo.application?.applicant?._id || activeConvo.application?.applicant || "") === String(me?.id || "");
+                      return (
+                        <div className={`w-full flex ${isApplicant ? "justify-end" : "justify-start"} my-3`}>
+                          <div className={`flex items-end gap-2 max-w-[95%] md:max-w-[80%]`}>
+                            {!isApplicant && (
+                              <div className="w-8 h-8 rounded-full shrink-0 overflow-hidden relative border border-ink-700 bg-ink-800 self-end mb-1">
+                                <Image
+                                  src={activeConvo.application?.applicant?.avatarUrl || "https://picsum.photos/seed/user/64/64"}
+                                  alt=""
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
+                            <ApplicationEmailCard
+                              isMe={isApplicant}
+                              senderName={
+                                activeConvo.application?.name ||
+                                activeConvo.application?.applicant?.name ||
+                                "Applicant"
+                              }
+                              senderEmail={
+                                activeConvo.application?.email ||
+                                activeConvo.application?.applicant?.email
+                              }
+                              roleTitle={activeConvo.application?.roleTitle || "Role"}
+                              startupName={activeConvo.startup?.name || "Startup"}
+                              message={activeConvo.application?.message}
+                              resumeUrl={
+                                activeConvo.application?.resumeUrl ||
+                                activeConvo.application?.applicant?.resumeUrl
+                              }
+                              resumeName={
+                                activeConvo.application?.resumeName ||
+                                activeConvo.application?.applicant?.resumeName ||
+                                "resume.pdf"
+                              }
+                              createdAt={activeConvo.application?.createdAt || activeConvo.lastMessageAt}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                   {messages.map((msg, i) => {
-                    const isMe = msg.sender._id === me?.id;
-                    const showAvatar = !isMe && (i === 0 || messages[i - 1].sender._id !== msg.sender._id);
+                    const isApplicant =
+                      String(activeConvo.application?.applicant?._id || activeConvo.application?.applicant || "") === String(me?.id || "");
+                    const isMe = String(msg.sender?._id || "") === String(me?.id || "");
                     const isMeet = msg.type === "meet" || msg.content.includes("📹");
                     const isAppCard = msg.type === "application_card" || !!msg.applicationData;
+                    const isAppCardMe = isAppCard ? (isMe || (!msg.sender?._id && isApplicant)) : isMe;
+                    const showAvatar = !isMe && (i === 0 || messages[i - 1]?.sender?._id !== msg.sender?._id);
 
                     if (isAppCard) {
                       const appData = (msg.applicationData || {}) as Record<string, any>;
@@ -731,17 +714,30 @@ export default function FoundersHookPage() {
                         "resume.pdf";
 
                       return (
-                        <div key={msg._id} className="w-full flex justify-center my-3">
-                          <ApplicationEmailCard
-                            senderName={appData.applicantName || msg.sender?.name || "Applicant"}
-                            senderEmail={appData.email || activeConvo.application?.applicant?.email}
-                            roleTitle={appData.roleTitle || activeConvo.application?.roleTitle || "Role"}
-                            startupName={activeConvo.startup?.name || "Startup"}
-                            message={appData.message || activeConvo.application?.message}
-                            resumeUrl={resumeLink}
-                            resumeName={resumeTitle}
-                            createdAt={msg.createdAt}
-                          />
+                        <div key={msg._id} className={`w-full flex ${isAppCardMe ? "justify-end" : "justify-start"} my-3`}>
+                          <div className={`flex items-end gap-2 max-w-[95%] md:max-w-[80%]`}>
+                            {!isAppCardMe && (
+                              <div className="w-8 h-8 rounded-full shrink-0 overflow-hidden relative border border-ink-700 bg-ink-800 self-end mb-1">
+                                <Image
+                                  src={msg.sender?.avatarUrl || activeConvo.application?.applicant?.avatarUrl || "https://picsum.photos/seed/user/64/64"}
+                                  alt=""
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            )}
+                            <ApplicationEmailCard
+                              isMe={isAppCardMe}
+                              senderName={appData.applicantName || msg.sender?.name || "Applicant"}
+                              senderEmail={appData.email || activeConvo.application?.applicant?.email}
+                              roleTitle={appData.roleTitle || activeConvo.application?.roleTitle || "Role"}
+                              startupName={activeConvo.startup?.name || "Startup"}
+                              message={appData.message || activeConvo.application?.message}
+                              resumeUrl={resumeLink}
+                              resumeName={resumeTitle}
+                              createdAt={msg.createdAt}
+                            />
+                          </div>
                         </div>
                       );
                     }
@@ -757,7 +753,7 @@ export default function FoundersHookPage() {
                             >
                               {showAvatar && (
                                 <Image
-                                  src={msg.sender.avatarUrl || "https://picsum.photos/seed/user/64/64"}
+                                  src={msg.sender?.avatarUrl || "https://picsum.photos/seed/user/64/64"}
                                   alt=""
                                   fill
                                   className="object-cover"

@@ -1349,7 +1349,7 @@ export default function LandingPage() {
               {primaryLabel}
               <ArrowRight size={15} />
             </Link>
-            <Link href="/feed" className="landing-btn-secondary">
+            <Link href={primaryHref} className="landing-btn-secondary">
               Join Startups
             </Link>
           </motion.div>

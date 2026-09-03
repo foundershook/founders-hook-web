@@ -13,6 +13,7 @@
     "@ai-sdk/react": "^4.0.50",
     "ai": "^7.0.47",
     "bcryptjs": "^2.4.3",
+    "firebase": "^12.18.0",
     "framer-motion": "^11.18.2",
     "jose": "^5.4.0",
     "jsonwebtoken": "^9.0.2",

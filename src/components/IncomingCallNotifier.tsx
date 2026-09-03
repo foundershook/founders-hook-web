@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Video, X, ExternalLink, PhoneCall } from "lucide-react";
+import { subscribeIncomingCalls, endMeetingCall } from "@/lib/chat";
 
 interface IncomingCall {
   messageId: string;
@@ -123,38 +124,40 @@ export default function IncomingCallNotifier() {
     setIncomingCall(null);
   }, []);
 
-  // Poll for incoming calls every 4 seconds across all pages
+  // Real-time Firestore subscription for incoming calls
   useEffect(() => {
+    let unsubscribe: (() => void) | null = null;
     let isMounted = true;
 
-    const checkIncomingCalls = async () => {
-      try {
-        const res = await fetch("/api/conversations/incoming-call");
-        if (!res.ok) return;
-        const data = await res.json();
+    // Check logged in user once
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isMounted || !data?.user?.id) return;
+        const currentUserId = data.user.id;
 
-        if (data.incomingCall && isMounted) {
-          const call: IncomingCall = data.incomingCall;
-          if (!dismissedCallIds.current.has(call.messageId)) {
+        unsubscribe = subscribeIncomingCalls(currentUserId, (call) => {
+          if (!isMounted) return;
+
+          if (call && !dismissedCallIds.current.has(call.messageId)) {
             setIncomingCall((prev) => {
               if (prev?.messageId !== call.messageId) {
                 playCallChime();
               }
               return call;
             });
+          } else if (!call) {
+            setIncomingCall(null);
           }
-        }
-      } catch {
-        // network error / unauthenticated
-      }
-    };
-
-    checkIncomingCalls();
-    const interval = setInterval(checkIncomingCalls, 4000);
+        });
+      })
+      .catch(() => {
+        // User not logged in, ignore
+      });
 
     return () => {
       isMounted = false;
-      clearInterval(interval);
+      if (unsubscribe) unsubscribe();
     };
   }, []);
 
@@ -171,13 +174,9 @@ export default function IncomingCallNotifier() {
         if (meetWindow.closed) {
           clearInterval(checkTimer);
           try {
-            await fetch(`/api/conversations/${convoId}/meet`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ messageId: msgId }),
-            });
+            await endMeetingCall(convoId, msgId);
           } catch (err) {
-            console.error("Failed to mark call ended:", err);
+            console.error("Failed to mark call ended in Firestore:", err);
           }
         }
       }, 1500);

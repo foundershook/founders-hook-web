@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import Conversation from "@/models/Conversation";
 import Application from "@/models/Application";
 import Startup from "@/models/Startup";
 import User from "@/models/User"; // Ensure registered
@@ -17,47 +16,82 @@ export async function GET(request: Request) {
     const myStartups = await Startup.find({ founder: user._id });
     const myStartupIds = myStartups.map((s) => s._id);
 
-    // Sync missing conversations for applications
+    // Find all applications where current user is applicant OR startup founder
     const apps = await Application.find({
       $or: [{ applicant: user._id }, { startup: { $in: myStartupIds } }],
-    });
+    })
+      .populate("startup", "name icon coverImage founder openRoles")
+      .populate("applicant", "name username avatarUrl email mobile gender experience resumeUrl resumeName message status createdAt")
+      .sort({ createdAt: -1 });
 
-    for (const app of apps) {
-      const exists = await Conversation.exists({ application: app._id });
-      if (!exists) {
-        const startup = await Startup.findById(app.startup);
-        if (startup) {
-          // Avoid duplicate participants if founder is applying to their own startup (edge case)
-          const participants = [app.applicant.toString()];
-          if (startup.founder.toString() !== app.applicant.toString()) {
-            participants.push(startup.founder.toString());
-          }
-          await Conversation.create({
-            participants,
-            type: "application",
-            application: app._id,
-            startup: startup._id,
-          });
+    // Map each application into a conversation thread metadata object for Firestore
+    const conversations = apps.map((app: any) => {
+      const startup = app.startup;
+      const applicant = app.applicant;
+      const participants: string[] = [];
+
+      if (applicant?._id) {
+        participants.push(applicant._id.toString());
+      }
+      if (startup?.founder) {
+        const founderIdStr = startup.founder.toString();
+        if (!participants.includes(founderIdStr)) {
+          participants.push(founderIdStr);
         }
       }
-    }
 
-    // Fetch all conversations for the user
-    const conversations = await Conversation.find({ participants: user._id })
-      .populate("participants", "name username avatarUrl")
-      .populate({
-        path: "application",
-        populate: [
-          { path: "startup", select: "name icon" },
-          { path: "applicant", select: "name username avatarUrl email mobile gender experience resumeUrl resumeName message status createdAt" },
-        ],
-      })
-      .populate("startup", "name icon")
-      .sort({ lastMessageAt: -1 });
+      const roleIdStr = app.roleId ? app.roleId.toString() : "";
+      const matchedRole = startup?.openRoles?.find(
+        (r: any) => r._id?.toString() === roleIdStr
+      );
+      const roleTitle = matchedRole?.title || app.roleTitle || "Role";
+
+      return {
+        _id: `app_${app._id.toString()}`,
+        applicationId: app._id.toString(),
+        startupId: startup?._id ? startup._id.toString() : null,
+        type: "application",
+        participants,
+        startup: {
+          _id: startup?._id ? startup._id.toString() : null,
+          name: startup?.name || "Startup",
+          icon: startup?.icon || null,
+          coverImage: startup?.coverImage || null,
+        },
+        application: {
+          _id: app._id.toString(),
+          roleTitle,
+          status: app.status || "Pending",
+          message: app.message || "",
+          email: app.email || applicant?.email || null,
+          mobile: app.mobile || applicant?.mobile || null,
+          gender: app.gender || applicant?.gender || null,
+          experience: app.experience || applicant?.experience || null,
+          resumeUrl: app.resumeUrl || applicant?.resumeUrl || null,
+          resumeName: app.resumeName || applicant?.resumeName || null,
+          applicant: applicant
+            ? {
+                _id: applicant._id.toString(),
+                name: app.name || applicant.name || "Applicant",
+                username: applicant.username || "",
+                avatarUrl: applicant.avatarUrl || "",
+                email: app.email || applicant.email || null,
+                mobile: app.mobile || applicant.mobile || null,
+                gender: app.gender || applicant.gender || null,
+                experience: app.experience || applicant.experience || null,
+                resumeUrl: app.resumeUrl || applicant.resumeUrl || null,
+                resumeName: app.resumeName || applicant.resumeName || null,
+                message: app.message || "",
+                createdAt: applicant.createdAt ? applicant.createdAt.toString() : null,
+              }
+            : null,
+        },
+      };
+    });
 
     return NextResponse.json({ conversations });
   } catch (error) {
-    console.error("Error fetching conversations:", error);
+    console.error("Error fetching conversations metadata:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

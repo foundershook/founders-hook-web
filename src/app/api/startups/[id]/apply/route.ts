@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
 import Application from "@/models/Application";
+import User from "@/models/User";
 import { verifySession, SESSION_COOKIE } from "@/lib/auth";
 
 const ApplySchema = z.object({
@@ -43,10 +44,10 @@ export async function POST(
     return NextResponse.json({ error: "Startup not found" }, { status: 404 });
   }
 
-  const roleExists = startup.openRoles.some(
+  const matchedRole = startup.openRoles.find(
     (r: any) => r._id.toString() === parsed.data.roleId
   );
-  if (!roleExists) {
+  if (!matchedRole) {
     return NextResponse.json({ error: "That role no longer exists" }, { status: 404 });
   }
 
@@ -64,7 +65,62 @@ export async function POST(
       resumeName: parsed.data.resumeName,
       message: parsed.data.message,
     });
-    return NextResponse.json({ application }, { status: 201 });
+
+    const applicantUser = await User.findById(session.userId).select("name username avatarUrl email mobile");
+
+    const participants: string[] = [session.userId];
+    if (startup.founder) {
+      const founderIdStr = startup.founder.toString();
+      if (!participants.includes(founderIdStr)) {
+        participants.push(founderIdStr);
+      }
+    }
+
+    const roleTitle = matchedRole.title || "Role";
+
+    const conversationData = {
+      id: `app_${application._id.toString()}`,
+      participants,
+      type: "application",
+      applicationId: application._id.toString(),
+      startupId: startup._id.toString(),
+      startup: {
+        _id: startup._id.toString(),
+        name: startup.name || "Startup",
+        icon: startup.icon || "🚀",
+      },
+      application: {
+        _id: application._id.toString(),
+        roleTitle,
+        status: application.status || "Pending",
+        message: application.message || "",
+        applicant: {
+          _id: session.userId,
+          name: parsed.data.name || applicantUser?.name || "Applicant",
+          username: applicantUser?.username || "",
+          avatarUrl: applicantUser?.avatarUrl || "",
+          email: parsed.data.email || applicantUser?.email || null,
+          mobile: parsed.data.mobile || applicantUser?.mobile || null,
+          gender: parsed.data.gender || null,
+          experience: parsed.data.experience || null,
+          resumeUrl: parsed.data.resumeUrl || null,
+          resumeName: parsed.data.resumeName || null,
+          createdAt: application.createdAt ? application.createdAt.toISOString() : null,
+        },
+      },
+      initialMessage: {
+        roleTitle,
+        applicantName: parsed.data.name || applicantUser?.name || "Applicant",
+        email: parsed.data.email || applicantUser?.email || "",
+        mobile: parsed.data.mobile || "",
+        experience: parsed.data.experience || "",
+        resumeUrl: parsed.data.resumeUrl || "",
+        resumeName: parsed.data.resumeName || "",
+        message: parsed.data.message || "",
+      },
+    };
+
+    return NextResponse.json({ application, conversationData }, { status: 201 });
   } catch (err: any) {
     if (err.code === 11000) {
       return NextResponse.json(

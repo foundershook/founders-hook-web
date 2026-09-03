@@ -19,6 +19,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import type { StartupDTO } from "./StartupCard";
+import { syncFirestoreConversation, sendApplicationCardMessage } from "@/lib/chat";
 
 const GENDER_OPTIONS = ["Male", "Female", "Other", "Prefer not to say"] as const;
 
@@ -35,7 +36,6 @@ export default function ApplyModal({
   const [mobile, setMobile] = useState("");
   const [gender, setGender] = useState<string>("Male");
   const [message, setMessage] = useState("");
-  const [showSenderDetails, setShowSenderDetails] = useState(false);
 
   // Resume state
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -125,17 +125,10 @@ export default function ApplyModal({
   async function submit() {
     if (!name.trim()) {
       setError("Please enter your full name in the Sender section");
-      setShowSenderDetails(true);
       return;
     }
     if (!email.trim()) {
       setError("Please enter your email address in the Sender section");
-      setShowSenderDetails(true);
-      return;
-    }
-    if (!mobile.trim()) {
-      setError("Please enter your contact mobile number in the Sender section");
-      setShowSenderDetails(true);
       return;
     }
 
@@ -164,6 +157,35 @@ export default function ApplyModal({
         setStatus("error");
         return;
       }
+
+      // Sync conversation and post initial application card into Firestore
+      if (data.conversationData) {
+        try {
+          await syncFirestoreConversation({
+            id: data.conversationData.id,
+            participants: data.conversationData.participants,
+            type: "application",
+            applicationId: data.conversationData.applicationId,
+            startupId: data.conversationData.startupId,
+            application: data.conversationData.application,
+            startup: data.conversationData.startup,
+          });
+
+          await sendApplicationCardMessage(
+            data.conversationData.id,
+            {
+              _id: data.conversationData.application.applicant._id,
+              name: data.conversationData.application.applicant.name,
+              username: data.conversationData.application.applicant.username,
+              avatarUrl: data.conversationData.application.applicant.avatarUrl,
+            },
+            data.conversationData.initialMessage
+          );
+        } catch (chatErr) {
+          console.error("Failed to sync application to Firestore chat:", chatErr);
+        }
+      }
+
       setStatus("done");
     } catch {
       setError("Network error. Please try again.");
@@ -284,59 +306,7 @@ export default function ApplyModal({
                         <span className="text-white/20 hidden sm:inline">&gt;</span>
                       </div>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setShowSenderDetails(!showSenderDetails)}
-                      className="text-[11px] text-amber-400/90 hover:text-amber-300 ml-2 flex items-center gap-1 shrink-0 px-2 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 transition-colors"
-                    >
-                      <span>{showSenderDetails ? "Hide Info" : "Phone & Details"}</span>
-                      <ChevronDown
-                        size={12}
-                        className={`transition-transform duration-200 ${
-                          showSenderDetails ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
                   </div>
-
-                  {/* Expandable Sender Details (Phone, Gender) */}
-                  <AnimatePresence>
-                    {showSenderDetails && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden pt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"
-                      >
-                        <div className="flex items-center gap-2 rounded-lg bg-black/40 border border-white/10 px-2.5 py-1.5">
-                          <Phone size={13} className="text-white/40 shrink-0" />
-                          <input
-                            type="tel"
-                            placeholder="Mobile / WhatsApp Number *"
-                            value={mobile}
-                            onChange={(e) => setMobile(e.target.value)}
-                            className="bg-transparent text-xs text-white placeholder-white/30 focus:outline-none w-full"
-                          />
-                        </div>
-
-                        <div className="flex items-center gap-2 rounded-lg bg-black/40 border border-white/10 px-2.5 py-1.5">
-                          <span className="text-[11px] text-white/40 shrink-0">Gender:</span>
-                          <select
-                            value={gender}
-                            onChange={(e) => setGender(e.target.value)}
-                            className="bg-transparent text-xs text-white focus:outline-none w-full cursor-pointer"
-                          >
-                            {GENDER_OPTIONS.map((g) => (
-                              <option key={g} value={g} className="bg-[#1a1a24] text-white">
-                                {g}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
 
                 {/* 2. RECEIVER FIELD */}

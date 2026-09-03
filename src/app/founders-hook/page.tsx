@@ -24,7 +24,17 @@ import {
   MessageSquare,
   Video,
   VideoOff,
+  Paperclip,
 } from "lucide-react";
+import { StartupLogo } from "@/components/StartupMedia";
+import {
+  subscribeConversations,
+  subscribeMessages,
+  sendChatMessage,
+  sendMeetingInvite,
+  endMeetingCall,
+  syncFirestoreConversation,
+} from "@/lib/chat";
 
 type Me = {
   id: string;
@@ -50,13 +60,129 @@ interface Message {
   conversation: string;
   sender: any;
   content: string;
-  type?: "text" | "meet";
+  type?: "text" | "meet" | "application_card";
+  applicationData?: {
+    roleTitle: string;
+    applicantName: string;
+    email?: string;
+    mobile?: string;
+    experience?: string;
+    resumeUrl?: string;
+    resumeName?: string;
+    message?: string;
+  };
   meetUrl?: string;
   meetStatus?: "active" | "ended";
   endedAt?: string;
   createdAt: string;
 }
 
+
+function ApplicationEmailCard({
+  senderName,
+  senderEmail,
+  roleTitle,
+  startupName,
+  message,
+  resumeUrl,
+  resumeName,
+  createdAt,
+}: {
+  senderName: string;
+  senderEmail?: string | null;
+  roleTitle: string;
+  startupName: string;
+  message?: string | null;
+  resumeUrl?: string | null;
+  resumeName?: string | null;
+  createdAt?: string | null;
+}) {
+  return (
+    <div 
+      style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
+      className="w-full max-w-2xl mx-auto my-4 rounded-2xl bg-gradient-to-b from-ink-900 via-ink-900/95 to-ink-950 border border-emerald-500/25 overflow-hidden shadow-2xl backdrop-blur-md"
+    >
+      {/* Email Header Bar */}
+      <div className="bg-ink-950/90 px-5 py-4 border-b border-ink-800/80 flex flex-col gap-2.5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+            <Mail size={15} />
+            <span>Job Application Email</span>
+          </div>
+          {createdAt && (
+            <span className="text-[11px] text-sand-500">
+              {timeAgo(createdAt)}
+            </span>
+          )}
+        </div>
+
+        <div className="space-y-1.5 text-xs">
+          <div className="flex items-baseline gap-2">
+            <span className="text-sand-500 font-semibold w-12 shrink-0">From:</span>
+            <span className="font-bold text-sand-100">
+              {senderName}
+            </span>
+            {senderEmail && (
+              <span className="text-sand-400 text-[11px]">&lt;{senderEmail}&gt;</span>
+            )}
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-sand-500 font-semibold w-12 shrink-0">Role:</span>
+            <span className="text-emerald-300 font-semibold bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20 text-[11px]">
+              {roleTitle || "Role"}
+            </span>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-sand-500 font-semibold w-12 shrink-0">To:</span>
+            <span className="text-sand-300 font-medium">
+              {startupName || "Hiring Team"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Email Body */}
+      <div className="px-6 py-5 text-xs sm:text-sm text-sand-200 leading-relaxed space-y-4">
+        {message ? (
+          <div 
+            style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
+            className="whitespace-pre-wrap text-sand-100 bg-ink-950/40 p-4 rounded-xl border border-ink-800/60 leading-relaxed"
+          >
+            {message}
+          </div>
+        ) : (
+          <p 
+            style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
+            className="text-sand-400 italic"
+          >
+            No cover message provided.
+          </p>
+        )}
+
+        {/* Attached Resume */}
+        {resumeUrl && (
+          <div className="pt-3 border-t border-ink-800/70">
+            <span className="text-xs font-semibold text-sand-400 block mb-2">
+              📎 Attached Resume:
+            </span>
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-ink-850 hover:bg-emerald-500/15 border border-ink-700/80 hover:border-emerald-500/30 text-sand-200 hover:text-emerald-300 font-medium text-xs transition shadow-sm group"
+            >
+              <div className="p-1 rounded bg-red-500/15 text-red-400 group-hover:text-red-300">
+                <FileText size={16} />
+              </div>
+              <span className="font-semibold truncate max-w-xs">{resumeName || "Resume.pdf"}</span>
+              <ExternalLink size={13} className="text-sand-400 group-hover:text-emerald-300 ml-1 shrink-0" />
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function FoundersHookPage() {
   const [me, setMe] = useState<Me | null>(null);
@@ -90,49 +216,70 @@ export default function FoundersHookPage() {
       .catch(() => setMeLoading(false));
   }, []);
 
-  // Fetch conversations
-  const fetchConversations = useCallback(() => {
+  // Fetch conversations metadata from applications and sync to Firestore
+  const syncConversations = useCallback(() => {
+    if (!me?.id) return;
     fetch("/api/conversations")
       .then((r) => r.json())
-      .then((d) => {
-        setConversations(d.conversations || []);
+      .then(async (d) => {
+        const threads = d.conversations || [];
+        for (const thread of threads) {
+          await syncFirestoreConversation({
+            id: thread._id,
+            participants: thread.participants,
+            type: thread.type,
+            applicationId: thread.applicationId,
+            startupId: thread.startupId,
+            application: thread.application,
+            startup: thread.startup,
+          });
+        }
+      })
+      .catch((err) => console.error("Error syncing conversations:", err));
+  }, [me?.id]);
+
+  // Subscribe to user's conversations in Firestore in real time
+  useEffect(() => {
+    if (!me?.id) return;
+    syncConversations();
+
+    const unsubscribe = subscribeConversations(
+      me.id,
+      (convos) => {
+        setConversations(convos as any);
         setLoadingConvos(false);
-      })
-      .catch(() => setLoadingConvos(false));
-  }, []);
+      },
+      (err) => {
+        console.error("Firestore conversation subscription error:", err);
+        setLoadingConvos(false);
+      }
+    );
 
+    return () => unsubscribe();
+  }, [me?.id, syncConversations]);
+
+  // Subscribe to messages of active conversation in real time
   useEffect(() => {
-    if (!me) return;
-    fetchConversations();
-    // Poll conversations every 10 seconds
-    const interval = setInterval(fetchConversations, 10000);
-    return () => clearInterval(interval);
-  }, [me, fetchConversations]);
-
-  // Fetch messages for active conversation
-  const fetchMessages = useCallback(() => {
-    if (!activeConversationId) return;
-    fetch(`/api/conversations/${activeConversationId}/messages`)
-      .then((r) => r.json())
-      .then((d) => {
-        setMessages(d.messages || []);
-      })
-      .catch((e) => console.error(e));
-  }, [activeConversationId]);
-
-  useEffect(() => {
-    if (activeConversationId) {
-      setLoadingMessages(true);
-      fetchMessages();
-      setLoadingMessages(false);
-      
-      // Poll messages every 3 seconds for active chat
-      const interval = setInterval(fetchMessages, 3000);
-      return () => clearInterval(interval);
-    } else {
+    if (!activeConversationId) {
       setMessages([]);
+      return;
     }
-  }, [activeConversationId, fetchMessages]);
+
+    setLoadingMessages(true);
+    const unsubscribe = subscribeMessages(
+      activeConversationId,
+      (msgs) => {
+        setMessages(msgs as any);
+        setLoadingMessages(false);
+      },
+      (err) => {
+        console.error("Firestore messages subscription error:", err);
+        setLoadingMessages(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [activeConversationId]);
 
   // Scroll to bottom of chat
   useEffect(() => {
@@ -143,81 +290,57 @@ export default function FoundersHookPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeConversationId || sending) return;
-    
+    if (!newMessage.trim() || !activeConversationId || !me || sending) return;
+
     setSending(true);
-    const content = newMessage;
+    const content = newMessage.trim();
     setNewMessage("");
 
-    // Optimistic append
-    const tempMsg: Message = {
-      _id: Date.now().toString(),
-      conversation: activeConversationId,
-      sender: { _id: me?.id, name: me?.name, username: me?.username, avatarUrl: me?.avatarUrl },
-      content,
-      createdAt: new Date().toISOString()
-    };
-    setMessages((prev) => [...prev, tempMsg]);
-
     try {
-      await fetch(`/api/conversations/${activeConversationId}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-      fetchMessages();
-      fetchConversations();
+      await sendChatMessage(
+        activeConversationId,
+        { _id: me.id, name: me.name, username: me.username, avatarUrl: me.avatarUrl },
+        content
+      );
     } catch (e) {
-      console.error(e);
-      // rollback could be added here
+      console.error("Error sending message via Firestore:", e);
     } finally {
       setSending(false);
     }
   };
 
   const handleStartMeet = async () => {
-    if (!activeConversationId || startingMeet) return;
-    
+    if (!activeConversationId || !me || startingMeet) return;
+
     // Open new tab immediately on user click to prevent popup blocking
     const meetWindow = window.open("https://meet.google.com/new", "_blank");
     setStartingMeet(true);
 
     try {
-      const res = await fetch(`/api/conversations/${activeConversationId}/meet`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (data.success) {
-        if (meetWindow && data.meetUrl && data.meetUrl !== "https://meet.google.com/new") {
-          meetWindow.location.href = data.meetUrl;
-        }
-        const createdMessageId = data.message?._id;
-        fetchMessages();
-        fetchConversations();
+      const activeConvo = conversations.find((c) => c._id === activeConversationId);
+      const startupName = activeConvo?.startup?.name || "Founders Hook";
+      const createdMessageId = await sendMeetingInvite(
+        activeConversationId,
+        { _id: me.id, name: me.name, username: me.username, avatarUrl: me.avatarUrl },
+        "https://meet.google.com/new",
+        startupName
+      );
 
-        // Monitor when the Google Meet tab is closed to automatically end the call
-        if (meetWindow) {
-          const checkTimer = setInterval(async () => {
-            if (meetWindow.closed) {
-              clearInterval(checkTimer);
-              try {
-                await fetch(`/api/conversations/${activeConversationId}/meet`, {
-                  method: "PATCH",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ messageId: createdMessageId }),
-                });
-                fetchMessages();
-                fetchConversations();
-              } catch (err) {
-                console.error("Failed to update ended call status:", err);
-              }
+      // Monitor when the Google Meet tab is closed to automatically end the call
+      if (meetWindow) {
+        const checkTimer = setInterval(async () => {
+          if (meetWindow.closed) {
+            clearInterval(checkTimer);
+            try {
+              await endMeetingCall(activeConversationId, createdMessageId);
+            } catch (err) {
+              console.error("Failed to update ended call status in Firestore:", err);
             }
-          }, 1500);
-        }
+          }
+        }, 1500);
       }
     } catch (e) {
-      console.error(e);
+      console.error("Error starting meet invitation:", e);
     } finally {
       setStartingMeet(false);
     }
@@ -230,15 +353,9 @@ export default function FoundersHookPage() {
         if (meetWindow.closed) {
           clearInterval(checkTimer);
           try {
-            await fetch(`/api/conversations/${activeConversationId}/meet`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ messageId }),
-            });
-            fetchMessages();
-            fetchConversations();
+            await endMeetingCall(activeConversationId, messageId);
           } catch (err) {
-            console.error("Failed to update ended call status:", err);
+            console.error("Failed to update ended call status in Firestore:", err);
           }
         }
       }, 1500);
@@ -257,7 +374,7 @@ export default function FoundersHookPage() {
         body: JSON.stringify({ status }),
       });
       if (res.ok) {
-        fetchConversations();
+        syncConversations();
       }
     } catch (e) {
       console.error(e);
@@ -282,29 +399,41 @@ export default function FoundersHookPage() {
   // Helper to get chat title/avatar
   const getChatMetadata = (convo: Conversation) => {
     if (convo.type === "application") {
-      // If I'm the founder, show applicant info. If I'm the applicant, show startup/founder info.
-      const isApplicant = convo.application?.applicant?._id === me?.id;
+      // If I'm the applicant, show startup info. If I'm the founder, show applicant info.
+      const isApplicant =
+        convo.application?.applicant?._id === me?.id ||
+        convo.application?.applicant === me?.id ||
+        (convo.participants?.includes(me?.id || "") && convo.startup?.founder !== me?.id);
+
       if (isApplicant) {
         return {
           title: convo.startup?.name || "Startup",
-          subtitle: `Application: ${convo.application?.roleTitle || "Role"}`,
+          subtitle: "", // Requirement 1: Removed "Application: sde"
+          isStartup: true,
+          startup: convo.startup,
           avatar: convo.startup?.icon?.startsWith("http") ? convo.startup.icon : null,
-          iconText: convo.startup?.icon && !convo.startup?.icon.startsWith("http") ? convo.startup.icon : "🚀",
+          iconText: convo.startup?.name ? convo.startup.name.charAt(0).toUpperCase() : "S",
         };
       } else {
+        const applicantName =
+          convo.application?.name ||
+          convo.application?.applicant?.name ||
+          "Applicant";
         return {
-          title: convo.application?.applicant?.name || "Applicant",
-          subtitle: `Applied for ${convo.application?.roleTitle || "Role"} at ${convo.startup?.name}`,
+          title: applicantName,
+          subtitle: `Applied for ${convo.application?.roleTitle || "Role"}`,
+          isStartup: false,
+          startup: null,
           avatar: convo.application?.applicant?.avatarUrl,
-          iconText: "U",
+          iconText: applicantName.charAt(0).toUpperCase(),
         };
       }
     }
-    return { title: "Conversation", subtitle: "", avatar: null, iconText: "💬" };
+    return { title: "Conversation", subtitle: "", isStartup: false, startup: null, avatar: null, iconText: "💬" };
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-ink-950 text-sand-200" style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}>
+    <div className="flex h-screen overflow-hidden bg-ink-950 text-sand-200" style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}>
       <Sidebar user={me ? { ...me, isFounder: me.isFounder, hasApplied: me.hasApplied } : null} />
 
       <main className="flex flex-1 flex-col h-full overflow-hidden relative">
@@ -343,10 +472,14 @@ export default function FoundersHookPage() {
           </div>
         </div>
         {/* Apple Messages Style Layout */}
-        <div className="flex w-full flex-1 min-h-0 relative z-10 rounded-2xl overflow-hidden">
+        <div 
+          style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
+          className="flex w-full flex-1 min-h-0 relative z-10 rounded-2xl overflow-hidden"
+        >
           
           {/* ─── LEFT SIDEBAR: CONVERSATIONS LIST ─── */}
           <div 
+            style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
             className={`w-full md:w-80 lg:w-96 flex-col bg-transparent h-full
             ${mobileView === "list" ? "flex" : "hidden md:flex"}
           `}>
@@ -356,6 +489,7 @@ export default function FoundersHookPage() {
                 <input 
                   type="text" 
                   placeholder="Search..." 
+                  style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
                   className="w-full bg-white/5 border border-white/10 backdrop-blur-md rounded-lg py-2 px-4 text-sm text-white placeholder:text-sand-400 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 transition-all shadow-sm"
                 />
               </div>
@@ -386,11 +520,23 @@ export default function FoundersHookPage() {
                         ${isActive ? "bg-emerald-900/20" : "hover:bg-ink-800/40"}
                       `}
                     >
-                      <div className="relative h-12 w-12 shrink-0 rounded-full bg-ink-800 flex items-center justify-center overflow-hidden border border-ink-700/50">
-                        {meta.avatar ? (
-                          <Image src={meta.avatar} alt={meta.title} fill className="object-cover" />
+                      <div className="shrink-0 flex items-center justify-center">
+                        {meta.isStartup ? (
+                          <StartupLogo
+                            icon={meta.startup?.icon}
+                            name={meta.startup?.name}
+                            id={meta.startup?._id}
+                            size="md"
+                            className="!rounded-full border border-ink-700/50"
+                          />
+                        ) : meta.avatar ? (
+                          <div className="relative h-12 w-12 shrink-0 rounded-full bg-ink-800 flex items-center justify-center overflow-hidden border border-ink-700/50">
+                            <Image src={meta.avatar} alt={meta.title} fill className="object-cover" />
+                          </div>
                         ) : (
-                          <span className="text-lg">{meta.iconText}</span>
+                          <div className="relative h-12 w-12 shrink-0 rounded-full bg-ink-800 flex items-center justify-center border border-ink-700/50 text-sand-200 font-bold text-base">
+                            {meta.iconText}
+                          </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -430,20 +576,34 @@ export default function FoundersHookPage() {
                       <ChevronLeft size={24} />
                     </button>
                     
-                    <div className="relative h-10 w-10 shrink-0 rounded-full bg-ink-800 flex items-center justify-center overflow-hidden border border-ink-700">
-                      {getChatMetadata(activeConvo).avatar ? (
-                        <Image src={getChatMetadata(activeConvo).avatar!} alt="" fill className="object-cover" />
+                    <div className="shrink-0 flex items-center justify-center">
+                      {getChatMetadata(activeConvo).isStartup ? (
+                        <StartupLogo
+                          icon={getChatMetadata(activeConvo).startup?.icon}
+                          name={getChatMetadata(activeConvo).startup?.name}
+                          id={getChatMetadata(activeConvo).startup?._id}
+                          size="md"
+                          className="!rounded-full border border-ink-700"
+                        />
+                      ) : getChatMetadata(activeConvo).avatar ? (
+                        <div className="relative h-10 w-10 shrink-0 rounded-full bg-ink-800 flex items-center justify-center overflow-hidden border border-ink-700">
+                          <Image src={getChatMetadata(activeConvo).avatar!} alt="" fill className="object-cover" />
+                        </div>
                       ) : (
-                        <span>{getChatMetadata(activeConvo).iconText}</span>
+                        <div className="relative h-10 w-10 shrink-0 rounded-full bg-ink-800 flex items-center justify-center border border-ink-700 text-sand-200 font-bold text-sm">
+                          {getChatMetadata(activeConvo).iconText}
+                        </div>
                       )}
                     </div>
                     <div>
                       <h2 className="font-bold text-sand-100 text-sm md:text-base leading-tight">
                         {getChatMetadata(activeConvo).title}
                       </h2>
-                      <p className="text-xs text-emerald-400/80 leading-tight">
-                        {getChatMetadata(activeConvo).subtitle}
-                      </p>
+                      {getChatMetadata(activeConvo).subtitle && (
+                        <p className="text-xs text-emerald-400/80 leading-tight mt-0.5">
+                          {getChatMetadata(activeConvo).subtitle}
+                        </p>
+                      )}
                     </div>
                   </div>
                   
@@ -482,38 +642,37 @@ export default function FoundersHookPage() {
                   </div>
                 </div>
 
-                {/* Application Details Panel (Optional info bar) */}
-                {activeConvo.type === "application" && activeConvo.application && activeConvo.application.applicant._id !== me?.id && (
+                {/* Application Details Panel (Resume & Quick Actions) */}
+                {activeConvo.type === "application" && activeConvo.application && (
                   <div className="bg-ink-900/50 border-b border-ink-800/50 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
                     <div className="flex flex-wrap items-center gap-4 text-xs text-sand-300">
-                      {activeConvo.application.email && (
-                        <span className="flex items-center gap-1.5"><Mail size={13} className="text-sand-500"/> {activeConvo.application.email}</span>
-                      )}
-                      {activeConvo.application.mobile && (
-                        <span className="flex items-center gap-1.5"><Phone size={13} className="text-sand-500"/> {activeConvo.application.mobile}</span>
-                      )}
-                      {activeConvo.application.resumeUrl && (
-                         <a href={activeConvo.application.resumeUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-emerald-400 hover:underline">
-                           <FileText size={13}/> View Resume
-                         </a>
+                      {(activeConvo.application.resumeUrl || activeConvo.application.applicant?.resumeUrl) && (
+                        <a
+                          href={activeConvo.application.resumeUrl || activeConvo.application.applicant?.resumeUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1.5 text-emerald-400 hover:underline font-semibold"
+                        >
+                          <Paperclip size={13} /> View Resume
+                        </a>
                       )}
                     </div>
-                    {/* Action buttons if Pending */}
-                    {activeConvo.application.status === "Pending" && (
+                    {/* Action buttons if Pending and current user is the recipient / founder */}
+                    {activeConvo.application.status === "Pending" && activeConvo.application.applicant?._id !== me?.id && (
                       <div className="flex gap-2">
-                        <button 
+                        <button
                           onClick={() => handleUpdateStatus(activeConvo.application._id, "Accepted")}
                           disabled={updatingStatus}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 rounded-md text-xs font-semibold transition"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 rounded-md text-xs font-semibold transition cursor-pointer disabled:opacity-50"
                         >
-                          <CheckCircle size={14}/> Accept
+                          <CheckCircle size={14} /> Accept
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleUpdateStatus(activeConvo.application._id, "Rejected")}
                           disabled={updatingStatus}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-md text-xs font-semibold transition"
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 rounded-md text-xs font-semibold transition cursor-pointer disabled:opacity-50"
                         >
-                          <XCircle size={14}/> Reject
+                          <XCircle size={14} /> Reject
                         </button>
                       </div>
                     )}
@@ -522,33 +681,87 @@ export default function FoundersHookPage() {
 
                 {/* Chat History */}
                 <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 custom-scrollbar">
-                  {/* First message is the application message if available */}
-                  {activeConvo.type === "application" && activeConvo.application?.message && (
-                     <div className="flex justify-start mb-6">
-                       <div className="flex items-end gap-2 max-w-[85%] md:max-w-[75%]">
-                         <div className="w-8 h-8 rounded-full bg-ink-800 shrink-0 overflow-hidden relative border border-ink-700">
-                           <Image src={activeConvo.application.applicant.avatarUrl || "https://picsum.photos/seed/user/64/64"} alt="" fill className="object-cover" />
-                         </div>
-                         <div className="bg-ink-800 border border-ink-700 text-sand-200 px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm text-sm whitespace-pre-wrap">
-                           <p className="font-semibold text-xs text-emerald-400 mb-1">Application Note:</p>
-                           {activeConvo.application.message}
-                         </div>
-                       </div>
-                     </div>
-                  )}
+                  {/* Fallback structured email application message for conversations without an application_card message */}
+                  {activeConvo.type === "application" &&
+                    !messages.some((m) => m.type === "application_card") && (
+                      <div className="w-full flex justify-center mb-6">
+                        <ApplicationEmailCard
+                          senderName={
+                            activeConvo.application?.name ||
+                            activeConvo.application?.applicant?.name ||
+                            "Applicant"
+                          }
+                          senderEmail={
+                            activeConvo.application?.email ||
+                            activeConvo.application?.applicant?.email
+                          }
+                          roleTitle={activeConvo.application?.roleTitle || "Role"}
+                          startupName={activeConvo.startup?.name || "Startup"}
+                          message={activeConvo.application?.message}
+                          resumeUrl={
+                            activeConvo.application?.resumeUrl ||
+                            activeConvo.application?.applicant?.resumeUrl
+                          }
+                          resumeName={
+                            activeConvo.application?.resumeName ||
+                            activeConvo.application?.applicant?.resumeName ||
+                            "resume.pdf"
+                          }
+                          createdAt={activeConvo.application?.createdAt || activeConvo.lastMessageAt}
+                        />
+                      </div>
+                    )}
 
                   {messages.map((msg, i) => {
                     const isMe = msg.sender._id === me?.id;
-                    const showAvatar = !isMe && (i === 0 || messages[i-1].sender._id !== msg.sender._id);
+                    const showAvatar = !isMe && (i === 0 || messages[i - 1].sender._id !== msg.sender._id);
                     const isMeet = msg.type === "meet" || msg.content.includes("📹");
+                    const isAppCard = msg.type === "application_card" || !!msg.applicationData;
+
+                    if (isAppCard) {
+                      const appData = (msg.applicationData || {}) as Record<string, any>;
+                      const resumeLink =
+                        appData.resumeUrl ||
+                        activeConvo.application?.resumeUrl ||
+                        activeConvo.application?.applicant?.resumeUrl;
+                      const resumeTitle =
+                        appData.resumeName ||
+                        activeConvo.application?.resumeName ||
+                        activeConvo.application?.applicant?.resumeName ||
+                        "resume.pdf";
+
+                      return (
+                        <div key={msg._id} className="w-full flex justify-center my-3">
+                          <ApplicationEmailCard
+                            senderName={appData.applicantName || msg.sender?.name || "Applicant"}
+                            senderEmail={appData.email || activeConvo.application?.applicant?.email}
+                            roleTitle={appData.roleTitle || activeConvo.application?.roleTitle || "Role"}
+                            startupName={activeConvo.startup?.name || "Startup"}
+                            message={appData.message || activeConvo.application?.message}
+                            resumeUrl={resumeLink}
+                            resumeName={resumeTitle}
+                            createdAt={msg.createdAt}
+                          />
+                        </div>
+                      );
+                    }
 
                     return (
                       <div key={msg._id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                         <div className={`flex items-end gap-2 max-w-[85%] md:max-w-[70%]`}>
                           {!isMe && (
-                            <div className={`w-8 h-8 rounded-full shrink-0 overflow-hidden relative border border-ink-700 ${showAvatar ? "bg-ink-800" : "bg-transparent border-transparent"}`}>
+                            <div
+                              className={`w-8 h-8 rounded-full shrink-0 overflow-hidden relative border border-ink-700 ${
+                                showAvatar ? "bg-ink-800" : "bg-transparent border-transparent"
+                              }`}
+                            >
                               {showAvatar && (
-                                <Image src={msg.sender.avatarUrl || "https://picsum.photos/seed/user/64/64"} alt="" fill className="object-cover" />
+                                <Image
+                                  src={msg.sender.avatarUrl || "https://picsum.photos/seed/user/64/64"}
+                                  alt=""
+                                  fill
+                                  className="object-cover"
+                                />
                               )}
                             </div>
                           )}
@@ -606,13 +819,17 @@ export default function FoundersHookPage() {
                               </div>
                             )
                           ) : (
-                            <div className={`
+                            <div
+                              style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
+                              className={`
                               px-4 py-2.5 text-sm shadow-sm
-                              ${isMe 
-                                ? "bg-emerald-600 text-white rounded-2xl rounded-br-sm" 
-                                : "bg-ink-800 border border-ink-700 text-sand-200 rounded-2xl rounded-bl-sm"
+                              ${
+                                isMe
+                                  ? "bg-emerald-600 text-white rounded-2xl rounded-br-sm"
+                                  : "bg-ink-800 border border-ink-700 text-sand-200 rounded-2xl rounded-bl-sm"
                               }
-                            `}>
+                            `}
+                            >
                               {msg.content}
                             </div>
                           )}
@@ -632,6 +849,7 @@ export default function FoundersHookPage() {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Type a message..."
+                        style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
                         className="w-full bg-ink-950 border border-ink-700 rounded-full py-3 pl-5 pr-12 text-sm text-sand-200 placeholder-sand-500 focus:outline-none focus:border-emerald-500/50 shadow-inner"
                       />
                       <button 

@@ -37,6 +37,32 @@ export async function PATCH(
     application.status = status;
     await application.save();
 
+    // Create notification for applicant
+    try {
+      const Notification = (await import("@/models/Notification")).default;
+      const matchedRole = startup.openRoles?.find(
+        (r: any) => r._id?.toString() === application.roleId?.toString()
+      );
+      const roleTitle = matchedRole?.title || "Role";
+
+      await Notification.create({
+        recipient: application.applicant,
+        type: status === "Accepted" ? "application_accepted" : "application_rejected",
+        title: status === "Accepted" ? "Application Accepted! 🎉" : "Application Update",
+        message:
+          status === "Accepted"
+            ? `${startup.name} accepted your application for ${roleTitle}!`
+            : `${startup.name} has updated the status of your application for ${roleTitle} to Rejected.`,
+        link: `/founders-hook?applicationId=${application._id.toString()}`,
+        applicationId: application._id,
+        startupName: startup.name,
+        roleTitle,
+        read: false,
+      });
+    } catch (notifErr) {
+      console.error("Failed to create application notification:", notifErr);
+    }
+
     return NextResponse.json(application, { status: 200 });
   } catch (error) {
     console.error("Error updating application status:", error);

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Search, Bell, Plus } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
+import NotificationBell from "@/components/NotificationBell";
 
 type Me = {
   id: string;
@@ -98,13 +99,7 @@ export default function FeedPage() {
                 />
               </div>
 
-              <button
-                className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ink-700 bg-ink-850 text-sand-400 hover:text-sand-100 transition-colors"
-                aria-label="Notifications"
-              >
-                <Bell size={16} />
-                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-white" />
-              </button>
+              <NotificationBell />
             </div>
           </div>
 

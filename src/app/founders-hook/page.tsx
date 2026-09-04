@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "@/components/Sidebar";
@@ -23,6 +24,8 @@ import {
   Video,
   VideoOff,
   Paperclip,
+  Check,
+  X,
 } from "lucide-react";
 import { StartupLogo } from "@/components/StartupMedia";
 import {
@@ -86,6 +89,11 @@ function ApplicationEmailCard({
   resumeName,
   createdAt,
   isMe = false,
+  applicationStatus,
+  isFounder = false,
+  onAccept,
+  onReject,
+  isUpdating = false,
 }: {
   senderName: string;
   senderEmail?: string | null;
@@ -96,7 +104,15 @@ function ApplicationEmailCard({
   resumeName?: string | null;
   createdAt?: string | null;
   isMe?: boolean;
+  applicationStatus?: "Pending" | "Accepted" | "Rejected" | string;
+  isFounder?: boolean;
+  onAccept?: () => void;
+  onReject?: () => void;
+  isUpdating?: boolean;
 }) {
+  const status = applicationStatus || "Pending";
+  const showActions = isFounder && !isMe && status === "Pending";
+
   return (
     <div 
       style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
@@ -115,11 +131,30 @@ function ApplicationEmailCard({
             <Briefcase size={15} />
             <span>{isMe ? "Job Application (Sent)" : "Job Application (Received)"}</span>
           </div>
-          {createdAt && (
-            <span className="text-[11px] text-sand-500">
-              {timeAgo(createdAt)}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Status Badge */}
+            {status !== "Pending" && (
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                status === "Accepted"
+                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                  : "bg-red-500/15 text-red-400 border border-red-500/30"
+              }`}>
+                {status === "Accepted" ? <Check size={10} /> : <X size={10} />}
+                {status}
+              </span>
+            )}
+            {status === "Pending" && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                <Clock size={10} />
+                Pending
+              </span>
+            )}
+            {createdAt && (
+              <span className="text-[11px] text-sand-500">
+                {timeAgo(createdAt)}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="space-y-1.5 text-xs">
@@ -182,12 +217,47 @@ function ApplicationEmailCard({
             </a>
           </div>
         )}
+
+        {/* Accept / Reject Buttons for Founders */}
+        {showActions && (
+          <div className="pt-3 border-t border-ink-800/70">
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={onAccept}
+                disabled={isUpdating}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-ink-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUpdating ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Check size={14} />
+                )}
+                <span>Accept</span>
+              </button>
+              <button
+                onClick={onReject}
+                disabled={isUpdating}
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 bg-ink-800 hover:bg-red-500/20 border border-ink-700 hover:border-red-500/40 text-sand-200 hover:text-red-300 font-bold text-xs rounded-xl shadow-sm transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUpdating ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <X size={14} />
+                )}
+                <span>Reject</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export default function FoundersHookPage() {
+function FoundersHookContent() {
+  const searchParams = useSearchParams();
+  const targetApplicationId = searchParams.get("applicationId");
+
   const [me, setMe] = useState<Me | null>(null);
   const [meLoading, setMeLoading] = useState(true);
 
@@ -203,6 +273,9 @@ export default function FoundersHookPage() {
   const [startingMeet, setStartingMeet] = useState(false);
 
   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
+
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [applicationStatuses, setApplicationStatuses] = useState<Record<string, string>>({});
 
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -250,6 +323,20 @@ export default function FoundersHookPage() {
       (convos) => {
         setConversations(convos as any);
         setLoadingConvos(false);
+
+        // If redirected from notification with applicationId, select that conversation
+        if (targetApplicationId) {
+          const matched = convos.find(
+            (c: any) =>
+              c.applicationId === targetApplicationId ||
+              c.application?._id === targetApplicationId ||
+              c._id === `app_${targetApplicationId}`
+          );
+          if (matched) {
+            setActiveConversationId(matched._id);
+            setMobileView("chat");
+          }
+        }
       },
       (err) => {
         console.error("Firestore conversation subscription error:", err);
@@ -258,7 +345,7 @@ export default function FoundersHookPage() {
     );
 
     return () => unsubscribe();
-  }, [me?.id, syncConversations]);
+  }, [me?.id, syncConversations, targetApplicationId]);
 
   // Subscribe to messages of active conversation in real time
   useEffect(() => {
@@ -361,6 +448,37 @@ export default function FoundersHookPage() {
           }
         }
       }, 1500);
+    }
+  };
+
+  const handleApplicationStatus = async (applicationId: string, status: "Accepted" | "Rejected") => {
+    if (updatingStatus) return;
+    setUpdatingStatus(true);
+    try {
+      const res = await fetch(`/api/founders-hook/${applicationId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) {
+        setApplicationStatuses((prev) => ({ ...prev, [applicationId]: status }));
+        // Also sync the updated status to Firestore conversation
+        if (activeConversationId) {
+          const { doc, updateDoc } = await import("firebase/firestore");
+          const { db } = await import("@/lib/firebase");
+          const convoRef = doc(db, "conversations", activeConversationId);
+          await updateDoc(convoRef, {
+            "application.status": status,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+      } else {
+        console.error("Failed to update application status");
+      }
+    } catch (err) {
+      console.error("Error updating application status:", err);
+    } finally {
+      setUpdatingStatus(false);
     }
   };
 
@@ -686,6 +804,11 @@ export default function FoundersHookPage() {
                                 "resume.pdf"
                               }
                               createdAt={activeConvo.application?.createdAt || activeConvo.lastMessageAt}
+                              applicationStatus={applicationStatuses[activeConvo.application?._id] || activeConvo.application?.status || "Pending"}
+                              isFounder={!isApplicant}
+                              onAccept={() => activeConvo.application?._id && handleApplicationStatus(activeConvo.application._id, "Accepted")}
+                              onReject={() => activeConvo.application?._id && handleApplicationStatus(activeConvo.application._id, "Rejected")}
+                              isUpdating={updatingStatus}
                             />
                           </div>
                         </div>
@@ -736,6 +859,11 @@ export default function FoundersHookPage() {
                               resumeUrl={resumeLink}
                               resumeName={resumeTitle}
                               createdAt={msg.createdAt}
+                              applicationStatus={applicationStatuses[activeConvo.application?._id] || activeConvo.application?.status || "Pending"}
+                              isFounder={!isApplicant}
+                              onAccept={() => activeConvo.application?._id && handleApplicationStatus(activeConvo.application._id, "Accepted")}
+                              onReject={() => activeConvo.application?._id && handleApplicationStatus(activeConvo.application._id, "Rejected")}
+                              isUpdating={updatingStatus}
                             />
                           </div>
                         </div>
@@ -876,5 +1004,19 @@ export default function FoundersHookPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function FoundersHookPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen bg-ink-950 text-sand-200 items-center justify-center">
+          <Loader2 size={28} className="animate-spin text-white" />
+        </div>
+      }
+    >
+      <FoundersHookContent />
+    </Suspense>
   );
 }

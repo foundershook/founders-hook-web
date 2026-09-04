@@ -105,7 +105,7 @@ export function subscribeConversations(
     q,
     (snapshot) => {
       const convos: ConversationDoc[] = snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
+        const data = docSnap.data({ serverTimestamps: "estimate" });
         return {
           _id: docSnap.id,
           participants: data.participants || [],
@@ -153,7 +153,7 @@ export function subscribeMessages(
     q,
     (snapshot) => {
       const messages: MessageDoc[] = snapshot.docs.map((docSnap) => {
-        const data = docSnap.data();
+        const data = docSnap.data({ serverTimestamps: "estimate" });
         let createdAtStr = new Date().toISOString();
         if (data.createdAt instanceof Timestamp) {
           createdAtStr = data.createdAt.toDate().toISOString();

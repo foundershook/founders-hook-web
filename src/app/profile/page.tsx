@@ -18,6 +18,7 @@ import {
   Users,
   ChevronRight,
   Sparkles,
+  Camera,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { CldUploadWidget } from "next-cloudinary";
@@ -80,13 +81,13 @@ function FollowModal({ type, userId, onClose }: FollowModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      className="profile-calibri-container fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         className="relative w-full max-w-sm rounded-2xl border border-ink-700/60 bg-ink-850 p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
-        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+        style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
       >
         <div className="mb-5 flex items-center justify-between">
           <h2 className="font-display text-lg font-semibold capitalize text-sand-100">{type}</h2>
@@ -145,6 +146,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [bio, setBio] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const [bannerUrl, setBannerUrl] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditingBio, setIsEditingBio] = useState(false);
@@ -181,6 +183,7 @@ export default function ProfilePage() {
           setUser(data.user);
           setBio(data.user.bio || "");
           setProfilePic(data.user.profilePic || data.user.avatarUrl || "");
+          setBannerUrl(data.user.bannerUrl || "");
           fetchFollowStats(data.user._id || data.user.id);
         }
       } catch (error) {
@@ -217,7 +220,8 @@ export default function ProfilePage() {
         body: JSON.stringify({
           userId: user._id || user.id, // Pass ID to backend
           bio,
-          profilePic
+          profilePic,
+          bannerUrl,
         }),
       });
 
@@ -256,120 +260,191 @@ export default function ProfilePage() {
 
   return (
     <div
-      className="flex min-h-screen bg-ink-950 text-sand-200"
-      style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+      className="profile-calibri-container flex min-h-screen bg-ink-950 text-sand-200"
+      style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
     >
       <Sidebar user={sidebarUser} />
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">
         <section className="relative z-10 w-full px-6 pb-28 pt-20 lg:pt-16 lg:px-10">
 
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
+          {/* ── LINKEDIN-STYLE BANNER & PROFILE CARD ── */}
+          <div className="relative rounded-3xl border border-ink-700/60 bg-ink-900 shadow-xl overflow-hidden mb-8">
+            {/* Cover Banner */}
+            <CldUploadWidget
+              uploadPreset="founders_hook_users"
+              options={{ folder: "users-banner", multiple: false, maxFiles: 1 }}
+              onSuccess={async (result) => {
+                if (result.info && typeof result.info === "object" && "secure_url" in result.info) {
+                  const newBannerUrl = result.info.secure_url;
+                  setBannerUrl(newBannerUrl);
 
-              <div className="flex flex-col items-center gap-3 sm:items-start">
-                {/* 2. Update your Cloudinary Widget to auto-save immediately */}
-                <CldUploadWidget
-                  uploadPreset="founders_hook_users"
-                  options={{ folder: "users-profile-pic", multiple: false, maxFiles: 1 }}
-                  onSuccess={async (result) => {
-                    if (result.info && typeof result.info === 'object' && 'secure_url' in result.info) {
-                      const newPicUrl = result.info.secure_url;
-                      setProfilePic(newPicUrl); // Update UI instantly
-
-                      // AUTO-SAVE to MongoDB so it doesn't disappear on refresh
-                      try {
-                        await fetch("/api/profile/bio", {
-                          method: "PUT",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            userId: user._id || user.id,
-                            bio: bio,
-                            profilePic: newPicUrl
-                          }),
-                        });
-                      } catch (error) {
-                        console.error("Failed to auto-save image to database", error);
-                      }
-                    }
-                  }}
-                >
-                  {({ open }) => (
+                  try {
+                    await fetch("/api/profile/bio", {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        userId: user._id || user.id,
+                        bannerUrl: newBannerUrl,
+                      }),
+                    });
+                  } catch (error) {
+                    console.error("Failed to auto-save banner to database", error);
+                  }
+                }
+              }}
+            >
+              {({ open }) => (
+                <div className="relative h-44 sm:h-56 md:h-64 w-full overflow-hidden bg-gradient-to-r from-ink-950 via-ink-850 to-ink-900 group">
+                  {bannerUrl ? (
+                    <Image
+                      src={bannerUrl}
+                      alt="Profile Banner"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  ) : (
                     <div
                       onClick={() => open()}
-                      className="group relative h-32 w-32 cursor-pointer overflow-hidden rounded-2xl border border-slate-200 shadow-sm"
+                      className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-neutral-900 via-ink-850 to-neutral-900 cursor-pointer hover:opacity-90 transition-opacity"
                     >
-                      <Image
-                        src={profilePic || "https://picsum.photos/seed/user/160/160"}
-                        alt={user.name}
-                        width={128}
-                        height={128}
-                        className="h-full w-full object-cover"
-                      />
-                      <div className="absolute inset-0 hidden flex-col items-center justify-center bg-black/60 transition-all group-hover:flex">
-                        <Upload size={20} className="mb-1 text-white" />
-                        <span className="text-xs font-medium text-white">Edit</span>
+                      <div className="absolute inset-0 bg-[radial-gradient(#ffffff0d_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+                      <div className="relative z-10 flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-sand-400 backdrop-blur-sm group-hover:border-white/20 group-hover:text-sand-200 transition-all">
+                        <Camera size={15} />
+                        <span>Add a background</span>
                       </div>
                     </div>
                   )}
-                </CldUploadWidget>
+
+                  {/* Upload Banner Button */}
+                  <button
+                    onClick={() => open()}
+                    className="absolute top-4 right-4 z-20 flex items-center gap-2 rounded-full border border-white/25 bg-black/60 backdrop-blur-md px-3.5 py-1.5 text-xs font-semibold text-white shadow-xl transition-all hover:bg-black/85 hover:scale-105 active:scale-95 cursor-pointer"
+                    title={bannerUrl ? "Change background" : "Add a background"}
+                  >
+                    <Camera size={15} />
+                    <span>{bannerUrl ? "Change Banner" : "Add a background"}</span>
+                  </button>
+                </div>
+              )}
+            </CldUploadWidget>
+
+            {/* Profile Info Header (Avatar overlapping banner) */}
+            <div className="px-6 pb-6 sm:px-8 relative z-10">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-16 sm:-mt-20">
+                
+                {/* Avatar with thick border overlapping banner */}
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+                  <CldUploadWidget
+                    uploadPreset="founders_hook_users"
+                    options={{ folder: "users-profile-pic", multiple: false, maxFiles: 1 }}
+                    onSuccess={async (result) => {
+                      if (result.info && typeof result.info === "object" && "secure_url" in result.info) {
+                        const newPicUrl = result.info.secure_url;
+                        setProfilePic(newPicUrl);
+
+                        try {
+                          await fetch("/api/profile/bio", {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              userId: user._id || user.id,
+                              bio: bio,
+                              profilePic: newPicUrl,
+                              bannerUrl: bannerUrl,
+                            }),
+                          });
+                        } catch (error) {
+                          console.error("Failed to auto-save image to database", error);
+                        }
+                      }
+                    }}
+                  >
+                    {({ open }) => (
+                      <div
+                        onClick={() => open()}
+                        className="group relative h-28 w-28 sm:h-36 sm:w-36 cursor-pointer overflow-hidden rounded-full border-4 border-ink-900 bg-ink-850 shadow-2xl"
+                      >
+                        <Image
+                          src={profilePic || "https://picsum.photos/seed/user/160/160"}
+                          alt={user.name}
+                          width={144}
+                          height={144}
+                          className="h-full w-full object-cover"
+                        />
+                        <div className="absolute inset-0 hidden flex-col items-center justify-center bg-black/60 transition-all group-hover:flex">
+                          <Upload size={20} className="mb-1 text-white" />
+                          <span className="text-xs font-medium text-white">Edit</span>
+                        </div>
+                      </div>
+                    )}
+                  </CldUploadWidget>
+
+                  {/* Name & Role */}
+                  <div className="mt-2 sm:mt-0 text-center sm:text-left">
+                    <div className="mb-1.5 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-sand-100">
+                        <UserRound size={13} />
+                        {user.isFounder ? "Founder" : "Candidate"} profile
+                      </span>
+                    </div>
+                    <h1 className="font-display text-2xl sm:text-3xl font-bold text-sand-100">{user.name}</h1>
+                    <p className="text-sm text-sand-400">@{user.username}</p>
+                  </div>
+                </div>
+
+                {/* Edit profile button */}
+                <div className="flex items-center justify-center sm:justify-end gap-3 self-center sm:self-end">
+                  <Link
+                    href="/settings"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-ink-700/60 bg-ink-850 text-sand-300 transition-all hover:border-white/40 hover:bg-ink-800 hover:text-white shadow-sm"
+                    title="Edit profile"
+                    aria-label="Edit profile"
+                  >
+                    <Pencil size={17} />
+                  </Link>
+                </div>
               </div>
 
-              <div>
-                <p className="mb-2 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-semibold text-sand-100">
-                  <UserRound size={14} />
-                  Founder profile
-                </p>
-                <h1 className="font-display text-4xl font-semibold text-sand-100">{user.name}</h1>
-                <p className="mt-1 text-sm text-sand-400">@{user.username}</p>
+              {/* Follow Stats & Joined Date */}
+              <div className="mt-5 flex flex-wrap items-center justify-center sm:justify-start gap-6 border-t border-ink-700/50 pt-4">
+                <button
+                  onClick={() => setFollowModal("followers")}
+                  className="group flex items-center gap-2 transition-colors hover:text-sand-100"
+                >
+                  <span className="text-base font-bold text-sand-100">
+                    {followStats.followers}
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-sand-400">
+                    <Users size={12} />
+                    Followers
+                  </span>
+                </button>
 
-                {/* ── Follow stats ── */}
-                <div className="mt-3 flex items-center gap-5">
-                  <button
-                    onClick={() => setFollowModal("followers")}
-                    className="group flex flex-col items-start transition-colors hover:text-sand-100"
-                  >
-                    <span className="text-lg font-bold leading-none text-sand-100 group-hover:text-sand-100 transition-colors">
-                      {followStats.followers}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-sand-400">
-                      <Users size={11} />
-                      Followers
-                    </span>
-                  </button>
+                <div className="h-4 w-px bg-ink-700/60" />
 
-                  <div className="h-8 w-px bg-ink-700/60" />
+                <button
+                  onClick={() => setFollowModal("following")}
+                  className="group flex items-center gap-2 transition-colors hover:text-sand-100"
+                >
+                  <span className="text-base font-bold text-sand-100">
+                    {followStats.following}
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-sand-400">
+                    <Users size={12} />
+                    Following
+                  </span>
+                </button>
 
-                  <button
-                    onClick={() => setFollowModal("following")}
-                    className="group flex flex-col items-start transition-colors hover:text-sand-100"
-                  >
-                    <span className="text-lg font-bold leading-none text-sand-100 group-hover:text-sand-100 transition-colors">
-                      {followStats.following}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-sand-400">
-                      <Users size={11} />
-                      Following
-                    </span>
-                  </button>
+                <div className="h-4 w-px bg-ink-700/60" />
 
-                  <div className="h-8 w-px bg-ink-700/60" />
-
-                  <div className="flex flex-col items-start">
-                    <span className="flex items-center gap-1 text-sm text-sand-400">
-                      <CalendarDays size={13} />
-                      {joinedDate}
-                    </span>
-                    <span className="text-xs text-sand-600">Joined</span>
-                  </div>
+                <div className="flex items-center gap-1.5 text-xs text-sand-400">
+                  <CalendarDays size={13} />
+                  <span>Joined {joinedDate}</span>
                 </div>
               </div>
             </div>
-
-            <Link href="/onboarding" className="btn-outline w-fit">
-              <Pencil size={16} />
-              Edit profile
-            </Link>
           </div>
 
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.5fr)_1fr] gap-6 border-b border-ink-700/50 pb-8">

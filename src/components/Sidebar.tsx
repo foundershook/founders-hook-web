@@ -15,10 +15,12 @@ import {
   Rss,
   Menu,
   X,
+  Settings,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const NAV_ITEMS = [
+  { label: "Settings",      icon: Settings, href: "/settings" },
   { label: "Feed",          icon: Rss,      href: "/feed" },
   { label: "Profile",       icon: UserRound, href: "/profile" },
   { label: "Founders",      icon: Users,    href: "/founders" },
@@ -101,7 +103,7 @@ export default function Sidebar({
         className={`fixed left-0 top-0 z-[80] flex h-full w-64 flex-col border-r border-ink-700/60 bg-ink-900 shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+        style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
       >
         {/* Close button */}
         <div className="flex items-center justify-between px-4 py-4">
@@ -190,7 +192,7 @@ export default function Sidebar({
           ═══════════════════════════════════════════════ */}
       <aside
         className="hidden w-[72px] flex-col items-center border-r border-ink-700/60 bg-ink-900 py-5 lg:flex xl:w-52 xl:items-stretch xl:px-3"
-        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+        style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
       >
         {/* LOGO */}
         <Link href="/" className="mb-7 flex items-center gap-2.5 xl:px-2 group">
@@ -268,6 +270,13 @@ export default function Sidebar({
                 className="flex w-full items-center gap-2 px-4 py-3 text-sm text-sand-200 font-medium transition-colors hover:bg-ink-800 hover:text-sand-100"
               >
                 <UserRound size={14} /> Profile
+              </Link>
+              <Link
+                href="/settings"
+                onClick={() => setMenuOpen(false)}
+                className="flex w-full items-center gap-2 px-4 py-3 text-sm text-sand-200 font-medium transition-colors hover:bg-ink-800 hover:text-sand-100"
+              >
+                <Settings size={14} /> Settings
               </Link>
               <button
                 onClick={handleLogout}

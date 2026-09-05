@@ -7,6 +7,7 @@ export interface IUser extends Document {
   email: string;
   passwordHash: string;
   avatarUrl: string;
+  bannerUrl?: string;
   bio: string;
   skills: string[];
   
@@ -49,6 +50,10 @@ const UserSchema = new Schema<IUser>(
     avatarUrl: {
       type: String,
       default: "https://picsum.photos/seed/avatar/200/200",
+    },
+    bannerUrl: {
+      type: String,
+      default: "",
     },
     bio: {
       type: String,

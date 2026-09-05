@@ -19,6 +19,7 @@ export async function GET() {
       username: user.username,
       email: user.email || "",
       avatarUrl: user.avatarUrl,
+      bannerUrl: user.bannerUrl || "",
       bio: user.bio || "",
       skills: user.skills || [],
       onboardingAnswers: user.onboardingAnswers || {},

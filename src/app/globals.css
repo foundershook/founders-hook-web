@@ -51,6 +51,11 @@ body {
 }
 
 @layer components {
+  .profile-calibri-container,
+  .profile-calibri-container * {
+    font-family: Calibri, 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif !important;
+  }
+
   .font-display {
     font-family: 'Times New Roman', Calibri, Georgia, serif;
   }

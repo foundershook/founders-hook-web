@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import {
   CalendarDays,
@@ -16,6 +17,7 @@ import {
   X,
   ChevronRight,
   Sparkles,
+  Pencil,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
@@ -37,6 +39,7 @@ interface PublicUser {
   name: string;
   username: string;
   avatarUrl: string;
+  bannerUrl?: string;
   bio: string;
   skills?: string[];
   createdAt: string;
@@ -81,12 +84,13 @@ function FollowListModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      className="profile-calibri-container fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-ink-900 p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
+        style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
       >
         <div className="mb-5 flex items-center justify-between">
           <h2 className="font-display text-lg font-semibold capitalize text-white">{type}</h2>
@@ -203,7 +207,10 @@ export default function UserProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen bg-ink-950">
+      <div
+        className="profile-calibri-container flex min-h-screen bg-ink-950"
+        style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
+      >
         <Sidebar user={currentUser} />
         <div className="flex flex-1 items-center justify-center">
           <Loader2 size={28} className="animate-spin text-gold-400" />
@@ -229,7 +236,10 @@ export default function UserProfilePage() {
     : null;
 
   return (
-    <div className="flex min-h-screen bg-ink-950">
+    <div
+      className="profile-calibri-container flex min-h-screen bg-ink-950"
+      style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
+    >
       <Sidebar user={sidebarUser} />
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">
@@ -244,100 +254,131 @@ export default function UserProfilePage() {
             Back
           </button>
 
-          {/* ── Profile Header ─────────────────────────────────────────── */}
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-end">
-
-              {/* Avatar */}
-              <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-2xl border border-white/15 shadow-card">
+          {/* ── LINKEDIN-STYLE BANNER & PROFILE CARD ── */}
+          <div className="relative rounded-3xl border border-ink-700/60 bg-ink-900 shadow-xl overflow-hidden mb-8">
+            {/* Cover Banner */}
+            <div className="relative h-44 sm:h-56 md:h-64 w-full overflow-hidden bg-gradient-to-r from-ink-950 via-ink-850 to-ink-900">
+              {profile.bannerUrl ? (
                 <Image
-                  src={profile.avatarUrl || "https://picsum.photos/seed/user/160/160"}
-                  alt={profile.name}
+                  src={profile.bannerUrl}
+                  alt={profile.name + " Banner"}
                   fill
                   className="object-cover"
+                  priority
                 />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-neutral-900 via-ink-850 to-neutral-900">
+                  <div className="absolute inset-0 bg-[radial-gradient(#ffffff0d_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+                </div>
+              )}
+            </div>
+
+            {/* Profile Info Header (Avatar overlapping banner) */}
+            <div className="px-6 pb-6 sm:px-8">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-16 sm:-mt-20">
+                
+                {/* Avatar with thick border overlapping banner */}
+                <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5">
+                  <div className="relative h-28 w-28 sm:h-36 sm:w-36 overflow-hidden rounded-full border-4 border-ink-900 bg-ink-850 shadow-2xl shrink-0">
+                    <Image
+                      src={profile.avatarUrl || "https://picsum.photos/seed/user/160/160"}
+                      alt={profile.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+
+                  {/* Name & Role */}
+                  <div className="mt-2 sm:mt-0 text-center sm:text-left">
+                    <div className="mb-1.5 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-sand-100">
+                        <UserRound size={13} />
+                        {profile.isFounder ? "Founder" : "Candidate"} profile
+                      </span>
+                    </div>
+                    <h1 className="font-display text-2xl sm:text-3xl font-bold text-sand-100">{profile.name}</h1>
+                    <p className="text-sm text-sand-400">@{profile.username}</p>
+                  </div>
+                </div>
+
+                {/* Follow button */}
+                <div className="flex items-center justify-center sm:justify-end gap-3 self-center sm:self-end">
+                  {!profile.isCurrentUser && currentUser && (
+                    <button
+                      onClick={handleFollow}
+                      disabled={followPending}
+                      className={`inline-flex w-fit items-center gap-2 rounded-full border px-6 py-2.5 text-sm font-semibold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${
+                        isFollowing
+                          ? "border-rose-500/40 bg-rose-500/10 text-rose-300 hover:border-rose-400/60 hover:bg-rose-500/20"
+                          : "btn-white"
+                      }`}
+                    >
+                      {followPending ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : isFollowing ? (
+                        <>
+                          <UserCheck size={16} />
+                          Following
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus size={16} />
+                          Follow
+                        </>
+                      )}
+                    </button>
+                  )}
+                  {profile.isCurrentUser && (
+                    <Link
+                      href="/settings"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-ink-700/60 bg-ink-850 text-sand-300 transition-all hover:border-white/40 hover:bg-ink-800 hover:text-white shadow-sm"
+                      title="Edit profile"
+                      aria-label="Edit profile"
+                    >
+                      <Pencil size={17} />
+                    </Link>
+                  )}
+                </div>
               </div>
 
-              <div>
-                <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <p className="inline-flex items-center gap-2 rounded-full border border-gold-400/25 bg-gold-400/10 px-3 py-1 text-xs font-semibold text-gold-200">
-                    <UserRound size={14} />
-                    {profile.isFounder ? "Founder" : "Member"} profile
-                  </p>
-                </div>
-                <h1 className="font-display text-4xl font-semibold text-white">{profile.name}</h1>
-                <p className="mt-1 text-sm text-mist-400">@{profile.username}</p>
+              {/* Follow Stats & Joined Date */}
+              <div className="mt-5 flex flex-wrap items-center justify-center sm:justify-start gap-6 border-t border-ink-700/50 pt-4">
+                <button
+                  onClick={() => setFollowModal("followers")}
+                  className="group flex items-center gap-2 transition-colors hover:text-sand-100"
+                >
+                  <span className="text-base font-bold text-sand-100">
+                    {followerCount}
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-sand-400">
+                    <Users size={12} />
+                    Followers
+                  </span>
+                </button>
 
-                {/* Stats row */}
-                <div className="mt-3 flex items-center gap-5">
-                  <button
-                    onClick={() => setFollowModal("followers")}
-                    className="group flex flex-col items-start transition-colors hover:text-gold-300"
-                  >
-                    <span className="text-lg font-bold leading-none text-white group-hover:text-gold-300 transition-colors">
-                      {followerCount}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-mist-400">
-                      <Users size={11} /> Followers
-                    </span>
-                  </button>
+                <div className="h-4 w-px bg-ink-700/60" />
 
-                  <div className="h-8 w-px bg-white/10" />
+                <button
+                  onClick={() => setFollowModal("following")}
+                  className="group flex items-center gap-2 transition-colors hover:text-sand-100"
+                >
+                  <span className="text-base font-bold text-sand-100">
+                    {profile.followingCount}
+                  </span>
+                  <span className="flex items-center gap-1 text-xs text-sand-400">
+                    <Users size={12} />
+                    Following
+                  </span>
+                </button>
 
-                  <button
-                    onClick={() => setFollowModal("following")}
-                    className="group flex flex-col items-start transition-colors hover:text-gold-300"
-                  >
-                    <span className="text-lg font-bold leading-none text-white group-hover:text-gold-300 transition-colors">
-                      {profile.followingCount}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-mist-400">
-                      <Users size={11} /> Following
-                    </span>
-                  </button>
+                <div className="h-4 w-px bg-ink-700/60" />
 
-                  <div className="h-8 w-px bg-white/10" />
-
-                  <div className="flex flex-col items-start">
-                    <span className="flex items-center gap-1 text-sm text-mist-400">
-                      <CalendarDays size={13} />
-                      {joinedDate}
-                    </span>
-                    <span className="text-xs text-mist-600">Joined</span>
-                  </div>
+                <div className="flex items-center gap-1.5 text-xs text-sand-400">
+                  <CalendarDays size={13} />
+                  <span>Joined {joinedDate}</span>
                 </div>
               </div>
             </div>
-
-            {/* Follow button */}
-            {!profile.isCurrentUser && currentUser && (
-              <button
-                onClick={handleFollow}
-                disabled={followPending}
-                className={`inline-flex w-fit items-center gap-2 rounded-full border px-6 py-2.5 text-sm font-semibold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${
-                  isFollowing
-                    ? "border-gold-500/40 bg-gold-500/10 text-gold-300 hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300"
-                    : "border-white/15 bg-white/[0.03] text-mist-100 hover:border-gold-400/60 hover:bg-white/[0.06]"
-                }`}
-              >
-                {followPending ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : isFollowing ? (
-                  <UserCheck size={16} />
-                ) : (
-                  <UserPlus size={16} />
-                )}
-                {isFollowing ? "Following" : "Follow"}
-              </button>
-            )}
-            {profile.isCurrentUser && (
-              <button
-                onClick={() => router.push("/profile")}
-                className="btn-outline w-fit"
-              >
-                Edit your profile
-              </button>
-            )}
           </div>
 
           {/* ── Bio + Details ──────────────────────────────────────────── */}

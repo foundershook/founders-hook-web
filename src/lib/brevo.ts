@@ -241,4 +241,125 @@ export async function sendMeetInviteEmail({ to, recipientName, senderName, meetU
   await sendEmail({ to, subject, htmlContent, textContent });
 }
 
+export async function sendPasswordResetEmail({ to, otp }: { to: string, otp: string }): Promise<void> {
+  const digits = otp.split("").join("</span><span style=\"display:inline-block;width:48px;height:56px;line-height:56px;text-align:center;font-size:28px;font-weight:700;background:#1a1c23;border:1.5px solid rgba(255,255,255,0.3);border-radius:10px;color:#d4d4d8;margin:0 4px;font-family:monospace\">");
+  const subject = `Reset Your Password - Founders Hook`;
+  const textContent = `You requested to reset your password. Your verification code is: ${otp}\n\nThis code expires in 15 minutes.\n\nIf you did not request this, please ignore this email.`;
+  
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Reset Your Password</title>
+</head>
+<body style="margin:0;padding:0;background:#0c0d10;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0c0d10;min-height:100vh">
+    <tr>
+      <td align="center" style="padding:48px 16px">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#13141a;border-radius:20px;border:1px solid rgba(255,255,255,0.08);overflow:hidden">
+          <tr>
+            <td style="padding:36px 40px 24px;text-align:center;background:linear-gradient(135deg,rgba(255,255,255,0.12) 0%,transparent 70%)">
+              <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:8px">
+                <img src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg" width="36" height="36" style="border-radius:8px;object-fit:cover;" alt="Logo" />
+                <span style="font-size:16px;font-weight:700;color:#fff;letter-spacing:0.06em">FOUNDERS HOOK</span>
+              </div>
+              <div style="width:48px;height:2px;background:linear-gradient(90deg,transparent,#d4d4d8,transparent);margin:16px auto 0"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 40px 40px">
+              <h1 style="font-size:22px;font-weight:700;color:#fff;margin:0 0 8px;text-align:center">Reset Your Password</h1>
+              <p style="font-size:14px;color:#8b95a3;text-align:center;margin:0 0 32px;line-height:1.6">
+                You recently requested to reset your password for your Founders Hook account. Use the code below to reset it.
+              </p>
+              
+              <div style="text-align:center;margin-bottom:32px">
+                <span style="display:inline-block;width:48px;height:56px;line-height:56px;text-align:center;font-size:28px;font-weight:700;background:#1a1c23;border:1.5px solid rgba(255,255,255,0.3);border-radius:10px;color:#d4d4d8;margin:0 4px;font-family:monospace">${digits}</span>
+              </div>
 
+              <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:14px 18px;margin-bottom:28px;text-align:center">
+                <p style="font-size:13px;color:#d4d4d8;margin:0">
+                  This code expires in <strong>15 minutes</strong>
+                </p>
+              </div>
+
+              <p style="font-size:13px;color:#4a5260;text-align:center;margin:0;line-height:1.6">
+                If you didn't request a password reset, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.06);text-align:center">
+              <p style="font-size:12px;color:#3d4450;margin:0">
+                © ${new Date().getFullYear()} Founders Hook · All rights reserved
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+
+  await sendEmail({ to, subject, htmlContent, textContent });
+}
+
+export async function sendPasswordResetSuccessEmail(to: string): Promise<void> {
+  const subject = `Password Reset Successful - Founders Hook`;
+  const textContent = `Your password has been successfully reset. If you did not make this change, please contact support immediately.`;
+  
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Reset Successful</title>
+</head>
+<body style="margin:0;padding:0;background:#0c0d10;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0c0d10;min-height:100vh">
+    <tr>
+      <td align="center" style="padding:48px 16px">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#13141a;border-radius:20px;border:1px solid rgba(255,255,255,0.08);overflow:hidden">
+          <tr>
+            <td style="padding:36px 40px 24px;text-align:center;background:linear-gradient(135deg,rgba(16,185,129,0.12) 0%,transparent 70%)">
+              <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:8px">
+                <img src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg" width="36" height="36" style="border-radius:8px;object-fit:cover;" alt="Logo" />
+                <span style="font-size:16px;font-weight:700;color:#fff;letter-spacing:0.06em">FOUNDERS HOOK</span>
+              </div>
+              <div style="width:48px;height:2px;background:linear-gradient(90deg,transparent,#10b981,transparent);margin:16px auto 0"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 40px 40px">
+              <h1 style="font-size:22px;font-weight:700;color:#fff;margin:0 0 8px;text-align:center">Password Updated</h1>
+              <p style="font-size:14px;color:#8b95a3;text-align:center;margin:0 0 32px;line-height:1.6">
+                Your password for your Founders Hook account has been successfully updated. You can now log in using your new password.
+              </p>
+              
+              <p style="font-size:13px;color:#4a5260;text-align:center;margin:0;line-height:1.6">
+                If you did not make this change, please contact our support team immediately to secure your account.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 40px;border-top:1px solid rgba(255,255,255,0.06);text-align:center">
+              <p style="font-size:12px;color:#3d4450;margin:0">
+                © ${new Date().getFullYear()} Founders Hook · All rights reserved
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+
+  await sendEmail({ to, subject, htmlContent, textContent });
+}

@@ -18,12 +18,13 @@ export async function GET(
     const currentUserId = currentUser ? (currentUser._id as any).toString() : null;
 
     const user = await User.findById(userId)
-      .select("name username avatarUrl bio skills onboardingAnswers createdAt followers following")
+      .select("name username avatarUrl bannerUrl bio skills onboardingAnswers createdAt followers following")
       .lean<{
         _id: any;
         name: string;
         username: string;
         avatarUrl: string;
+        bannerUrl?: string;
         bio: string;
         skills?: string[];
         onboardingAnswers?: any;
@@ -65,6 +66,7 @@ export async function GET(
         name: user.name,
         username: user.username,
         avatarUrl: user.avatarUrl,
+        bannerUrl: user.bannerUrl || "",
         bio: user.bio || "",
         skills: user.skills || [],
         createdAt: user.createdAt,

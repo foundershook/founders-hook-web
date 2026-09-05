@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import SettingsOtp from "@/models/SettingsOtp";
 import { sendSettingsChangeOtpEmail } from "@/lib/brevo";
-import { getSession } from "@/lib/auth"; // Assuming getSession is available in auth or we need to extract from headers
+
 
 export async function POST(req: NextRequest) {
   try {

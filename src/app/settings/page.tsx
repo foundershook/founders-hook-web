@@ -212,7 +212,7 @@ export default function SettingsPage() {
                   <Settings size={22} />
                 </div>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-sand-100">
+                  <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-sand-100">
                     Settings
                   </h1>
                   <p className="text-sm text-sand-400">

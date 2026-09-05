@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', 'Times New Roman', Calibri, Georgia, sans-serif;
+  font-family: 'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif;
   background-color: #050505;
   color: #f0f0f0;
 }
@@ -51,13 +51,13 @@ body {
 }
 
 @layer components {
-  .profile-calibri-container,
-  .profile-calibri-container * {
-    font-family: Calibri, 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif !important;
+  .profile-calibri-container {
+    font-family: 'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif;
   }
 
-  .font-display {
-    font-family: 'Times New Roman', Calibri, Georgia, serif;
+  .font-display,
+  .profile-calibri-container .font-display {
+    font-family: 'Times New Roman', Calibri, Georgia, serif !important;
   }
 
   /* Primary amber CTA — uses direct CSS to avoid @apply token resolution issues */
@@ -72,7 +72,7 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     color: #050505;
-    font-family: 'Inter', 'Times New Roman', Calibri, Georgia, sans-serif;
+    font-family: 'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif;
     box-shadow: 0 8px 30px -8px rgba(255, 255, 255, 0.5);
     transition: background-color 0.2s, transform 0.2s;
   }

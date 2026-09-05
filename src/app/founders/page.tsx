@@ -139,7 +139,7 @@ export default function FoundersPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-ink-950 text-sand-200" style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}>
+    <div className="flex min-h-screen bg-ink-950 text-sand-200" style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}>
       <Sidebar user={currentUser} />
 
       <main className="relative min-w-0 flex-1 overflow-y-auto">

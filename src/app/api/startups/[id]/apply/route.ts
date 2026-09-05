@@ -87,6 +87,27 @@ export async function POST(
 
     const applicantUser = await User.findById(session.userId).select("name username avatarUrl email mobile");
 
+    // Notify startup founder of new application
+    if (startup.founder && startup.founder.toString() !== session.userId) {
+      try {
+        const Notification = (await import("@/models/Notification")).default;
+        const roleTitleText = matchedRole.title || "Role";
+        await Notification.create({
+          recipient: startup.founder,
+          type: "new_application",
+          title: "New Job Application 🚀",
+          message: `${parsed.data.name || applicantUser?.name || "A candidate"} applied for ${roleTitleText} at ${startup.name}.`,
+          link: `/founders-hook?applicationId=${application._id.toString()}`,
+          applicationId: application._id,
+          startupName: startup.name,
+          roleTitle: roleTitleText,
+          read: false,
+        });
+      } catch (notifErr) {
+        console.error("Failed to create founder notification:", notifErr);
+      }
+    }
+
     const participants: string[] = [session.userId];
     if (startup.founder) {
       const founderIdStr = startup.founder.toString();

@@ -4,10 +4,7 @@ import { SESSION_COOKIE } from "@/lib/auth-constants";
 
 // Added /feed to the protected routes array
 const PROTECTED = ["/onboarding", "/dashboard", "/waitlist-success", "/feed", "/founders-hook"];
-
-// Define who gets to bypass the waitlist and see the app
-// Replace these with the exact username(s) you register with
-const ADMIN_USERNAMES = ["shubham", "adwait","saraswat"];
+const ADMIN_USERNAMES = ["shubham", "adwait", "saraswat", "amoghj_18", "rishabh45", "jay.antbhat"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

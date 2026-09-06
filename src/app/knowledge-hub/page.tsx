@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { timeAgo } from "@/lib/timeAgo";
+import CommentsSection from "@/components/knowledge/CommentsSection";
 
 interface Post {
   _id: string;
@@ -195,6 +196,12 @@ export default function KnowledgeHubPage() {
             <div className="prose prose-invert max-w-none text-sand-300 text-base sm:text-lg leading-relaxed space-y-6 whitespace-pre-wrap">
               {readingPost.content || readingPost.excerpt}
             </div>
+
+            {/* Comments & Discussion */}
+            <CommentsSection
+              postId={readingPost._id}
+              currentUser={currentUser}
+            />
           </div>
         ) : (
           <>

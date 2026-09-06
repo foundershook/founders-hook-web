@@ -335,7 +335,7 @@ export default function StartupDetailModal({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           key={m._id || `member-${idx}`}
-                          src={m.avatarUrl}
+                          src={m.avatarUrl || "https://picsum.photos/seed/user/64/64"}
                           alt={m.name}
                           title={m.name}
                           className="h-8 w-8 rounded-full border-2 border-ink-850 object-cover"

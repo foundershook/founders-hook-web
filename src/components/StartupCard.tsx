@@ -102,7 +102,7 @@ export default function StartupCard({ startup }: { startup: StartupDTO }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={m._id || `member-${idx}`}
-                    src={m.avatarUrl}
+                    src={m.avatarUrl || "https://picsum.photos/seed/user/64/64"}
                     alt={m.name}
                     className="h-6 w-6 rounded-full border border-ink-850 object-cover"
                   />

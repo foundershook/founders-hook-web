@@ -54,13 +54,13 @@ export default function FeedPage() {
 
   return (
     <div
-      className="flex min-h-screen bg-ink-950 text-sand-200"
+      className="flex h-screen overflow-hidden bg-ink-950 text-sand-200"
       style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
     >
       <Sidebar user={me} />
 
       {/* MAIN CONTENT */}
-      <div className="relative flex-1 overflow-y-auto pb-16 lg:pb-0">
+      <div className="relative flex-1 h-screen overflow-y-auto pb-16 lg:pb-0">
         {/* Background Image Overlay restricted to header */}
         <div
           className="absolute top-0 left-0 right-0 h-[520px] z-0 pointer-events-none opacity-100"

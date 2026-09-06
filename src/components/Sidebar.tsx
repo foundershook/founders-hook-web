@@ -193,7 +193,7 @@ export default function Sidebar({
           DESKTOP: Permanent sidebar (unchanged)
           ═══════════════════════════════════════════════ */}
       <aside
-        className="hidden w-[72px] flex-col items-center border-r border-ink-700/60 bg-ink-900 py-5 lg:flex xl:w-52 xl:items-stretch xl:px-3"
+        className="hidden w-[72px] flex-col items-center border-r border-ink-700/60 bg-ink-900 py-5 lg:flex xl:w-52 xl:items-stretch xl:px-3 sticky top-0 h-screen overflow-y-auto"
         style={{ fontFamily: "'Calibri', 'Carlito', 'Segoe UI', Candara, Optima, Arial, sans-serif" }}
       >
         {/* LOGO */}

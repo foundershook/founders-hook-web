@@ -115,9 +115,9 @@ export function subscribeConversations(
           application: data.application,
           startup: data.startup,
           activeMeet: data.activeMeet || null,
-          lastMessageAt: data.lastMessageAt || data.application?.createdAt || data.createdAt || null,
-          lastMessagePreview: data.lastMessagePreview || (data.application?.roleTitle ? `Applied for ${data.application.roleTitle}` : ""),
-          createdAt: data.createdAt || data.application?.createdAt || null,
+          lastMessageAt: data.lastMessageAt || null,
+          lastMessagePreview: data.lastMessagePreview || "",
+          createdAt: data.createdAt || null,
           updatedAt: data.updatedAt,
         };
       });
@@ -154,11 +154,24 @@ export function subscribeMessages(
     (snapshot) => {
       const messages: MessageDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data({ serverTimestamps: "estimate" });
-        let createdAtStr = new Date().toISOString();
+        let createdAtStr = "";
         if (data.createdAt instanceof Timestamp) {
           createdAtStr = data.createdAt.toDate().toISOString();
         } else if (typeof data.createdAt === "string") {
-          createdAtStr = data.createdAt;
+          const t = new Date(data.createdAt).getTime();
+          if (!isNaN(t)) createdAtStr = data.createdAt;
+        } else if (data.createdAt && typeof data.createdAt === "object" && typeof data.createdAt.toDate === "function") {
+          createdAtStr = data.createdAt.toDate().toISOString();
+        } else if (data.createdAt && typeof data.createdAt === "object" && "seconds" in data.createdAt && typeof data.createdAt.seconds === "number") {
+          createdAtStr = new Date(data.createdAt.seconds * 1000).toISOString();
+        }
+
+        if (!createdAtStr) {
+          if (data.endedAt && typeof data.endedAt === "string" && !isNaN(new Date(data.endedAt).getTime())) {
+            createdAtStr = data.endedAt;
+          } else {
+            createdAtStr = (docSnap as any).createTime ? (docSnap as any).createTime.toDate().toISOString() : "1970-01-01T00:00:00.000Z";
+          }
         }
 
         return {
@@ -174,6 +187,13 @@ export function subscribeMessages(
           readBy: data.readBy || [],
           createdAt: createdAtStr,
         };
+      });
+
+      // Guarantee strict ascending chronological sorting so latest message is ALWAYS at the bottom
+      messages.sort((a, b) => {
+        const timeA = new Date(a.createdAt).getTime() || 0;
+        const timeB = new Date(b.createdAt).getTime() || 0;
+        return timeA - timeB;
       });
 
       onUpdate(messages);
@@ -303,7 +323,7 @@ export async function sendMeetingInvite(
     avatarUrl: sender.avatarUrl || "",
   });
 
-  const docRef = await addDoc(messagesRef, sanitizeForFirestore({
+  const docRef = await addDoc(messagesRef, {
     sender: cleanSender,
     content: "📹 Started a Google Meet: Click to join",
     type: "meet",
@@ -311,7 +331,7 @@ export async function sendMeetingInvite(
     meetStatus: "active",
     readBy: [sender._id],
     createdAt: serverTimestamp(),
-  }));
+  });
 
   const convoRef = doc(db, "conversations", conversationId);
   await updateDoc(convoRef, sanitizeForFirestore({
@@ -351,6 +371,7 @@ export async function endMeetingCall(conversationId: string, messageId?: string)
     const convoRef = doc(db, "conversations", conversationId);
     await updateDoc(convoRef, {
       activeMeet: null,
+      lastMessagePreview: "📹 Google Meet Ended",
       updatedAt: now,
     });
   } catch (e) {
@@ -365,12 +386,18 @@ export function sanitizeForFirestore<T>(data: T): T {
   if (data === null || data === undefined) {
     return null as any;
   }
+  if (
+    data instanceof Date ||
+    (typeof data === "object" && data !== null && ("_methodName" in data || "nanoseconds" in data || "seconds" in data))
+  ) {
+    return data;
+  }
   if (Array.isArray(data)) {
     return data
       .filter((item) => item !== undefined)
       .map((item) => sanitizeForFirestore(item)) as any;
   }
-  if (typeof data === "object" && !(data instanceof Date)) {
+  if (typeof data === "object") {
     const result: Record<string, any> = {};
     for (const [key, value] of Object.entries(data as Record<string, any>)) {
       if (value !== undefined) {

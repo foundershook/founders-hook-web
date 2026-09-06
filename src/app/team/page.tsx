@@ -287,7 +287,7 @@ export default function TeamPage() {
   return (
     <div
       className="flex min-h-screen bg-ink-950 text-sand-200"
-      style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+      style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
     >
       <Sidebar user={currentUser} />
 

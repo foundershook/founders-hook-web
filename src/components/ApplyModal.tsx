@@ -19,7 +19,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import type { StartupDTO } from "./StartupCard";
-import { syncFirestoreConversation, sendApplicationCardMessage } from "@/lib/chat";
+import { syncFirestoreConversation } from "@/lib/chat";
 
 const GENDER_OPTIONS = ["Male", "Female", "Other", "Prefer not to say"] as const;
 
@@ -158,7 +158,7 @@ export default function ApplyModal({
         return;
       }
 
-      // Sync conversation and post initial application card into Firestore
+      // Sync conversation metadata to Firestore so founder can message candidate when ready
       if (data.conversationData) {
         try {
           await syncFirestoreConversation({
@@ -170,19 +170,8 @@ export default function ApplyModal({
             application: data.conversationData.application,
             startup: data.conversationData.startup,
           });
-
-          await sendApplicationCardMessage(
-            data.conversationData.id,
-            {
-              _id: data.conversationData.application.applicant._id,
-              name: data.conversationData.application.applicant.name,
-              username: data.conversationData.application.applicant.username,
-              avatarUrl: data.conversationData.application.applicant.avatarUrl,
-            },
-            data.conversationData.initialMessage
-          );
         } catch (chatErr) {
-          console.error("Failed to sync application to Firestore chat:", chatErr);
+          console.error("Failed to sync application to Firestore:", chatErr);
         }
       }
 
@@ -201,7 +190,7 @@ export default function ApplyModal({
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
         transition={{ duration: 0.2 }}
         className="my-auto w-full max-w-2xl rounded-2xl border border-white/15 bg-[#0e0e12] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col max-h-[92vh]"
-        style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}
+        style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
       >
         {/* Email Window Chrome / Header Bar */}
         <div className="flex items-center justify-between border-b border-white/10 bg-[#14141a] px-4 py-3 select-none">

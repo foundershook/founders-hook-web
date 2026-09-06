@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 
-// Deprecated: Chat messages are managed natively in Firebase Firestore
+// The primary application database (MongoDB) does not store chats or messages.
 export async function GET() {
-  return NextResponse.json({ messages: [], message: "Messages are handled via Firestore" });
+  return NextResponse.json({ messages: [], message: "Chats are not stored in the database." });
 }
 
 export async function POST() {
-  return NextResponse.json({ success: true, message: "Messages are handled via Firestore" });
+  return NextResponse.json({ success: true, message: "Chats are not stored in the database." });
 }
+

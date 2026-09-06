@@ -16,7 +16,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json();
-    const { status } = body;
+    const { status, message } = body;
 
     if (!status || !["Accepted", "Rejected"].includes(status)) {
       return NextResponse.json({ error: "Invalid status" }, { status: 400 });
@@ -45,15 +45,17 @@ export async function PATCH(
       );
       const roleTitle = matchedRole?.title || "Role";
 
+      const defaultMessage =
+        status === "Accepted"
+          ? `${startup.name} accepted your application for ${roleTitle}!`
+          : `${startup.name} has updated the status of your application for ${roleTitle} to Rejected.`;
+
       await Notification.create({
         recipient: application.applicant,
         type: status === "Accepted" ? "application_accepted" : "application_rejected",
         title: status === "Accepted" ? "Application Accepted! 🎉" : "Application Update",
-        message:
-          status === "Accepted"
-            ? `${startup.name} accepted your application for ${roleTitle}!`
-            : `${startup.name} has updated the status of your application for ${roleTitle} to Rejected.`,
-        link: `/founders-hook?applicationId=${application._id.toString()}`,
+        message: message ? message.trim() : defaultMessage,
+        link: `/messages?conversationId=${application._id.toString()}`,
         applicationId: application._id,
         startupName: startup.name,
         roleTitle,

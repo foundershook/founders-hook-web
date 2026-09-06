@@ -3,7 +3,8 @@
 import ProjectSetupModal from "@/components/ProjectSetupModal";
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Search, Bell, Plus } from "lucide-react";
+import { Search, Bell, Plus, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
 import NotificationBell from "@/components/NotificationBell";
@@ -54,7 +55,7 @@ export default function FeedPage() {
   return (
     <div
       className="flex min-h-screen bg-ink-950 text-sand-200"
-      style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+      style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
     >
       <Sidebar user={me} />
 
@@ -78,7 +79,7 @@ export default function FeedPage() {
           {/* ── HEADER ── */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <h1 className="font-bold text-2xl sm:text-[1.75rem] tracking-tight text-sand-100 drop-shadow-md">
+              <h1 className="font-display font-bold text-2xl sm:text-[1.75rem] tracking-tight text-sand-100 drop-shadow-md">
                 {greeting()}, {me?.name ? me.name.split(" ")[0] : "there"} 👋
               </h1>
               <p className="mt-0.5 text-sm text-sand-300 drop-shadow-sm">
@@ -99,14 +100,23 @@ export default function FeedPage() {
                 />
               </div>
 
+              <Link
+                href="/messages"
+                className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ink-700 bg-ink-850 text-sand-400 hover:text-sand-100 transition-colors focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+                aria-label="Messages"
+                title="Messages"
+              >
+                <MessageSquare size={16} />
+              </Link>
+
               <NotificationBell />
             </div>
           </div>
 
           {/* ── DISCOVER STARTUPS ── */}
-          <section className="mt-64 sm:mt-72 lg:mt-80" style={{ fontFamily: "'Calibri', sans-serif" }}>
+          <section className="mt-64 sm:mt-72 lg:mt-80">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-bold text-base text-sand-100">
+              <h2 className="font-display font-bold text-base text-sand-100">
                 Discover Impactful Startups
               </h2>
             </div>
@@ -150,7 +160,7 @@ export default function FeedPage() {
       <button
         onClick={() => setCreateOpen(true)}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-white text-ink-950 shadow-glow hover:bg-sand-200 transition-all hover:scale-[1.03] active:scale-[0.97] lg:h-auto lg:w-auto lg:gap-2 lg:px-5 lg:py-2.5"
-        style={{ fontFamily: "'Times New Roman', Calibri, Georgia, serif" }}
+        style={{ fontFamily: "'Calibri', 'Candara', 'Segoe UI', Arial, sans-serif" }}
         aria-label="Create Startup"
       >
         <Plus size={20} className="shrink-0" />

@@ -16,18 +16,20 @@ import {
   Menu,
   X,
   Settings,
+  MessageSquare,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const NAV_ITEMS = [
-  { label: "Settings",      icon: Settings, href: "/settings" },
-  { label: "Feed",          icon: Rss,      href: "/feed" },
-  { label: "Profile",       icon: UserRound, href: "/profile" },
-  { label: "Founders",      icon: Users,    href: "/founders" },
-  { label: "Founders Hook", icon: Anchor,   href: "/founders-hook" },
-  { label: "Team",           icon: UsersRound, href: "/team" },
-  { label: "Networking",    icon: Network,  href: "/networking" },
-  { label: "Knowledge Hub", icon: BookOpen, href: "/knowledge-hub" },
+  { label: "Feed",          icon: Rss,          href: "/feed" },
+  { label: "Profile",       icon: UserRound,    href: "/profile" },
+  { label: "Founders",      icon: Users,        href: "/founders" },
+  { label: "Founders Hook", icon: Anchor,       href: "/founders-hook" },
+  { label: "Messages",      icon: MessageSquare, href: "/messages" },
+  { label: "Team",          icon: UsersRound,   href: "/team" },
+  { label: "Networking",    icon: Network,      href: "/networking" },
+  { label: "Knowledge Hub", icon: BookOpen,     href: "/knowledge-hub" },
+  { label: "Settings",      icon: Settings,     href: "/settings" },
 ];
 
 export default function Sidebar({

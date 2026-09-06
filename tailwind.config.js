@@ -42,7 +42,7 @@ module.exports = {
       },
       fontFamily: {
         display: ["'Times New Roman'", "Calibri", "Georgia", "serif"],
-        sans:    ["Calibri", "'Times New Roman'", "Georgia", "serif"],
+        sans:    ["Calibri", "'Candara'", "'Segoe UI'", "Arial", "sans-serif"],
       },
       backgroundImage: {
         "white-gradient": "linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)",

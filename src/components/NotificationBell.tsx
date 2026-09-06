@@ -95,9 +95,9 @@ export default function NotificationBell() {
     if (notif.link) {
       router.push(notif.link);
     } else if (notif.applicationId) {
-      router.push(`/founders-hook?applicationId=${notif.applicationId}`);
+      router.push(`/messages?conversationId=${notif.applicationId}`);
     } else {
-      router.push("/founders-hook");
+      router.push("/messages");
     }
   };
 

@@ -23,6 +23,7 @@ import {
   User,
   Camera,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 
@@ -149,6 +150,13 @@ export default function OnboardingPage() {
   useEffect(() => {
     async function init() {
       try {
+        if (typeof window !== "undefined") {
+          const params = new URLSearchParams(window.location.search);
+          if (params.get("phase") === "startup") {
+            setPhase("startup");
+          }
+        }
+
         const [qRes, userRes] = await Promise.all([
           fetch("/api/questions"),
           fetch("/api/auth/me"),
@@ -201,25 +209,25 @@ export default function OnboardingPage() {
     setProfileSaving(true);
     setProfileError("");
     try {
-      const res = await fetch("/api/profile/bio", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: currentUser?.id || currentUser?._id,
-          bio: bio.trim(),
-          profilePic: profilePic || undefined,
-          skills,
-        }),
-      });
+      if (profilePic) {
+        const res = await fetch("/api/profile/bio", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: currentUser?.id || currentUser?._id,
+            profilePic: profilePic || undefined,
+          }),
+        });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setProfileError(data.error || "Failed to update profile.");
-        setProfileSaving(false);
-        return;
+        if (!res.ok) {
+          const data = await res.json();
+          setProfileError(data.error || "Failed to save profile picture.");
+          setProfileSaving(false);
+          return;
+        }
       }
 
-      setPhase("questions");
+      router.push("/onboarding/chat");
     } catch {
       setProfileError("Network error. Please try again.");
     } finally {
@@ -359,19 +367,16 @@ export default function OnboardingPage() {
       <main className="relative flex min-h-screen items-center justify-center bg-ink-radial px-4 sm:px-6 py-12">
         <div className="pointer-events-none absolute -top-32 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-white/5 blur-[110px]" />
 
-        <div className="relative z-10 w-full max-w-lg">
+        <div className="relative z-10 w-full max-w-md">
           <div className="rounded-3xl border border-white/10 bg-ink-900/80 p-6 sm:p-8 shadow-card backdrop-blur-xl">
             <div className="text-center mb-6">
               <h1 className="text-xl sm:text-2xl font-bold text-sand-100 tracking-tight">
                 Welcome{currentUser?.name ? `, ${currentUser.name.split(" ")[0]}` : ""}!
               </h1>
-              <p className="mt-1 text-xs text-sand-400">
-                Set up your profile to connect with founders and teammates.
-              </p>
             </div>
 
             {/* 1. Add Photo in the middle */}
-            <div className="flex flex-col items-center justify-center mb-6">
+            <div className="flex flex-col items-center justify-center mb-8">
               <div className="relative">
                 <CldUploadWidget
                   uploadPreset="founders_hook_users"
@@ -437,103 +442,6 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            {/* 2. Small Bio Textbox */}
-            <div className="mb-5">
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-sand-400">
-                  Bio
-                </label>
-                <span className="text-[10px] text-sand-500 font-mono">
-                  {bio.length}/250
-                </span>
-              </div>
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                maxLength={250}
-                rows={2}
-                placeholder="A brief intro about yourself and what you're building..."
-                className="w-full rounded-xl border border-white/10 bg-black/40 px-3.5 py-2.5 text-xs sm:text-sm text-sand-200 placeholder-sand-600 outline-none transition focus:border-white/30 focus:ring-1 focus:ring-white/20 resize-none leading-relaxed"
-              />
-            </div>
-
-            {/* 3. Selectable Skills Boxes */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-sand-400">
-                  Skills
-                </label>
-                {skills.length > 0 && (
-                  <span className="text-[10px] text-sand-400">
-                    {skills.length} selected
-                  </span>
-                )}
-              </div>
-
-              {/* Skill selectable boxes */}
-              <div className="flex flex-wrap gap-2">
-                {PRESET_SKILLS.map((skill) => {
-                  const isSelected = skills.includes(skill);
-                  return (
-                    <button
-                      key={skill}
-                      type="button"
-                      onClick={() => toggleSkill(skill)}
-                      className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs transition-all ${
-                        isSelected
-                          ? "border border-white bg-white text-ink-950 font-semibold shadow-sm scale-[1.02]"
-                          : "border border-white/10 bg-white/5 text-sand-300 hover:border-white/20 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      {isSelected && <Check size={12} className="shrink-0" />}
-                      <span>{skill}</span>
-                    </button>
-                  );
-                })}
-
-                {/* Custom added skills */}
-                {skills
-                  .filter((s) => !PRESET_SKILLS.includes(s))
-                  .map((skill) => (
-                    <button
-                      key={skill}
-                      type="button"
-                      onClick={() => toggleSkill(skill)}
-                      className="flex items-center gap-1.5 rounded-lg border border-white bg-white text-ink-950 font-semibold px-3 py-1.5 text-xs shadow-sm scale-[1.02]"
-                    >
-                      <Check size={12} className="shrink-0" />
-                      <span>{skill}</span>
-                    </button>
-                  ))}
-              </div>
-
-              {/* Custom Skill Input */}
-              <div className="mt-2.5 flex items-center gap-2">
-                <input
-                  type="text"
-                  value={customSkill}
-                  onChange={(e) => setCustomSkill(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleAddCustomSkill();
-                    }
-                  }}
-                  placeholder="+ Add other skill (e.g. Python, Figma)..."
-                  className="flex-1 rounded-lg border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-sand-200 placeholder-sand-600 outline-none transition focus:border-white/30"
-                />
-                {customSkill.trim() && (
-                  <button
-                    type="button"
-                    onClick={handleAddCustomSkill}
-                    className="rounded-lg bg-white/10 border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
-                  >
-                    Add
-                  </button>
-                )}
-              </div>
-            </div>
-
             {profileError && (
               <p className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-300">
                 {profileError}
@@ -545,10 +453,20 @@ export default function OnboardingPage() {
               type="button"
               onClick={handleProfileSubmit}
               disabled={profileSaving}
-              className="btn-white w-full !py-2.5 !px-6 text-sm font-semibold rounded-full shadow-glow flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+              className="btn-gold w-full !py-3 !px-6 text-sm font-semibold rounded-full shadow-glow flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
             >
-              {profileSaving ? "Saving..." : "Continue"}
-              <ArrowRight size={15} />
+              {profileSaving ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Saving photo...</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles size={16} />
+                  <span>Continue to AI Profile Builder</span>
+                  <ArrowRight size={15} />
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -759,12 +677,19 @@ export default function OnboardingPage() {
                     Takes about 2 minutes — and your startup will be featured at launch!
                   </p>
 
-                  <div className="mt-10 flex flex-col items-center gap-4">
+                  <div className="mt-10 flex flex-col items-center gap-3">
                     <button
                       onClick={() => setStartupStep(1)}
                       className="btn-gold !px-8 !py-3"
                     >
                       Set Up My Startup <ArrowRight size={16} />
+                    </button>
+                    <button
+                      onClick={() => router.push("/waitlist-success")}
+                      className="text-xs text-mist-400 hover:text-sand-100 transition-colors inline-flex items-center gap-1 mt-1"
+                    >
+                      <span>I don&apos;t have a startup yet — View my VIP code</span>
+                      <ArrowRight size={12} />
                     </button>
                   </div>
                 </motion.div>

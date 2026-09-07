@@ -56,8 +56,9 @@ function FoundersHookLogoIcon({
 }) {
   return (
     <div
-      className={`relative overflow-hidden shrink-0 border border-white/10 ${glow ? "shadow-[0_0_18px_rgba(231,181,99,0.35)] border-amber-400/35" : "shadow-sm"
-        } ${className}`}
+      className={`relative overflow-hidden shrink-0 border border-white/10 ${
+        glow ? "shadow-[0_0_18px_rgba(231,181,99,0.35)] border-amber-400/35" : "shadow-sm"
+      } ${className}`}
       style={{ width: size, height: size }}
     >
       <Image
@@ -535,39 +536,39 @@ function AIOnboardingChatContent() {
   const welcomeCards =
     mode === "edit"
       ? [
-        {
-          icon: Lightbulb,
-          title: "Make bio punchier",
-          prompt: "Please rewrite my bio to be punchier, high-impact, and compelling to co-founders and investors.",
-        },
-        {
-          icon: Compass,
-          title: "Highlight recent wins",
-          prompt: "I want to highlight my latest startup milestones, key launches, and architectural leadership.",
-        },
-        {
-          icon: Code2,
-          title: "Update technical skills",
-          prompt: "Suggest modern technical, architectural, and leadership skills based on my background.",
-        },
-      ]
+          {
+            icon: Lightbulb,
+            title: "Make bio punchier",
+            prompt: "Please rewrite my bio to be punchier, high-impact, and compelling to co-founders and investors.",
+          },
+          {
+            icon: Compass,
+            title: "Highlight recent wins",
+            prompt: "I want to highlight my latest startup milestones, key launches, and architectural leadership.",
+          },
+          {
+            icon: Code2,
+            title: "Update technical skills",
+            prompt: "Suggest modern technical, architectural, and leadership skills based on my background.",
+          },
+        ]
       : [
-        {
-          icon: Briefcase,
-          title: "Founder building a startup",
-          prompt: "I'm a Founder building an early-stage startup looking for co-founders and founding engineers.",
-        },
-        {
-          icon: Code2,
-          title: "Applicant joining a team",
-          prompt: "I'm an Applicant with strong technical & product experience looking for an ambitious team.",
-        },
-        {
-          icon: Rocket,
-          title: "Exploring both paths",
-          prompt: "I build side projects and also look for high-impact founding roles across AI and SaaS.",
-        },
-      ];
+          {
+            icon: Briefcase,
+            title: "Founder building a startup",
+            prompt: "I'm a Founder building an early-stage startup looking for co-founders and founding engineers.",
+          },
+          {
+            icon: Code2,
+            title: "Applicant joining a team",
+            prompt: "I'm an Applicant with strong technical & product experience looking for an ambitious team.",
+          },
+          {
+            icon: Rocket,
+            title: "Exploring both paths",
+            prompt: "I build side projects and also look for high-impact founding roles across AI and SaaS.",
+          },
+        ];
 
   if (loadingUser) {
     return (
@@ -785,14 +786,34 @@ function AIOnboardingChatContent() {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex flex-wrap gap-2 pl-12"
                 >
-                  <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-gold-500/30 bg-gold-500/15 text-gold-300 shadow-sm">
-                    <Bot size={16} />
-                  </div>
-                  <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-white/10 bg-ink-900/90 px-4 py-3 text-xs text-mist-400">
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gold-400" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gold-400 [animation-delay:0.2s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gold-400 [animation-delay:0.4s]" />
-                    <span className="ml-2 text-xs">Crafting your profile...</span>
+                  {dynamicSuggestions.map((suggestion, sIdx) => (
+                    <button
+                      key={sIdx}
+                      type="button"
+                      onClick={() => sendMessage(suggestion)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1.5 text-xs text-amber-200 transition-all hover:bg-amber-400/20 hover:border-amber-400/60 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <span>{suggestion}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* Thinking / Shimmer State */}
+              {isTyping && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-start gap-3.5 max-w-[88%]"
+                >
+                  <FoundersHookLogoIcon size={32} className="rounded-xl mt-1 animate-pulseGlow" glow />
+                  <div className="rounded-2xl border border-white/[0.06] bg-ink-900/60 px-5 py-4 backdrop-blur-md">
+                    <div className="flex items-center gap-2">
+                      <span className="gemini-shimmer-text text-xs sm:text-sm font-medium">
+                        Founders Hook AI is thinking...
+                      </span>
+                    </div>
+                    <div className="mt-2.5 h-0.5 w-36 rounded-full gemini-shimmer-bar" />
                   </div>
                 </motion.div>
               )}
@@ -858,60 +879,62 @@ function AIOnboardingChatContent() {
             </div>
           </div>
 
-          {/* Saving / Success state banner */}
-          <AnimatePresence>
-            {(isSaving || savedSuccess) && (
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 15 }}
-                className="mx-4 mb-2 max-w-3xl rounded-2xl border border-gold-500/30 bg-ink-950/90 p-4 text-center shadow-gold backdrop-blur-lg sm:mx-auto sm:w-full"
+          {/* ── Floating Prompt Dock ─────────────────────────────────── */}
+          <footer className="relative shrink-0 px-4 pb-4 pt-2 sm:px-8 sm:pb-6">
+            <div className="mx-auto max-w-3xl">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  sendMessage();
+                }}
+                className="gemini-glass relative flex flex-col rounded-[26px] p-2 sm:p-2.5 transition-all duration-300 focus-within:border-amber-400/50 focus-within:shadow-[0_0_25px_rgba(231,181,99,0.18)]"
               >
-                {savedSuccess ? (
-                  <div className="flex items-center justify-center gap-2 text-sm font-semibold text-emerald-400">
-                    <CheckCircle2 size={18} />
-                    <span>Profile saved to MongoDB! Redirecting...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center gap-2 text-sm text-gold-300">
-                    <Loader2 size={18} className="animate-spin" />
-                    <span>Finalizing your profile and saving answers...</span>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  rows={1}
+                  placeholder={
+                    mode === "edit"
+                      ? "Tell the AI to refine your bio, rewrite for investors, or suggest skills..."
+                      : "Type your response or answer here..."
+                  }
+                  disabled={isTyping || isSaving || savedSuccess}
+                  className="max-h-36 min-h-[44px] w-full resize-none border-none bg-transparent px-3.5 py-2.5 text-xs sm:text-sm text-sand-100 placeholder-sand-600 focus:outline-none disabled:opacity-50"
+                />
 
-          {/* Input Bar - Aligned with the max-w-3xl messages container */}
-          <footer className="shrink-0 border-t border-white/10 bg-ink-950/80 px-4 py-3 backdrop-blur-md sm:px-8">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                sendMessage();
-              }}
-              className="mx-auto flex max-w-3xl items-center gap-2.5"
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your response..."
-                disabled={isTyping || isSaving || savedSuccess}
-                className="field-input flex-1 !py-3 !px-4 text-xs sm:text-sm placeholder-sand-600 disabled:opacity-50"
-              />
-              <button
-                type="submit"
-                disabled={!input.trim() || isTyping || isSaving || savedSuccess}
-                className="btn-gold !py-3 !px-4 shrink-0 rounded-xl disabled:opacity-40"
-              >
-                {isTyping ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <Send size={16} />
-                )}
-              </button>
-            </form>
+                <div className="flex items-center justify-between pt-1 px-1.5">
+                  <div className="flex items-center gap-2 text-sand-400">
+                    <FoundersHookLogoIcon size={20} className="rounded-md" />
+                    <span className="text-[11px] hidden sm:inline text-sand-500">
+                      Press <kbd className="rounded border border-white/10 px-1 py-0.5 text-[10px]">Enter</kbd> to send
+                    </span>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || isTyping || isSaving || savedSuccess}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 ${
+                      input.trim() && !isTyping
+                        ? "bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 text-ink-950 font-bold shadow-gold hover:scale-105 active:scale-95"
+                        : "bg-white/5 text-sand-600 border border-white/5 cursor-not-allowed"
+                    }`}
+                    aria-label="Send message"
+                  >
+                    {isTyping ? (
+                      <Loader2 size={15} className="animate-spin text-amber-400" />
+                    ) : (
+                      <Send size={15} className="translate-x-[1px]" />
+                    )}
+                  </button>
+                </div>
+              </form>
+
+              <p className="mt-2 text-center text-[10px] text-sand-600">
+                Founders Hook AI helps build your profile. You can edit your bio & skills anytime.
+              </p>
+            </div>
           </footer>
         </div>
 

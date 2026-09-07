@@ -22,6 +22,20 @@ module.exports = {
           900: "#59401d",
           950: "#32230f",
         },
+        // Gold alias matching amber
+        gold: {
+          50:  "#fcfaf5",
+          100: "#f8f3e9",
+          200: "#f0e1c8",
+          300: "#e7cda4",
+          400: "#dfba80",
+          500: "#e7b563",
+          600: "#c89a46",
+          700: "#9f7734",
+          800: "#7b5a28",
+          900: "#59401d",
+          950: "#32230f",
+        },
         // Deep neutral-black backgrounds matching screenshot
         ink: {
           950: "#050505",   // page bg
@@ -39,6 +53,16 @@ module.exports = {
           600: "#737373",   // placeholder / very muted
           800: "#404040",   // dimmed
         },
+        // Mist alias matching sand
+        mist: {
+          50:  "#ffffff",
+          100: "#f5f5f5",
+          200: "#f0f0f0",
+          300: "#d4d4d4",
+          400: "#a3a3a3",
+          500: "#737373",
+          600: "#525252",
+        },
       },
       fontFamily: {
         display: ["'Times New Roman'", "Calibri", "Georgia", "serif"],
@@ -46,12 +70,17 @@ module.exports = {
       },
       backgroundImage: {
         "white-gradient": "linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)",
+        "gold-gradient": "linear-gradient(135deg, #f8f3e9 0%, #e7b563 50%, #c89a46 100%)",
+        "gemini-glow": "radial-gradient(ellipse at center, rgba(231, 181, 99, 0.15) 0%, rgba(5, 5, 5, 0) 70%)",
         "ink-radial": "radial-gradient(140% 140% at 50% 0%, #1c1612 0%, #0e0c0a 45%, #080706 100%)",
       },
       boxShadow: {
-        glow:     "0 8px 30px -8px rgba(255, 255, 255, 0.5)",
-        glowSoft: "0 0 32px rgba(255, 255, 255, 0.25)",
-        card:     "0 1px 0 rgba(255,255,255,0.04), 0 8px 24px -8px rgba(0,0,0,0.9)",
+        glow:      "0 8px 30px -8px rgba(255, 255, 255, 0.5)",
+        glowSoft:  "0 0 32px rgba(255, 255, 255, 0.25)",
+        gold:      "0 8px 30px -8px rgba(231, 181, 99, 0.45)",
+        goldSoft:  "0 0 32px rgba(231, 181, 99, 0.22)",
+        gemini:    "0 0 24px rgba(231, 181, 99, 0.25), 0 0 48px rgba(231, 181, 99, 0.08)",
+        card:      "0 1px 0 rgba(255,255,255,0.04), 0 8px 24px -8px rgba(0,0,0,0.9)",
       },
       keyframes: {
         fadeUp: {
@@ -70,6 +99,10 @@ module.exports = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        geminiPulse: {
+          "0%, 100%": { opacity: "0.7", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.05)" },
+        },
         purpleGlow: {
           "0%, 100%": { boxShadow: "0 0 20px rgba(147,51,234,0.4), 0 0 40px rgba(147,51,234,0.15)" },
           "50%": { boxShadow: "0 0 30px rgba(147,51,234,0.6), 0 0 60px rgba(147,51,234,0.25)" },
@@ -80,6 +113,7 @@ module.exports = {
         floatSlow: "floatSlow 6s ease-in-out infinite",
         pulseGlow: "pulseGlow 4s ease-in-out infinite",
         shimmer: "shimmer 2.5s linear infinite",
+        geminiPulse: "geminiPulse 3s ease-in-out infinite",
         purpleGlow: "purpleGlow 2s ease-in-out infinite",
       },
     },

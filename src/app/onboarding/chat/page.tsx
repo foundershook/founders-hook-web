@@ -25,6 +25,7 @@ import {
   Sparkles,
   Rocket,
 } from "lucide-react";
+import AnimatedOnboardingBackground from "@/components/AnimatedOnboardingBackground";
 
 const FOUNDERS_HOOK_LOGO =
   "https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg";
@@ -57,7 +58,7 @@ function FoundersHookLogoIcon({
   return (
     <div
       className={`relative overflow-hidden shrink-0 border border-white/10 ${
-        glow ? "shadow-[0_0_18px_rgba(231,181,99,0.35)] border-amber-400/35" : "shadow-sm"
+        glow ? "shadow-[0_0_18px_rgba(255,255,255,0.35)] border-white/20" : "shadow-sm"
       } ${className}`}
       style={{ width: size, height: size }}
     >
@@ -104,14 +105,14 @@ function FormattedMessageContent({ text }: { text: string }) {
           }
           if (part.startsWith("*") && part.endsWith("*") && part.length >= 2) {
             return (
-              <em key={pIdx} className="italic text-amber-300">
+              <em key={pIdx} className="italic text-white">
                 {part.slice(1, -1)}
               </em>
             );
           }
           if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
             return (
-              <code key={pIdx} className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-xs text-amber-200 font-mono">
+              <code key={pIdx} className="rounded-md border border-white/10 bg-white/5 px-1.5 py-0.5 text-xs text-white font-mono">
                 {part.slice(1, -1)}
               </code>
             );
@@ -122,7 +123,7 @@ function FormattedMessageContent({ text }: { text: string }) {
         if (isBullet) {
           return (
             <div key={idx} className="flex items-start gap-2.5 pl-1">
-              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white" />
               <div className="flex-1">{renderedLine}</div>
             </div>
           );
@@ -163,11 +164,8 @@ function AIOnboardingChatContent() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [liveProfile, setLiveProfile] = useState<Partial<ProfileData>>({});
   const [profileReady, setProfileReady] = useState(false);
-  const [newSkillInput, setNewSkillInput] = useState("");
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
-  const [isEditingLiveBio, setIsEditingLiveBio] = useState(false);
-  const [manualBioDraft, setManualBioDraft] = useState("");
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -370,32 +368,6 @@ function AIOnboardingChatContent() {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const handleAddSkill = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = newSkillInput.trim();
-    if (trimmed && !(liveProfile.skills || []).includes(trimmed)) {
-      setLiveProfile((prev) => ({
-        ...prev,
-        skills: [...(prev.skills || []), trimmed],
-      }));
-      setNewSkillInput("");
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove: string) => {
-    setLiveProfile((prev) => ({
-      ...prev,
-      skills: (prev.skills || []).filter((s) => s !== skillToRemove),
-    }));
-  };
-
-  const saveManualBio = () => {
-    if (manualBioDraft.trim()) {
-      setLiveProfile((prev) => ({ ...prev, bio: manualBioDraft.trim() }));
-    }
-    setIsEditingLiveBio(false);
-  };
-
   // Dynamic quick-reply chips based on conversation state
   const getDynamicSuggestions = () => {
     if (isTyping) return [];
@@ -532,51 +504,15 @@ function AIOnboardingChatContent() {
     }
   }
 
-  // Welcome state cards
-  const welcomeCards =
-    mode === "edit"
-      ? [
-          {
-            icon: Lightbulb,
-            title: "Make bio punchier",
-            prompt: "Please rewrite my bio to be punchier, high-impact, and compelling to co-founders and investors.",
-          },
-          {
-            icon: Compass,
-            title: "Highlight recent wins",
-            prompt: "I want to highlight my latest startup milestones, key launches, and architectural leadership.",
-          },
-          {
-            icon: Code2,
-            title: "Update technical skills",
-            prompt: "Suggest modern technical, architectural, and leadership skills based on my background.",
-          },
-        ]
-      : [
-          {
-            icon: Briefcase,
-            title: "Founder building a startup",
-            prompt: "I'm a Founder building an early-stage startup looking for co-founders and founding engineers.",
-          },
-          {
-            icon: Code2,
-            title: "Applicant joining a team",
-            prompt: "I'm an Applicant with strong technical & product experience looking for an ambitious team.",
-          },
-          {
-            icon: Rocket,
-            title: "Exploring both paths",
-            prompt: "I build side projects and also look for high-impact founding roles across AI and SaaS.",
-          },
-        ];
 
   if (loadingUser) {
     return (
       <main className="fixed inset-0 flex items-center justify-center bg-ink-950 text-sand-200">
-        <div className="flex flex-col items-center gap-4">
+        <AnimatedOnboardingBackground />
+        <div className="relative z-10 flex flex-col items-center gap-4">
           <FoundersHookLogoIcon size={48} className="rounded-2xl animate-pulseGlow" glow />
           <div className="flex items-center gap-2.5 text-xs text-sand-400">
-            <Loader2 size={15} className="animate-spin text-amber-400" />
+            <Loader2 size={15} className="animate-spin text-white" />
             <span className="gemini-shimmer-text">Initializing Founders Hook AI...</span>
           </div>
         </div>
@@ -585,14 +521,14 @@ function AIOnboardingChatContent() {
   }
 
   return (
-    <main className="fixed inset-0 flex flex-col overflow-hidden bg-ink-950 text-sand-100 selection:bg-amber-400/20 selection:text-white font-sans">
-      {/* Ambient website lighting */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-amber-500/[0.07] blur-[140px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-amber-600/[0.04] blur-[150px]" />
-      <div className="pointer-events-none absolute top-1/3 -left-32 h-[350px] w-[350px] rounded-full bg-white/[0.02] blur-[130px]" />
+    <main className="fixed inset-0 flex flex-col overflow-hidden bg-ink-950 text-sand-100 selection:bg-white/20 selection:text-white font-sans">
+      {/* Dynamic Animated Website Background (Shapes, Orbs, Tech Grid, Particles) */}
+      <AnimatedOnboardingBackground />
 
       {/* ── Header Bar ───────────────────────────────────────────────── */}
-      <header className="relative z-30 flex h-16 shrink-0 items-center justify-between border-b border-white/[0.08] bg-ink-950/85 px-4 backdrop-blur-xl sm:px-8">
+      <header className="relative z-30 flex h-16 shrink-0 items-center justify-between border-b border-white/[0.08] bg-ink-950/75 px-4 backdrop-blur-xl sm:px-8">
+        {/* Animated Brand Gold Edge Beam */}
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         <div className="flex items-center gap-3">
           {mode === "edit" ? (
             <Link
@@ -635,10 +571,10 @@ function AIOnboardingChatContent() {
             onClick={() => setMobileDrawerOpen(true)}
             className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-sand-200 transition-all hover:bg-white/10 lg:hidden"
           >
-            <Sliders size={13} className="text-amber-400" />
+            <Sliders size={13} className="text-white" />
             <span>Preview</span>
             {liveProfile.skills && liveProfile.skills.length > 0 && (
-              <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[10px] font-bold text-ink-950">
+              <span className="ml-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px] font-bold text-ink-950">
                 {liveProfile.skills.length}
               </span>
             )}
@@ -654,7 +590,7 @@ function AIOnboardingChatContent() {
               {user?.avatarUrl ? (
                 <Image src={user.avatarUrl} alt={user.name || "User"} fill className="object-cover" />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-xs font-bold text-amber-300">
+                <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
                   {user?.name?.charAt(0) || "U"}
                 </div>
               )}
@@ -665,71 +601,14 @@ function AIOnboardingChatContent() {
 
       {/* ── Main Chat + Live Inspector Layout ─────────────────────────── */}
       <div className="relative z-10 grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
-        {/* Chat Column */}
-        <div className="flex min-h-0 flex-col overflow-hidden bg-gradient-to-b from-ink-950 via-ink-950/90 to-ink-950">
+        {/* Chat Column with Glassmorphic Translucency */}
+        <div className="relative flex min-h-0 flex-col overflow-hidden bg-ink-950/30 backdrop-blur-[2px]">
           {/* Messages Scroll Container */}
           <div
             ref={messagesContainerRef}
             className="flex-1 overflow-y-auto px-4 py-6 overscroll-contain sm:px-8"
           >
             <div className="mx-auto flex max-w-3xl flex-col gap-6">
-              {/* Welcome / Hero State */}
-              {messages.length <= 1 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="my-3 rounded-3xl border border-white/[0.08] bg-gradient-to-b from-ink-900/70 to-ink-950/40 p-6 sm:p-8 backdrop-blur-md shadow-card"
-                >
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <FoundersHookLogoIcon size={26} className="rounded-lg" />
-                    <span className="text-xs font-semibold uppercase tracking-widest text-amber-300">
-                      {mode === "edit" ? "Profile Enhancer" : "AI Profile Co-pilot"}
-                    </span>
-                  </div>
-
-                  <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-sand-100">
-                    Hello,{" "}
-                    <span className="bg-gradient-to-r from-sand-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">
-                      {user?.name ? user.name.split(" ")[0] : "Founder"}
-                    </span>
-                  </h1>
-
-                  <p className="mt-2 text-xs sm:text-sm text-sand-400 leading-relaxed max-w-xl">
-                    {mode === "edit"
-                      ? "Let's update your bio, highlight recent launches, and refresh your skills to connect with the right founders."
-                      : "I'll ask a few quick questions to craft an inspiring bio and showcase your skills to co-founders and teams."}
-                  </p>
-
-                  {/* Quick Cards */}
-                  <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    {welcomeCards.map((card, i) => {
-                      const CardIcon = card.icon;
-                      return (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => sendMessage(card.prompt)}
-                          className="group relative flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-ink-900/60 p-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/40 hover:bg-ink-850 hover:shadow-card active:scale-[0.98]"
-                        >
-                          <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-amber-300 group-hover:border-amber-400/40 group-hover:bg-amber-400/10 transition-colors">
-                            <CardIcon size={16} />
-                          </div>
-                          <div>
-                            <h2 className="text-xs sm:text-sm font-semibold text-sand-100 group-hover:text-amber-200 transition-colors">
-                              {card.title}
-                            </h2>
-                            <p className="mt-1 line-clamp-2 text-[11px] text-sand-400 leading-normal">
-                              {card.prompt}
-                            </p>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-
               {/* Messages Stream */}
               {messages.map((msg, idx) => (
                 <motion.div
@@ -762,8 +641,8 @@ function AIOnboardingChatContent() {
                           >
                             {copiedIndex === idx ? (
                               <>
-                                <CheckCheck size={13} className="text-emerald-400" />
-                                <span className="text-emerald-300">Copied</span>
+                                <CheckCheck size={13} className="text-white" />
+                                <span className="text-white">Copied</span>
                               </>
                             ) : (
                               <>
@@ -791,7 +670,7 @@ function AIOnboardingChatContent() {
                       key={sIdx}
                       type="button"
                       onClick={() => sendMessage(suggestion)}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1.5 text-xs text-amber-200 transition-all hover:bg-amber-400/20 hover:border-amber-400/60 hover:scale-[1.02] active:scale-[0.98]"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/20 px-3.5 py-1.5 text-xs text-white transition-all hover:bg-white/20 hover:border-white/20 hover:scale-[1.02] active:scale-[0.98]"
                     >
                       <span>{suggestion}</span>
                     </button>
@@ -824,11 +703,11 @@ function AIOnboardingChatContent() {
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.35 }}
-                  className="rounded-3xl border border-amber-400/30 bg-gradient-to-r from-amber-500/10 via-ink-900/90 to-ink-900/90 p-5 sm:p-6 shadow-card backdrop-blur-xl"
+                  className="rounded-3xl border border-white/20 bg-gradient-to-r from-white/20 via-ink-900/90 to-ink-900/90 p-5 sm:p-6 shadow-card backdrop-blur-xl"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-amber-500 text-ink-950 font-bold shadow-gold">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white to-white text-ink-950 font-bold shadow-gold">
                         <CheckCircle2 size={22} />
                       </div>
                       <div>
@@ -856,7 +735,7 @@ function AIOnboardingChatContent() {
                         </>
                       ) : savedSuccess ? (
                         <>
-                          <Check size={15} className="text-emerald-500" />
+                          <Check size={15} className="text-white" />
                           <span>Saved! Redirecting...</span>
                         </>
                       ) : (
@@ -887,8 +766,10 @@ function AIOnboardingChatContent() {
                   e.preventDefault();
                   sendMessage();
                 }}
-                className="gemini-glass relative flex flex-col rounded-[26px] p-2 sm:p-2.5 transition-all duration-300 focus-within:border-amber-400/50 focus-within:shadow-[0_0_25px_rgba(231,181,99,0.18)]"
+                className="relative flex flex-col rounded-[26px] border border-white/10 bg-ink-900/75 p-2 sm:p-2.5 backdrop-blur-2xl transition-all duration-300 focus-within:border-white/20 focus-within:shadow-[0_0_30px_rgba(255,255,255,0.18)] hover:border-white/20 shadow-[0_12px_32px_rgba(0,0,0,0.6)]"
               >
+                {/* Subtle ambient gold rim line */}
+                <div className="pointer-events-none absolute -top-px left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                 <textarea
                   ref={textareaRef}
                   value={input}
@@ -917,13 +798,13 @@ function AIOnboardingChatContent() {
                     disabled={!input.trim() || isTyping || isSaving || savedSuccess}
                     className={`flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 ${
                       input.trim() && !isTyping
-                        ? "bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 text-ink-950 font-bold shadow-gold hover:scale-105 active:scale-95"
+                        ? "bg-gradient-to-r from-white via-white to-white text-ink-950 font-bold shadow-gold hover:scale-105 active:scale-95"
                         : "bg-white/5 text-sand-600 border border-white/5 cursor-not-allowed"
                     }`}
                     aria-label="Send message"
                   >
                     {isTyping ? (
-                      <Loader2 size={15} className="animate-spin text-amber-400" />
+                      <Loader2 size={15} className="animate-spin text-white" />
                     ) : (
                       <Send size={15} className="translate-x-[1px]" />
                     )}
@@ -939,28 +820,32 @@ function AIOnboardingChatContent() {
         </div>
 
         {/* ── Desktop Live Profile Preview Inspector Sidebar ──────────── */}
-        <aside className="hidden border-l border-white/[0.08] bg-ink-900/60 p-6 backdrop-blur-2xl lg:flex lg:flex-col lg:justify-between overflow-y-auto">
+        <aside className="hidden relative border-l border-white/[0.08] bg-ink-950/45 p-6 backdrop-blur-2xl lg:flex lg:flex-col lg:justify-between overflow-y-auto">
+          {/* Animated vertical flowing amber border beam */}
+          <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-[1px] bg-gradient-to-b from-transparent via-white/20 to-transparent" />
           <div>
             <div className="mb-5 flex items-center justify-between pb-3 border-b border-white/[0.08]">
               <div>
                 <div className="flex items-center gap-1.5">
                   <FoundersHookLogoIcon size={16} className="rounded-md" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white">
                     Live Profile Preview
                   </span>
                 </div>
                 <p className="text-[11px] text-sand-400">Real-time sync with AI</p>
               </div>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-medium text-emerald-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-medium text-white">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Active Sync
               </span>
             </div>
 
             {/* Profile Card Mockup */}
-            <div className="rounded-2xl border border-white/10 bg-ink-850 p-5 shadow-card">
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-ink-850/80 p-5 shadow-card hover:border-white/20 transition-all backdrop-blur-md">
+              {/* Subtle top gold rim */}
+              <div className="pointer-events-none absolute -top-px left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               <div className="flex items-center gap-3.5 mb-4">
-                <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-amber-400/40 bg-ink-800 shadow-md shrink-0">
+                <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-white/20 bg-ink-800 shadow-md shrink-0">
                   {user?.avatarUrl ? (
                     <Image src={user.avatarUrl} alt="Avatar" fill className="object-cover" />
                   ) : (
@@ -975,23 +860,12 @@ function AIOnboardingChatContent() {
                   </h3>
                   <p className="text-xs text-sand-400 truncate">@{user?.username || "username"}</p>
 
-                  {/* Interactive Role Toggle */}
-                  <div className="mt-1.5 flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setLiveProfile((prev) => ({
-                          ...prev,
-                          role: prev.role === "Founder" ? "Applicant" : "Founder",
-                        }))
-                      }
-                      className="inline-flex items-center gap-1 rounded-md border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300 transition-colors hover:bg-amber-400/20"
-                      title="Click to toggle role"
-                    >
-                      <span>{liveProfile.role || "Founder"}</span>
-                      <span className="text-[9px] text-amber-400/70">(switch)</span>
-                    </button>
-                  </div>
+                  {/* Role Badge */}
+                  {liveProfile.role && (
+                    <span className="mt-1.5 inline-block rounded-md border border-white/20 bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-white">
+                      {liveProfile.role}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -1001,55 +875,20 @@ function AIOnboardingChatContent() {
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-sand-400">
                     Bio
                   </span>
-                  {liveProfile.bio && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!isEditingLiveBio) {
-                          setManualBioDraft(liveProfile.bio || "");
-                        }
-                        setIsEditingLiveBio(!isEditingLiveBio);
-                      }}
-                      className="inline-flex items-center gap-1 text-[10px] text-sand-400 hover:text-sand-100 transition-colors"
-                    >
-                      <Pencil size={10} />
-                      <span>{isEditingLiveBio ? "Cancel" : "Tweak"}</span>
-                    </button>
-                  )}
                 </div>
 
-                {isEditingLiveBio ? (
-                  <div className="mt-1.5 space-y-2">
-                    <textarea
-                      value={manualBioDraft}
-                      onChange={(e) => setManualBioDraft(e.target.value)}
-                      rows={3}
-                      className="w-full rounded-xl border border-amber-400/40 bg-ink-900 p-2.5 text-xs text-sand-200 focus:outline-none"
-                    />
-                    <div className="flex justify-end">
-                      <button
-                        type="button"
-                        onClick={saveManualBio}
-                        className="rounded-lg bg-white px-2.5 py-1 text-[10px] font-bold text-ink-950 hover:bg-sand-200"
-                      >
-                        Apply Text
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mt-1.5 min-h-[60px] text-xs text-sand-200 leading-relaxed bg-ink-900 p-3 rounded-xl border border-white/5">
-                    {liveProfile.bio ? (
-                      <p className="italic text-sand-200">"{liveProfile.bio}"</p>
-                    ) : (
-                      <span className="text-sand-600 not-italic">
-                        Your AI copilot will generate an inspiring bio as you chat...
-                      </span>
-                    )}
-                  </div>
-                )}
+                <div className="mt-1.5 min-h-[60px] text-xs text-sand-200 leading-relaxed bg-ink-900 p-3 rounded-xl border border-white/5">
+                  {liveProfile.bio ? (
+                    <p className="italic text-sand-200">"{liveProfile.bio}"</p>
+                  ) : (
+                    <span className="text-sand-600 not-italic">
+                      Your AI copilot will generate an inspiring bio as you chat...
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {/* Skills Preview & Quick Adder */}
+              {/* Skills Preview */}
               <div>
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-sand-400">
                   Detected Skills ({liveProfile.skills?.length || 0})
@@ -1059,17 +898,9 @@ function AIOnboardingChatContent() {
                     liveProfile.skills.map((s, i) => (
                       <span
                         key={i}
-                        className="group inline-flex items-center gap-1 rounded-lg border border-amber-400/25 bg-amber-400/10 px-2.5 py-1 text-[11px] font-medium text-amber-200 shadow-sm transition-all hover:bg-amber-400/20"
+                        className="rounded-lg border border-white/20 bg-white/20 px-2.5 py-1 text-[11px] font-medium text-white shadow-sm"
                       >
-                        <span>{s}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSkill(s)}
-                          className="text-amber-400/60 hover:text-white transition-colors"
-                          title={`Remove ${s}`}
-                        >
-                          <X size={11} />
-                        </button>
+                        {s}
                       </span>
                     ))
                   ) : (
@@ -1078,24 +909,6 @@ function AIOnboardingChatContent() {
                     </span>
                   )}
                 </div>
-
-                <form onSubmit={handleAddSkill} className="mt-2.5 flex items-center gap-1.5">
-                  <input
-                    type="text"
-                    value={newSkillInput}
-                    onChange={(e) => setNewSkillInput(e.target.value)}
-                    placeholder="Add a skill..."
-                    className="flex-1 rounded-lg border border-white/10 bg-ink-900 px-2.5 py-1 text-xs text-sand-200 placeholder-sand-600 focus:border-amber-400/50 focus:outline-none"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!newSkillInput.trim()}
-                    className="flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-sand-300 hover:bg-white/10 hover:text-white disabled:opacity-40 transition-colors"
-                    title="Add skill"
-                  >
-                    <Plus size={13} />
-                  </button>
-                </form>
               </div>
 
               {/* Save & Proceed Button */}
@@ -1113,7 +926,7 @@ function AIOnboardingChatContent() {
                     </>
                   ) : savedSuccess ? (
                     <>
-                      <Check size={14} className="text-emerald-500" />
+                      <Check size={14} className="text-white" />
                       <span>Saved! Redirecting...</span>
                     </>
                   ) : (
@@ -1173,11 +986,11 @@ function AIOnboardingChatContent() {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-amber-400/40 bg-ink-800 shrink-0">
+                    <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-white/20 bg-ink-800 shrink-0">
                       {user?.avatarUrl ? (
                         <Image src={user.avatarUrl} alt="Avatar" fill className="object-cover" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center text-xs font-bold text-amber-300">
+                        <div className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
                           {user?.name?.charAt(0) || "U"}
                         </div>
                       )}
@@ -1186,7 +999,7 @@ function AIOnboardingChatContent() {
                       <h3 className="text-sm font-semibold text-sand-100">{user?.name}</h3>
                       <p className="text-xs text-sand-400">@{user?.username}</p>
                       {liveProfile.role && (
-                        <span className="mt-1 inline-block rounded-md border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] text-amber-300">
+                        <span className="mt-1 inline-block rounded-md border border-white/20 bg-white/20 px-2 py-0.5 text-[10px] text-white">
                           {liveProfile.role}
                         </span>
                       )}
@@ -1211,7 +1024,7 @@ function AIOnboardingChatContent() {
                         liveProfile.skills.map((s, i) => (
                           <span
                             key={i}
-                            className="rounded-md border border-amber-400/20 bg-amber-400/10 px-2 py-1 text-[11px] text-amber-200"
+                            className="rounded-md border border-white/20 bg-white/20 px-2 py-1 text-[11px] text-white"
                           >
                             {s}
                           </span>
@@ -1251,8 +1064,9 @@ export default function AIOnboardingChatPage() {
     <Suspense
       fallback={
         <main className="fixed inset-0 flex items-center justify-center bg-ink-950 text-sand-200">
-          <div className="flex items-center gap-3">
-            <Loader2 size={20} className="animate-spin text-amber-400" />
+          <AnimatedOnboardingBackground />
+          <div className="relative z-10 flex items-center gap-3">
+            <Loader2 size={20} className="animate-spin text-white" />
             <span className="text-sm">Loading session...</span>
           </div>
         </main>

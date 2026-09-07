@@ -430,7 +430,7 @@ export default function AIOnboardingChatPage() {
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gold-400" />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gold-400 [animation-delay:0.2s]" />
                     <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gold-400 [animation-delay:0.4s]" />
-                    <span className="ml-2 text-xs">Crafting your profile...</span>
+                    <span className="ml-2 text-xs">Pondering...</span>
                   </div>
                 </motion.div>
               )}
@@ -513,7 +513,7 @@ export default function AIOnboardingChatPage() {
                 {savedSuccess ? (
                   <div className="flex items-center justify-center gap-2 text-sm font-semibold text-emerald-400">
                     <CheckCircle2 size={18} />
-                    <span>Profile saved to MongoDB! Redirecting...</span>
+                    <span>Redirecting...</span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center gap-2 text-sm text-gold-300">

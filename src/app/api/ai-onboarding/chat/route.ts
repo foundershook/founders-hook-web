@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { verifySession, SESSION_COOKIE } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
-import Question from "@/models/Question";
 import User from "@/models/User";
 
 interface ChatMessage {
@@ -116,6 +115,77 @@ function extractProfileJson(text: string): { cleanText: string; profileData: Pro
   return { cleanText, profileData };
 }
 
+function enforceSingleQuestion(text: string, turnCount: number): string {
+  // If the text contains PROFILE_COMPLETE or profile summaries, do nothing
+  if (text.includes("<PROFILE_COMPLETE>") || text.includes("**Crafted Bio:**") || text.includes("**Role:**")) {
+    return text;
+  }
+
+  // Count question marks
+  const qCount = (text.match(/\?/g) || []).length;
+  if (qCount <= 1) return text;
+
+  // Split into paragraphs (acknowledgment vs question block)
+  const paragraphs = text.split(/\n+/).map((p) => p.trim()).filter(Boolean);
+  if (paragraphs.length === 0) return text;
+
+  const acknowledgment = paragraphs.length > 1 ? paragraphs[0] : "";
+  const questionBlock = paragraphs.length > 1 ? paragraphs.slice(1).join(" ") : paragraphs[0];
+
+  // Split questionBlock into individual sentences
+  const sentences = questionBlock
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  let chosenQuestion = "";
+
+  // Turn 2: User just answered Industry -> We ask ONLY for YEARS OF EXPERIENCE
+  if (turnCount === 2) {
+    const expQ = sentences.find((s) =>
+      /year|how long|experience|in the game/i.test(s) && s.includes("?")
+    );
+    if (expQ) {
+      chosenQuestion = expQ.replace(/^(?:and|also|so),?\s*/i, "");
+    }
+  }
+
+  // Turn 3: User just answered Experience -> We ask ONLY for SKILLS
+  if (!chosenQuestion && turnCount === 3) {
+    const skillQ = sentences.find((s) =>
+      /skill|stack|toolkit|technolog|tools/i.test(s) && s.includes("?")
+    );
+    if (skillQ) {
+      chosenQuestion = skillQ.replace(/^(?:and|also|so),?\s*/i, "");
+    }
+  }
+
+  // Turn 1: User just answered Role -> We ask ONLY for INDUSTRY
+  if (!chosenQuestion && turnCount === 1) {
+    const indQ = sentences.find((s) =>
+      /industry|domain|sector|building|space/i.test(s) && s.includes("?")
+    );
+    if (indQ) {
+      chosenQuestion = indQ.replace(/^(?:and|also|so),?\s*/i, "");
+    }
+  }
+
+  // Fallback: choose the primary question sentence
+  if (!chosenQuestion) {
+    chosenQuestion = sentences.find((s) => s.includes("?")) || sentences[sentences.length - 1];
+    chosenQuestion = chosenQuestion.replace(/^(?:and|also|so),?\s*/i, "");
+  }
+
+  if (chosenQuestion) {
+    chosenQuestion = chosenQuestion.charAt(0).toUpperCase() + chosenQuestion.slice(1);
+  }
+
+  if (acknowledgment && chosenQuestion) {
+    return `${acknowledgment}\n\n${chosenQuestion}`;
+  }
+  return chosenQuestion || text;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const cookieStore = await cookies();
@@ -152,19 +222,6 @@ export async function POST(req: NextRequest) {
     const existingSkills = currentProfile.skills ?? dbUser?.skills ?? [];
     const existingRole = currentProfile.role ?? (dbUser?.isFounder ? "Founder" : "Applicant");
 
-    // Fetch existing onboarding questions from DB to inform the AI
-    let dbQuestionsText = "";
-    try {
-      const dbQuestions = await Question.find({}).sort({ order: 1 }).lean();
-      if (dbQuestions && dbQuestions.length > 0) {
-        dbQuestionsText = dbQuestions
-          .map((q: any, idx: number) => `${idx + 1}. ${q.text || ""}${q.options ? ` (Options: ${q.options.join(", ")})` : ""}`)
-          .join("\n");
-      }
-    } catch {
-      // Non-blocking
-    }
-
     const apiKey =
       process.env.OPENROUTER_PROFILE_API_KEY?.trim() ||
       process.env.OPENROUTER_API_KEY?.trim();
@@ -175,6 +232,31 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
+
+    const userMessages = messages.filter((m) => m.role === "user");
+    const userTurnCount = userMessages.length;
+
+    const stepDirective =
+      userTurnCount === 1
+        ? `CURRENT MANDATORY STEP: STEP 2 (INDUSTRY & DOMAIN)
+- Acknowledge their role in exactly 1 short sentence.
+- Ask ONLY: "What industry or domain are you building in or exploring (e.g. AI/ML, SaaS, FinTech, Web3)?"
+- STRICT: Do NOT ask about experience, skills, or anything else. Exactly ONE question.`
+        : userTurnCount === 2
+        ? `CURRENT MANDATORY STEP: STEP 3 (YEARS OF EXPERIENCE ONLY)
+- Acknowledge their industry in exactly 1 short sentence.
+- Ask ONLY: "How many years of experience do you have in the tech or startup world (e.g., <1 year, 1-3, 4-7, or 8+ years)?"
+- STRICT PROHIBITION: The user already selected their role in Step 1. NEVER ask about their role, job title, or specialization (e.g. do NOT ask if they are an engineer, researcher, designer, or what hats they wear). Ask ONLY for their years of experience! Exactly ONE question mark ('?').`
+        : userTurnCount === 3
+        ? `CURRENT MANDATORY STEP: STEP 4 (CORE SKILLS & TECH STACK ONLY)
+- Acknowledge their experience in exactly 1 short sentence.
+- Ask ONLY: "What are 4 to 8 core skills or technologies in your toolkit (e.g., Python, React, UI/UX, product management, etc.)?"
+- STRICT: Do NOT ask about anything else. Exactly ONE question mark ('?').`
+        : `CURRENT MANDATORY STEP: STEP 5 (DELIVER COMPLETE PROFILE)
+- You have all details: Role, Industry, Experience, and Skills.
+- Congratulate ${firstName}, summarize their profile with their crafted 2-3 sentence inspiring bio and key skills.
+- Ask ZERO questions (0 question marks '?').
+- Append the valid JSON inside <PROFILE_COMPLETE>...</PROFILE_COMPLETE>.`;
 
     const systemPrompt =
       mode === "edit"
@@ -194,7 +276,7 @@ CARDINAL RULE: EXACTLY ONE QUESTION OR PROMPT PER MESSAGE
 
 YOUR MISSION:
 Help ${firstName} enhance their bio and update their skills to make them stand out to co-founders, investors, or startup teams.
-1. Acknowledge what they'd like to improve (e.g. punchier tone, highlight a new project, emphasize leadership/technical chops).
+1. Acknowledge what they'd like to improve.
 2. Suggest an improved, compelling 2-3 sentence bio in first person ("I am...") and relevant skills.
 3. Present the updated bio and skills clearly.
 
@@ -219,45 +301,31 @@ Ask 0 questions in your final message, and append the updated profile JSON insid
         : `You are the AI Onboarding Copilot for "Founders Hook" — an exclusive platform that connects startup founders, builders, developers, and designers.
 You are having a friendly, smart, 1-on-1 onboarding conversation with ${firstName}.
 
-CARDINAL RULE: EXACTLY ONE QUESTION PER MESSAGE
-- NEVER ask multiple questions in a single response.
-- Your entire message must contain AT MOST ONE question mark ('?').
+CARDINAL RULE: STRICTLY EXACTLY ONE QUESTION PER MESSAGE
+- NEVER ask multiple questions in a single message.
+- Total question marks allowed in your entire response: AT MOST ONE ('?').
+- Absolutely NO compound questions (e.g., NEVER combine role/background with years of experience).
 - Structure every response in 2 short sentences:
   1. A brief acknowledgment or reaction to what ${firstName} just said.
-  2. Exactly ONE specific question to collect the next missing detail.
-- Absolutely NO compound questions (e.g., do NOT ask "What domain are you in and what is your tech stack?"). Ask only one thing at a time.
+  2. Exactly ONE specific question for the current step.
 
 STRICT OUTPUT & SPEECH DIRECTIVE:
 - Speak directly to ${firstName} in EVERY token you generate.
 - NEVER output internal thoughts, chain-of-thought, planning, scratchpads, or self-monologue.
-- NEVER say "Let me think...", "I have enough info...", "The finishing protocol...", or refer to your prompt/rules.
-- Keep responses short and conversational (under 45 words).
+- Keep responses short, punchy, and conversational (under 40 words).
 
-YOUR MISSION:
-Conversationally discover and build the user's complete profile in 3 to 4 quick exchanges:
-1. ROLE: Are they a "Founder" (building their own startup) or an "Applicant" (engineer, designer, growth, operator looking to join a team / open roles)?
-2. INDUSTRY & DOMAIN: What industry or domain (e.g., AI/ML, SaaS, FinTech, Web3, HealthTech, etc.)?
-3. EXPERIENCE & BACKGROUND: Their background, current or past companies/projects, and years of experience.
-4. SKILLS: 4 to 8 primary skills (tech stack, design, product, or business).
-5. BIO: A punchy, inspiring 2-3 sentence profile bio written in first person ("I am...") highlighting their strengths and goals.
+${stepDirective}
 
-PLATFORM BACKGROUND FIELDS TO MAP:
-${dbQuestionsText || "Workforce experience, current stage/role, and goals on Founders Hook."}
-
-CRITICAL INTELLIGENCE & DEDUCTION RULES:
-1. NEVER ASK QUESTIONS THE USER ALREADY ANSWERED OR THAT CAN BE LOGICALLY INFERRED:
-   - If the user says "corporate working at Google", they are OBVIOUSLY a "Working Professional" in Big Tech. Silently note it and never ask if they are a student, founder, or professional.
-   - If the user says "student at MIT", do not ask if they are a student or professional.
-   - If they already mentioned their industry, role, or background, NEVER ask for it again.
-2. CONCISE & FAST:
-   - In 3 to 4 quick exchanges, wrap up.
+CRITICAL RULES:
+1. The user's role is already chosen (Founder / Applicant / Both). NEVER ask about their role or background again!
+2. When asking about experience, ask ONLY for years of experience.
+3. Ask ONE question at a time. Never combine two topics into one message.
 
 FINISHING & DELIVERING THE PROFILE:
-Once you have enough information for their Role, Industry, Experience, Skills, and Bio:
-1. Congratulate ${firstName} and present a polished summary of what you put together (Role, Crafted Bio, and Key Skills).
-2. Tell them their profile is ready and to click "Proceed" below to set up their startup or explore opportunities.
-3. In this final wrap-up message, ask NO questions (0 question marks).
-4. At the very end of your final message, output the data inside <PROFILE_COMPLETE> tags with valid JSON:
+When all steps are complete:
+1. Congratulate ${firstName} and present a polished summary (Role, Crafted Bio, Key Skills).
+2. Ask NO questions (0 question marks).
+3. At the very end, output the data inside <PROFILE_COMPLETE> tags with valid JSON:
 
 <PROFILE_COMPLETE>
 {
@@ -274,9 +342,7 @@ Once you have enough information for their Role, Industry, Experience, Skills, a
     "skills": ["Skill1", "Skill2"]
   }
 }
-</PROFILE_COMPLETE>
-
-CRITICAL: Do NOT include <PROFILE_COMPLETE> until you have gathered all necessary information.`;
+</PROFILE_COMPLETE>`;
 
     const openRouterMessages = [
       { role: "system", content: systemPrompt },
@@ -326,9 +392,10 @@ CRITICAL: Do NOT include <PROFILE_COMPLETE> until you have gathered all necessar
     }
 
     const { cleanText, profileData } = extractProfileJson(rawContent);
+    const sanitizedText = profileData ? cleanText : enforceSingleQuestion(cleanText, userTurnCount);
 
     return NextResponse.json({
-      reply: cleanText,
+      reply: sanitizedText,
       isComplete: Boolean(profileData),
       profileData,
     });

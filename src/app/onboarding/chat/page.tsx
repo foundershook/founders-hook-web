@@ -12,7 +12,6 @@ import {
   Check,
   ArrowRight,
   ArrowLeft,
-  Copy,
   Plus,
   X,
   Sliders,
@@ -20,7 +19,6 @@ import {
   Briefcase,
   Code2,
   Lightbulb,
-  CheckCheck,
   Pencil,
   Sparkles,
   Rocket,
@@ -57,9 +55,8 @@ function FoundersHookLogoIcon({
 }) {
   return (
     <div
-      className={`relative overflow-hidden shrink-0 border border-white/10 ${
-        glow ? "shadow-[0_0_18px_rgba(255,255,255,0.35)] border-white/20" : "shadow-sm"
-      } ${className}`}
+      className={`relative overflow-hidden shrink-0 border border-white/10 ${glow ? "shadow-[0_0_18px_rgba(255,255,255,0.35)] border-white/20" : "shadow-sm"
+        } ${className}`}
       style={{ width: size, height: size }}
     >
       <Image
@@ -164,7 +161,6 @@ function AIOnboardingChatContent() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [liveProfile, setLiveProfile] = useState<Partial<ProfileData>>({});
   const [profileReady, setProfileReady] = useState(false);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -361,87 +357,13 @@ function AIOnboardingChatContent() {
       sendMessage();
     }
   };
-
-  const copyMessage = (text: string, idx: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedIndex(idx);
-    setTimeout(() => setCopiedIndex(null), 2000);
-  };
-
-  // Dynamic quick-reply chips based on conversation state
-  const getDynamicSuggestions = () => {
-    if (isTyping) return [];
-
-    const lastMsg = messages[messages.length - 1];
-    if (!lastMsg || lastMsg.role !== "assistant") return [];
-
-    const contentLower = lastMsg.content.toLowerCase();
-
-    // 1. Role inquiry
-    if (contentLower.includes("founder") && contentLower.includes("applicant")) {
-      return [
-        "I'm a Founder building a startup 🚀",
-        "I'm an Applicant looking for roles 💻",
-        "A bit of both! ⚡",
-      ];
-    }
-
-    // 2. Industry inquiry
-    if (
-      contentLower.includes("industry") ||
-      contentLower.includes("domain") ||
-      contentLower.includes("sector") ||
-      contentLower.includes("building?")
-    ) {
-      return [
-        "AI / Machine Learning",
-        "FinTech & Payments",
-        "B2B SaaS",
-        "Web3 & Blockchain",
-        "HealthTech",
-        "Developer Tools",
-      ];
-    }
-
-    // 3. Experience inquiry
-    if (
-      contentLower.includes("experience") ||
-      contentLower.includes("background") ||
-      contentLower.includes("years")
-    ) {
-      return [
-        "Student / Early career builder",
-        "1-3 years in tech startups",
-        "4-7 years experienced",
-        "8+ years Senior / Lead",
-      ];
-    }
-
-    // 4. Skills inquiry
-    if (contentLower.includes("skills") || contentLower.includes("tech stack")) {
-      return [
-        "React, Next.js, TypeScript",
-        "Python, AI/LLMs, PyTorch",
-        "Full-Stack, Node.js, PostgreSQL",
-        "UI/UX Design, Figma",
-        "Product Management & Growth",
-      ];
-    }
-
-    // 5. Edit mode refinement chips
-    if (mode === "edit" && !profileReady) {
-      return [
-        "Make it punchier & more concise",
-        "Highlight tech leadership & AI",
-        "Focus on fundraising & traction",
-        "Keep it friendly and founder-focused",
-      ];
-    }
-
-    return [];
-  };
-
-  const dynamicSuggestions = getDynamicSuggestions();
+  // Show options only for the first question
+  const showFirstQuestionOptions =
+    mode === "onboarding" &&
+    messages.filter((m) => m.role === "user").length === 0 &&
+    messages.length > 0 &&
+    !isTyping &&
+    !profileReady;
 
   // Save to MongoDB & proceed
   async function handleProceed() {
@@ -631,50 +553,72 @@ function AIOnboardingChatContent() {
                       <div className="min-w-0 flex-1 rounded-2xl border border-white/[0.06] bg-ink-900/60 p-5 shadow-card backdrop-blur-md">
                         <FormattedMessageContent text={msg.content} />
 
-                        {/* Action buttons below assistant message */}
-                        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-white/5 text-[11px] text-sand-400 opacity-80 group-hover:opacity-100 transition-opacity">
-                          <button
-                            type="button"
-                            onClick={() => copyMessage(msg.content, idx)}
-                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 transition-colors hover:bg-white/5 hover:text-sand-200"
-                            title="Copy response"
-                          >
-                            {copiedIndex === idx ? (
-                              <>
-                                <CheckCheck size={13} className="text-white" />
-                                <span className="text-white">Copied</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy size={13} />
-                                <span>Copy</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        {/* Proceed button directly inside the chatbot message */}
+                        {profileReady && idx === messages.length - 1 && (
+                          <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between gap-3 flex-wrap">
+                            <div className="flex items-center gap-2 text-sand-300 text-xs">
+                              <CheckCircle2 size={16} className="text-white shrink-0" />
+                              <span className="font-medium text-white">
+                                {mode === "edit" ? "Profile update ready" : "Profile setup complete"}
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={handleProceed}
+                              disabled={isSaving || savedSuccess}
+                              className="btn-white !py-2.5 !px-6 text-xs sm:text-sm font-semibold rounded-full inline-flex items-center justify-center gap-2 shadow-glow hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                            >
+                              {isSaving ? (
+                                <>
+                                  <Loader2 size={14} className="animate-spin" />
+                                  <span>Saving Profile...</span>
+                                </>
+                              ) : savedSuccess ? (
+                                <>
+                                  <Check size={14} className="text-white" />
+                                  <span>Saved! Redirecting...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>{mode === "edit" ? "Save & Return to Profile" : "Proceed"}</span>
+                                  <ArrowRight size={14} />
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
                 </motion.div>
               ))}
 
-              {/* Dynamic Contextual Quick-Reply Chips */}
-              {dynamicSuggestions.length > 0 && !profileReady && (
+              {/* Options for the first question only */}
+              {showFirstQuestionOptions && (
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-wrap gap-2 pl-12"
+                  className="flex flex-wrap gap-2.5 pl-0 sm:pl-[46px]"
                 >
-                  {dynamicSuggestions.map((suggestion, sIdx) => (
-                    <button
-                      key={sIdx}
-                      type="button"
-                      onClick={() => sendMessage(suggestion)}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/20 px-3.5 py-1.5 text-xs text-white transition-all hover:bg-white/20 hover:border-white/20 hover:scale-[1.02] active:scale-[0.98]"
-                    >
-                      <span>{suggestion}</span>
-                    </button>
-                  ))}
+                  {[
+                    { label: "Founder", value: "Founder", icon: Rocket },
+                    { label: "Applicant", value: "Applicant", icon: Briefcase },
+                    { label: "A bit of both", value: "A bit of both", icon: Sparkles },
+                  ].map((opt) => {
+                    const Icon = opt.icon;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => sendMessage(opt.value)}
+                        className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs sm:text-sm font-medium text-white transition-all hover:bg-white/20 hover:border-white/40 hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-sm backdrop-blur-sm"
+                      >
+                        <Icon size={14} className="text-white/80 shrink-0" />
+                        <span>{opt.label}</span>
+                      </button>
+                    );
+                  })}
                 </motion.div>
               )}
 
@@ -697,57 +641,6 @@ function AIOnboardingChatContent() {
                 </motion.div>
               )}
 
-              {/* Completion Celebratory Banner */}
-              {profileReady && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.35 }}
-                  className="rounded-3xl border border-white/20 bg-gradient-to-r from-white/20 via-ink-900/90 to-ink-900/90 p-5 sm:p-6 shadow-card backdrop-blur-xl"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white to-white text-ink-950 font-bold shadow-gold">
-                        <CheckCircle2 size={22} />
-                      </div>
-                      <div>
-                        <h2 className="text-sm sm:text-base font-semibold text-sand-100 font-display">
-                          {mode === "edit" ? "Profile update ready!" : "Your profile is complete!"}
-                        </h2>
-                        <p className="text-xs text-sand-400 mt-0.5">
-                          {mode === "edit"
-                            ? "Review your bio and skills in the preview panel, then save changes."
-                            : "Woohoo! Your bio and skills are crafted. You may proceed to startup registration."}
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleProceed}
-                      disabled={isSaving || savedSuccess}
-                      className="btn-white !py-2.5 !px-6 text-xs sm:text-sm font-semibold rounded-full inline-flex items-center justify-center gap-2 shadow-glow hover:scale-105 active:scale-95 transition-all disabled:opacity-50 shrink-0"
-                    >
-                      {isSaving ? (
-                        <>
-                          <Loader2 size={15} className="animate-spin" />
-                          <span>Saving Profile...</span>
-                        </>
-                      ) : savedSuccess ? (
-                        <>
-                          <Check size={15} className="text-white" />
-                          <span>Saved! Redirecting...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>{mode === "edit" ? "Save & Return to Profile" : "Proceed"}</span>
-                          <ArrowRight size={15} />
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
 
               {/* Error banner */}
               {error && (
@@ -796,11 +689,10 @@ function AIOnboardingChatContent() {
                   <button
                     type="submit"
                     disabled={!input.trim() || isTyping || isSaving || savedSuccess}
-                    className={`flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 ${
-                      input.trim() && !isTyping
-                        ? "bg-gradient-to-r from-white via-white to-white text-ink-950 font-bold shadow-gold hover:scale-105 active:scale-95"
-                        : "bg-white/5 text-sand-600 border border-white/5 cursor-not-allowed"
-                    }`}
+                    className={`flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 ${input.trim() && !isTyping
+                      ? "bg-gradient-to-r from-white via-white to-white text-ink-950 font-bold shadow-gold hover:scale-105 active:scale-95"
+                      : "bg-white/5 text-sand-600 border border-white/5 cursor-not-allowed"
+                      }`}
                     aria-label="Send message"
                   >
                     {isTyping ? (
@@ -911,32 +803,6 @@ function AIOnboardingChatContent() {
                 </div>
               </div>
 
-              {/* Save & Proceed Button */}
-              {(profileReady || liveProfile.bio) && (
-                <button
-                  type="button"
-                  onClick={handleProceed}
-                  disabled={isSaving || savedSuccess}
-                  className="btn-white mt-5 w-full !py-2.5 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 size={14} className="animate-spin" />
-                      <span>Saving Profile...</span>
-                    </>
-                  ) : savedSuccess ? (
-                    <>
-                      <Check size={14} className="text-white" />
-                      <span>Saved! Redirecting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>{mode === "edit" ? "Save & Return to Profile" : "Proceed"}</span>
-                      <ArrowRight size={14} />
-                    </>
-                  )}
-                </button>
-              )}
             </div>
           </div>
 

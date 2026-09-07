@@ -127,11 +127,30 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { messages = [] } = body as { messages: ChatMessage[] };
+    const {
+      messages = [],
+      mode = "onboarding",
+      currentProfile = {},
+    } = body as {
+      messages: ChatMessage[];
+      mode?: "onboarding" | "edit";
+      currentProfile?: {
+        bio?: string;
+        skills?: string[];
+        role?: "Founder" | "Applicant";
+        industry?: string;
+        experience?: string;
+      };
+    };
 
     await connectToDatabase();
-    const dbUser: any = await User.findById(session.userId).select("name username avatarUrl").lean();
+    const dbUser: any = await User.findById(session.userId)
+      .select("name username avatarUrl bio skills isFounder")
+      .lean();
     const firstName = dbUser?.name ? dbUser.name.split(" ")[0] : "there";
+    const existingBio = currentProfile.bio ?? dbUser?.bio ?? "";
+    const existingSkills = currentProfile.skills ?? dbUser?.skills ?? [];
+    const existingRole = currentProfile.role ?? (dbUser?.isFounder ? "Founder" : "Applicant");
 
     // Fetch existing onboarding questions from DB to inform the AI
     let dbQuestionsText = "";
@@ -157,7 +176,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const systemPrompt = `You are the AI Onboarding Copilot for "Founders Hook" — an exclusive platform that connects startup founders, builders, developers, and designers.
+    const systemPrompt =
+      mode === "edit"
+        ? `You are the AI Profile Copilot for "Founders Hook" — an exclusive platform that connects startup founders, builders, developers, and designers.
+You are collaborating 1-on-1 with ${firstName} to refine, polish, and elevate their profile bio and skills.
+
+${firstName}'S CURRENT PROFILE DATA:
+- Role: ${existingRole}
+- Current Bio: ${existingBio ? `"${existingBio}"` : "None"}
+- Current Skills: ${existingSkills.length > 0 ? existingSkills.join(", ") : "None"}
+
+CARDINAL RULE: EXACTLY ONE QUESTION OR PROMPT PER MESSAGE
+- NEVER ask multiple questions in a single response.
+- At most ONE question mark ('?').
+- Keep every response under 45 words.
+- Speak directly to ${firstName} in every token. NEVER output internal thoughts, chain-of-thought, or scratchpads.
+
+YOUR MISSION:
+Help ${firstName} enhance their bio and update their skills to make them stand out to co-founders, investors, or startup teams.
+1. Acknowledge what they'd like to improve (e.g. punchier tone, highlight a new project, emphasize leadership/technical chops).
+2. Suggest an improved, compelling 2-3 sentence bio in first person ("I am...") and relevant skills.
+3. Present the updated bio and skills clearly.
+
+FINISHING & DELIVERING THE UPDATED PROFILE:
+When you have drafted the improved bio and updated skills, present them clearly, congratulate ${firstName}, and tell them to tap "Save & Update Profile".
+Ask 0 questions in your final message, and append the updated profile JSON inside <PROFILE_COMPLETE> tags:
+
+<PROFILE_COMPLETE>
+{
+  "role": "${existingRole}",
+  "industry": "${currentProfile.industry || "Tech"}",
+  "experience": "${currentProfile.experience || ""}",
+  "bio": "string (the updated 2-3 sentence bio in first person)",
+  "skills": ["Skill1", "Skill2", "Skill3"],
+  "onboardingAnswers": {
+    "role": "${existingRole}",
+    "bio": "string",
+    "skills": ["Skill1", "Skill2"]
+  }
+}
+</PROFILE_COMPLETE>`
+        : `You are the AI Onboarding Copilot for "Founders Hook" — an exclusive platform that connects startup founders, builders, developers, and designers.
 You are having a friendly, smart, 1-on-1 onboarding conversation with ${firstName}.
 
 CARDINAL RULE: EXACTLY ONE QUESTION PER MESSAGE

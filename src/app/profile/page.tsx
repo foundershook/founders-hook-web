@@ -517,14 +517,14 @@ export default function ProfilePage() {
                       Edit Bio
                     </button>
 
-                    <button
-                      disabled
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-lg border border-ink-700/50 bg-ink-850 text-sand-600 cursor-not-allowed"
-                      title="Coming Soon"
+                    <Link
+                      href="/onboarding/chat?mode=edit"
+                      className="group inline-flex items-center gap-2 px-4 py-2 text-sm rounded-full border border-amber-400/30 bg-gradient-to-r from-amber-500/10 via-amber-400/10 to-transparent text-amber-200 shadow-sm transition-all hover:border-amber-400/60 hover:bg-amber-400/15 hover:text-white hover:scale-[1.02] active:scale-[0.98]"
+                      title="Refine Bio & Skills with Founders Hook AI"
                     >
-                      <Bot size={16} />
-                      Write with AI (Coming Soon)
-                    </button>
+                      <Sparkles size={15} className="text-amber-400 group-hover:rotate-12 transition-transform" />
+                      <span>Write with AI</span>
+                    </Link>
                   </div>
                 </div>
               )}

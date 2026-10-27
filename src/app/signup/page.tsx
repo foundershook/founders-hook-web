@@ -75,12 +75,11 @@ export default function SignupPage() {
           </span>
         </Link>
 
-        {/* Updated Text for Waitlist Context */}
         <h1 className="font-display text-2xl font-semibold text-white">
-          Join the Early Access Waitlist
+          Create your account
         </h1>
         <p className="mt-1.5 text-sm text-mist-400">
-          Secure your spot and unlock VIP benefits. Next, we&apos;ll get to know you a little.
+          Join Founders Hook — next, we&apos;ll get to know you a little.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -158,7 +157,7 @@ export default function SignupPage() {
           )}
 
           <button type="submit" disabled={loading} className="btn-gold w-full justify-center disabled:opacity-60 mt-2">
-            {loading ? "Securing Spot…" : "Continue"}
+            {loading ? "Creating account…" : "Continue"}
             {!loading && <ArrowRight size={16} />}
           </button>
         </form>

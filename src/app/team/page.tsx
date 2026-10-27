@@ -191,6 +191,7 @@ export default function TeamPage() {
   // Phase: "select" | "results"
   const [phase, setPhase] = useState<"select" | "results">("select");
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [customSkillInput, setCustomSkillInput] = useState("");
 
   // Results
   const [users, setUsers] = useState<TeamUser[]>([]);
@@ -217,6 +218,15 @@ export default function TeamPage() {
     setSelectedSkills((prev) =>
       prev.includes(skill) ? prev.filter((s) => s !== skill) : [...prev, skill]
     );
+  }
+
+  function handleAddCustomSkill(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const trimmed = customSkillInput.trim();
+    if (trimmed && !selectedSkills.includes(trimmed)) {
+      setSelectedSkills((prev) => [...prev, trimmed]);
+    }
+    setCustomSkillInput("");
   }
 
   async function handleSearch() {
@@ -336,6 +346,30 @@ export default function TeamPage() {
                 </p>
               </div>
 
+              <div className="mb-6 max-w-md">
+                <form
+                  onSubmit={handleAddCustomSkill}
+                  className="relative flex items-center overflow-hidden rounded-full border border-white/20 bg-white/10 backdrop-blur-md shadow-lg transition-all focus-within:border-white/50 focus-within:bg-white/15"
+                >
+                  <div className="pl-4 pr-2 text-sand-300">
+                    <Search size={18} />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search or add a custom skill..."
+                    value={customSkillInput}
+                    onChange={(e) => setCustomSkillInput(e.target.value)}
+                    className="w-full bg-transparent py-3 pr-4 text-sm text-white placeholder-sand-400 outline-none"
+                  />
+                  <button
+                    type="submit"
+                    className="mr-2 rounded-full bg-white/20 px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/30"
+                  >
+                    Add
+                  </button>
+                </form>
+              </div>
+
               <div className="flex flex-wrap gap-3">
                 {SKILL_OPTIONS.map((skill) => (
                   <SkillChip
@@ -345,6 +379,16 @@ export default function TeamPage() {
                     onToggle={() => toggleSkill(skill)}
                   />
                 ))}
+                {selectedSkills
+                  .filter((skill) => !SKILL_OPTIONS.includes(skill))
+                  .map((skill) => (
+                    <SkillChip
+                      key={skill}
+                      label={skill}
+                      selected={true}
+                      onToggle={() => toggleSkill(skill)}
+                    />
+                  ))}
               </div>
 
               {/* Find button */}

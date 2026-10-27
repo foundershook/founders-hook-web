@@ -19,12 +19,14 @@ interface ProfileData {
 }
 
 function extractProfileJson(text: string): { cleanText: string; profileData: ProfileData | null } {
-  // 0. Clean any think/thought tags (both closed and open/truncated)
+  // 0. Clean any think/thought/reasoning tags (both closed and open/truncated)
   let cleanText = text
     .replace(/<think>[\s\S]*?<\/think>/gi, "")
     .replace(/<thought>[\s\S]*?<\/thought>/gi, "")
+    .replace(/<reasoning>[\s\S]*?<\/reasoning>/gi, "")
     .replace(/<think>[\s\S]*$/gi, "")
     .replace(/<thought>[\s\S]*$/gi, "")
+    .replace(/<reasoning>[\s\S]*$/gi, "")
     .trim();
 
   // 1. First look for explicit <PROFILE_COMPLETE>...</PROFILE_COMPLETE> tag (case-insensitive)
@@ -44,7 +46,12 @@ function extractProfileJson(text: string): { cleanText: string; profileData: Pro
     }
   }
 
-  // 2. Look for JSON markdown block anywhere in the text containing "role" and "bio"
+  // Always strip orphaned opening/closing PROFILE_COMPLETE tags that weren't matched
+  cleanText = cleanText
+    .replace(/<\/?PROFILE_COMPLETE>/gi, "")
+    .trim();
+
+  // 2. Try to extract JSON from ANY markdown code block and use as profileData if it has role+bio
   if (!profileData) {
     const jsonBlockRegex = /```(?:json)?\s*(\{[\s\S]*?"role"[\s\S]*?"bio"[\s\S]*?\})\s*```/i;
     const blockMatch = cleanText.match(jsonBlockRegex);
@@ -58,10 +65,25 @@ function extractProfileJson(text: string): { cleanText: string; profileData: Pro
     }
   }
 
+  // 2b. Strip ALL remaining markdown code blocks (json or otherwise) so they never reach the user
+  cleanText = cleanText
+    .replace(/```[\s\S]*?```/gi, "")
+    .trim();
+
+  // 2c. Strip any bare multi-line JSON objects (starts with { or [ and contains "role"/"bio"/"skills")
+  cleanText = cleanText
+    .replace(/\{[\s\S]*?"(?:role|bio|skills|industry|experience|onboardingAnswers)"[\s\S]*?\}/g, "")
+    .replace(/\[[\s\S]*?"[^"]+"[\s\S]*?\]/g, (m) => {
+      // Only strip arrays that look like skill lists (short strings, no sentences)
+      const items = m.slice(1, -1).split(",").map((s) => s.trim().replace(/^"|"$/g, ""));
+      return items.every((i) => i.length < 40 && !i.includes(".")) ? "" : m;
+    })
+    .trim();
+
   // 3. Fallback: Parse formatted summary text (e.g. **Role:**, **Crafted Bio:**, **Key Skills:**)
   if (!profileData) {
     const roleMatch = cleanText.match(/\*\*Role:\*\*\s*([^\n\r]+)/i);
-    const bioMatch = cleanText.match(/\*\*Crafted Bio:\*\*\s*[\r\n]+["“']?([\s\S]*?)["”']?[\r\n]+(?=\*\*|---|$)/i);
+    const bioMatch = cleanText.match(/\*\*Crafted Bio:\*\*\s*[\r\n]+["\u201c']?([\s\S]*?)["\u201d']?[\r\n]+(?=\*\*|---|$)/i);
     const skillsMatch = cleanText.match(/\*\*Key Skills:\*\*\s*([^\n\r]+)/i) || cleanText.match(/\*\*Skills:\*\*\s*([^\n\r]+)/i);
     const industryMatch = cleanText.match(/\*\*Industry:\*\*\s*([^\n\r]+)/i);
     const experienceMatch = cleanText.match(/\*\*Experience:\*\*\s*([^\n\r]+)/i);
@@ -96,20 +118,27 @@ function extractProfileJson(text: string): { cleanText: string; profileData: Pro
     }
   }
 
-  // 4. Strip any internal monologue paragraphs (e.g., model speaking to itself)
+  // 4. Strip internal monologue paragraphs (model self-talk, chain-of-thought)
   const paragraphs = cleanText.split(/\n\s*\n/);
   const filteredParagraphs = paragraphs.filter((p) => {
     const trimmed = p.trim();
-    return !/^(?:let me think|i have enough info|the finishing protocol|i could ask|maybe i should|i should wrap|thinking process|internal thoughts|scratchpad|i need a bio|i'm at like exchange)/i.test(trimmed);
+    // Skip paragraphs that are purely JSON-like (start/end with { } or [ ])
+    if (/^\s*[\{\[][\s\S]*[\}\]]\s*$/.test(trimmed)) return false;
+    // Skip common internal-monologue openers that small models produce
+    return !/^(?:let me think|i have enough info|the finishing protocol|i could ask|maybe i should|i should wrap|thinking process|internal thoughts|scratchpad|i need a bio|i'm at like exchange|okay, i have|alright, i have|now i need to|i'll now|i will now|step \d)/i.test(trimmed);
   });
 
   if (filteredParagraphs.length > 0) {
     cleanText = filteredParagraphs.join("\n\n").trim();
   }
 
-  // If entire text was internal thoughts, provide a friendly wrap-up message
-  if (!cleanText) {
-    cleanText = "Thanks for sharing your background! I've prepared your custom profile based on our chat. Take a look at the live preview and click Proceed when you're ready to continue!";
+  // 5. Final safety net: if the remaining text is pure JSON/empty, replace with friendly message
+  const trimmedFinal = cleanText.trim();
+  const looksLikePureJson = /^[\[\{]/.test(trimmedFinal) && /[\]\}]$/.test(trimmedFinal);
+  if (looksLikePureJson || !cleanText.trim()) {
+    cleanText = profileData
+      ? "Thanks for sharing your background! I've prepared your custom profile based on our chat. Take a look at the live preview and click Proceed when you're ready to continue!"
+      : "Sorry, I had trouble generating a response. Please try again!";
   }
 
   return { cleanText, profileData };
@@ -265,7 +294,7 @@ You are collaborating 1-on-1 with ${firstName} to refine, polish, and elevate th
 
 ${firstName}'S CURRENT PROFILE DATA:
 - Role: ${existingRole}
-- Current Bio: ${existingBio ? `"${existingBio}"` : "None"}
+- Current Bio: ${existingBio ? '"' + existingBio + '"' : "None"}
 - Current Skills: ${existingSkills.length > 0 ? existingSkills.join(", ") : "None"}
 
 CARDINAL RULE: EXACTLY ONE QUESTION OR PROMPT PER MESSAGE
@@ -273,6 +302,7 @@ CARDINAL RULE: EXACTLY ONE QUESTION OR PROMPT PER MESSAGE
 - At most ONE question mark ('?').
 - Keep every response under 45 words.
 - Speak directly to ${firstName} in every token. NEVER output internal thoughts, chain-of-thought, or scratchpads.
+- ABSOLUTE PROHIBITION: NEVER output raw JSON, code blocks (\`\`\`), or any structured data in your conversational reply. JSON is ONLY allowed inside <PROFILE_COMPLETE> tags in your FINAL message.
 
 YOUR MISSION:
 Help ${firstName} enhance their bio and update their skills to make them stand out to co-founders, investors, or startup teams.
@@ -313,6 +343,7 @@ STRICT OUTPUT & SPEECH DIRECTIVE:
 - Speak directly to ${firstName} in EVERY token you generate.
 - NEVER output internal thoughts, chain-of-thought, planning, scratchpads, or self-monologue.
 - Keep responses short, punchy, and conversational (under 40 words).
+- ABSOLUTE PROHIBITION: NEVER output raw JSON, code blocks (\`\`\`), arrays, or any structured data in conversational messages. JSON is ONLY allowed inside <PROFILE_COMPLETE> tags at the very end of your FINAL message.
 
 ${stepDirective}
 
@@ -320,6 +351,7 @@ CRITICAL RULES:
 1. The user's role is already chosen (Founder / Applicant / Both). NEVER ask about their role or background again!
 2. When asking about experience, ask ONLY for years of experience.
 3. Ask ONE question at a time. Never combine two topics into one message.
+4. If you are not on the final step, do NOT output any JSON or <PROFILE_COMPLETE> tag.
 
 FINISHING & DELIVERING THE PROFILE:
 When all steps are complete:
@@ -352,15 +384,23 @@ When all steps are complete:
       })),
     ];
 
-    // Priority model fallback list (OpenRouter allows max 3 models in the 'models' array)
+    // Model selection: prefer a configured model, otherwise fall back to better
+    // instruction-following models. Small 7B free models tend to hallucinate and
+    // leak raw JSON — use at least a 70B model when possible.
     const configuredModel = process.env.OPENROUTER_PROFILE_MODEL;
     const models = configuredModel
       ? [configuredModel]
       : [
-          "minimax/minimax-m2.7:free",
-          "liquid/lfm-2.5-2.6b:free",
-          "nvidia/nemotron-3.5-lightning:free",
+          // Confirmed free on OpenRouter (Sept 2026) — largest/best first:
+          "nvidia/nemotron-3-super-120b-a12b:free",   // 120B — best free chat model
+          "nvidia/nemotron-3.5-lightning:free",        // fast fallback, 1M context
+          "inclusionai/ling-3.0-flash-fin:free",       // last resort
         ];
+
+    // For conversational turns (not the final profile step), cap tokens tightly
+    // to prevent verbose hallucinations. Only allow more tokens for the profile step.
+    const isProfileStep = userTurnCount >= 4;
+    const maxTokens = isProfileStep ? 800 : 200;
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -373,8 +413,9 @@ When all steps are complete:
       body: JSON.stringify({
         models,
         messages: openRouterMessages,
-        temperature: 0.7,
-        max_tokens: 1500,
+        // Lower temperature reduces hallucination and improves instruction adherence
+        temperature: 0.4,
+        max_tokens: maxTokens,
       }),
     });
 

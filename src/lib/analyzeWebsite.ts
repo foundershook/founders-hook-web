@@ -92,11 +92,11 @@ Example output:
   const userPrompt = `Analyze the following website content. Return ONLY the JSON object with real, specific insights about THIS company:\n\n${pageText}`;
 
   const requestBody = {
-    // OpenRouter's native fallback: tries models in order server-side
+    // Confirmed free on OpenRouter — same models used by the AI Profile Builder:
     models: [
-      "inclusionai/ling-3.0-flash-fin:free",
-      "liquid/lfm-2.5-2.6b:free",
-      "nvidia/nemotron-3.5-content-safety:free"
+      "nvidia/nemotron-3-super-120b-a12b:free",   // 120B — best at structured JSON
+      "nvidia/nemotron-3.5-lightning:free",        // fast fallback
+      "inclusionai/ling-3.0-flash-fin:free",       // last resort
     ],
     max_tokens: 512,
     temperature: 0.2,

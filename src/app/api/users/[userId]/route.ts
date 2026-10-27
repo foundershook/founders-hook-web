@@ -47,6 +47,10 @@ export async function GET(
     const isFollowing = currentUserId
       ? (user.followers ?? []).some((id: any) => id.toString() === currentUserId)
       : false;
+    const isFollowedBy = currentUserId
+      ? (user.following ?? []).some((id: any) => id.toString() === currentUserId)
+      : false;
+    const isMutualFollow = isFollowing && isFollowedBy;
     const isCurrentUser = currentUserId ? user._id.toString() === currentUserId : false;
     const isFounder = startups.length > 0;
 
@@ -73,6 +77,8 @@ export async function GET(
         followerCount,
         followingCount,
         isFollowing,
+        isFollowedBy,
+        isMutualFollow,
         isCurrentUser,
         isFounder,
         onboardingAnswers,

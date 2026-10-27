@@ -8,7 +8,6 @@ import {
   CalendarDays,
   FileText,
   Pencil,
-  UserRound,
   Upload,
   Save,
   Loader2,
@@ -383,12 +382,6 @@ export default function ProfilePage() {
 
                   {/* Name & Role */}
                   <div className="mt-2 sm:mt-0 text-center sm:text-left">
-                    <div className="mb-1.5 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-sand-100">
-                        <UserRound size={13} />
-                        {user.isFounder ? "Founder" : "Candidate"} profile
-                      </span>
-                    </div>
                     <h1 className="font-display text-2xl sm:text-3xl font-bold text-sand-100">{user.name}</h1>
                     <p className="text-sm text-sand-400">@{user.username}</p>
                   </div>

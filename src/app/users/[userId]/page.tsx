@@ -7,7 +7,6 @@ import { useParams, useRouter } from "next/navigation";
 import {
   CalendarDays,
   FileText,
-  UserRound,
   Loader2,
   Rocket,
   Users,
@@ -18,9 +17,11 @@ import {
   ChevronRight,
   Sparkles,
   Pencil,
+  MessageSquare,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import StartupCard, { StartupDTO } from "@/components/StartupCard";
+import { getOrCreateDirectConversation } from "@/lib/chat";
 
 const QUESTION_LABELS: Record<string, string> = {
   "6a65a437a2b367178cacb7ea": "Current Role",
@@ -46,6 +47,8 @@ interface PublicUser {
   followerCount: number;
   followingCount: number;
   isFollowing: boolean;
+  isFollowedBy?: boolean;
+  isMutualFollow?: boolean;
   isCurrentUser: boolean;
   isFounder: boolean;
   onboardingAnswers: Record<string, any>;
@@ -150,8 +153,10 @@ export default function UserProfilePage() {
   const [loading, setLoading] = useState(true);
 
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowedBy, setIsFollowedBy] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followPending, setFollowPending] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
 
   const [followModal, setFollowModal] = useState<"followers" | "following" | null>(null);
 
@@ -168,6 +173,7 @@ export default function UserProfilePage() {
         const u: PublicUser = data.user;
         setProfile(u);
         setIsFollowing(u.isFollowing);
+        setIsFollowedBy(!!u.isFollowedBy);
         setFollowerCount(u.followerCount);
       } else {
         router.push("/networking");
@@ -196,12 +202,48 @@ export default function UserProfilePage() {
       if (!res.ok) {
         setIsFollowing(wasFollowing);
         setFollowerCount((c) => c + (wasFollowing ? 1 : -1));
+      } else {
+        // Refresh follow & mutual stats
+        const statsRes = await fetch(`/api/follow/${profile._id}`);
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          if (typeof stats.isFollowing === "boolean") setIsFollowing(stats.isFollowing);
+          if (typeof stats.isFollowedBy === "boolean") setIsFollowedBy(stats.isFollowedBy);
+        }
       }
     } catch {
       setIsFollowing(wasFollowing);
       setFollowerCount((c) => c + (wasFollowing ? 1 : -1));
     } finally {
       setFollowPending(false);
+    }
+  }
+
+  async function handleOpenDirectMessage() {
+    if (!currentUser || !profile || startingChat) return;
+    setStartingChat(true);
+    try {
+      const currentUserId = currentUser.id || currentUser._id;
+      const convoId = await getOrCreateDirectConversation(
+        {
+          _id: currentUserId,
+          name: currentUser.name || "User",
+          username: currentUser.username || "",
+          avatarUrl: currentUser.avatarUrl || "",
+        },
+        {
+          _id: profile._id,
+          name: profile.name || "User",
+          username: profile.username || "",
+          avatarUrl: profile.avatarUrl || "",
+        }
+      );
+      router.push(`/messages?conversationId=${convoId}`);
+    } catch (err) {
+      console.error("Failed to start direct conversation:", err);
+      router.push("/messages");
+    } finally {
+      setStartingChat(false);
     }
   }
 
@@ -274,7 +316,7 @@ export default function UserProfilePage() {
             </div>
 
             {/* Profile Info Header (Avatar overlapping banner) */}
-            <div className="px-6 pb-6 sm:px-8">
+            <div className="px-6 pb-6 sm:px-8 relative z-10">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-16 sm:-mt-20">
                 
                 {/* Avatar with thick border overlapping banner */}
@@ -290,19 +332,29 @@ export default function UserProfilePage() {
 
                   {/* Name & Role */}
                   <div className="mt-2 sm:mt-0 text-center sm:text-left">
-                    <div className="mb-1.5 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-sand-100">
-                        <UserRound size={13} />
-                        {profile.isFounder ? "Founder" : "Candidate"} profile
-                      </span>
-                    </div>
                     <h1 className="font-display text-2xl sm:text-3xl font-bold text-sand-100">{profile.name}</h1>
                     <p className="text-sm text-sand-400">@{profile.username}</p>
                   </div>
                 </div>
 
-                {/* Follow button */}
+                {/* Action buttons */}
                 <div className="flex items-center justify-center sm:justify-end gap-3 self-center sm:self-end">
+                  {!profile.isCurrentUser && currentUser && isFollowing && isFollowedBy && (
+                    <button
+                      onClick={handleOpenDirectMessage}
+                      disabled={startingChat}
+                      className="inline-flex w-fit items-center gap-2 rounded-full border border-ink-700/70 bg-ink-850 px-5 py-2.5 text-sm font-semibold text-sand-200 transition-all duration-150 hover:border-emerald-500/50 hover:bg-ink-800 hover:text-white shadow-sm active:scale-95 disabled:opacity-50 cursor-pointer"
+                      title="Send a message"
+                    >
+                      {startingChat ? (
+                        <Loader2 size={16} className="animate-spin text-emerald-400" />
+                      ) : (
+                        <MessageSquare size={16} className="text-emerald-400" />
+                      )}
+                      <span>Message</span>
+                    </button>
+                  )}
+
                   {!profile.isCurrentUser && currentUser && (
                     <button
                       onClick={handleFollow}

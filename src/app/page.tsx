@@ -71,157 +71,6 @@ function KeyboardRow({ keys, hasWideKey }: { keys: number; hasWideKey?: boolean 
   );
 }
 
-/* iMac Launch Countdown Timer (Target: 7 September 2026, 7:00 PM IST) */
-const LAUNCH_TARGET_DATE_MS = new Date("2026-09-07T19:00:00+05:30").getTime();
-
-function MacLaunchTimer() {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    isEnded: false,
-    mounted: false,
-  });
-
-  useEffect(() => {
-    const calculateTime = () => {
-      const now = new Date().getTime();
-      const difference = LAUNCH_TARGET_DATE_MS - now;
-
-      if (difference <= 0) {
-        setTimeLeft({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          isEnded: true,
-          mounted: true,
-        });
-        return;
-      }
-
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-      setTimeLeft({
-        days,
-        hours,
-        minutes,
-        seconds,
-        isEnded: false,
-        mounted: true,
-      });
-    };
-
-    calculateTime();
-    const interval = setInterval(calculateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const pad = (n: number) => String(n).padStart(2, "0");
-
-  return (
-    <div className="relative h-full w-full flex flex-col justify-between p-2 sm:p-5 select-none overflow-hidden font-sans">
-      {/* Top macOS Browser / Window Bar */}
-      <div className="flex items-center justify-between z-10">
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] shadow-sm inline-block" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] shadow-sm inline-block" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f] shadow-sm inline-block" />
-        </div>
-        <div className="flex items-center gap-1 sm:gap-1.5 rounded-full bg-white/10 px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-medium text-white/80 backdrop-blur-md border border-white/10">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8b893a] opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#b6b44c]" />
-          </span>
-          foundershook.in/launch
-        </div>
-        <div className="text-[10px] sm:text-xs font-semibold text-[#8b893a] uppercase tracking-wider hidden sm:block">
-          Live Timer
-        </div>
-      </div>
-
-      {/* Main Countdown Display Area */}
-      <div className="my-auto z-10 flex flex-col items-center text-center px-0.5 sm:px-1">
-        {/* Launch Pill */}
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#8b893a]/40 bg-[#8b893a]/15 px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-xs font-semibold uppercase tracking-wider text-[#d8d672] backdrop-blur-md mb-1 sm:mb-3 shadow-sm">
-          <Sparkles size={10} className="text-[#e2e078] animate-pulse sm:hidden" />
-          <Sparkles size={13} className="text-[#e2e078] animate-pulse hidden sm:block" />
-          <span>Platform Launch Countdown</span>
-        </div>
-
-        {/* Big Countdown Timer Grid */}
-        <div className="grid grid-cols-4 gap-1 sm:gap-3 w-full max-w-[420px] my-0.5 sm:my-2">
-          {/* Days */}
-          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
-              {timeLeft.mounted ? pad(timeLeft.days) : "--"}
-            </span>
-            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
-              Days
-            </span>
-          </div>
-
-          {/* Hours */}
-          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
-              {timeLeft.mounted ? pad(timeLeft.hours) : "--"}
-            </span>
-            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
-              Hours
-            </span>
-          </div>
-
-          {/* Minutes */}
-          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white tabular-nums">
-              {timeLeft.mounted ? pad(timeLeft.minutes) : "--"}
-            </span>
-            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
-              Mins
-            </span>
-          </div>
-
-          {/* Seconds */}
-          <div className="flex flex-col items-center justify-center rounded-lg sm:rounded-2xl border border-white/15 bg-white/10 p-1 sm:p-3 backdrop-blur-lg shadow-lg">
-            <span className="text-lg sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#e8e4dc] tabular-nums">
-              {timeLeft.mounted ? pad(timeLeft.seconds) : "--"}
-            </span>
-            <span className="text-[7px] sm:text-[11px] font-semibold uppercase tracking-widest text-[#d4d0c8] mt-0">
-              Secs
-            </span>
-          </div>
-        </div>
-
-        {/* Target Time Callout */}
-        <div className="mt-1 sm:mt-2 flex items-center justify-center gap-1 sm:gap-1.5 text-[8px] sm:text-xs font-medium text-[#FAF8F4]/90 bg-black/40 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full border border-white/10">
-          <Calendar size={10} className="text-[#8b893a] sm:hidden" />
-          <Calendar size={13} className="text-[#8b893a] hidden sm:block" />
-          <span>7 September 2026 • 7:00 PM IST</span>
-        </div>
-      </div>
-
-      {/* Bottom Bar: Access Status */}
-      <div className="z-10 flex items-center justify-between pt-0.5 sm:pt-1 border-t border-white/10 text-[8px] sm:text-xs text-white/70">
-        <div className="flex items-center gap-1.5">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          <span>Waitlist Applications Active</span>
-        </div>
-        <Link
-          href="/signup"
-          className="inline-flex items-center gap-1 font-semibold text-[#f0ece4] hover:text-white transition-colors underline underline-offset-2"
-        >
-          <span>Get Early Access</span>
-          <ArrowRight size={11} />
-        </Link>
-      </div>
-    </div>
-  );
-}
-
 /* Pure CSS iMac Mockup */
 function IMacMockup() {
   return (
@@ -231,24 +80,72 @@ function IMacMockup() {
         <div className="imac-bezel-top">
           <div className="imac-camera" />
         </div>
-        <div className="imac-screen">
-          {/* Background Dashboard Mockup Image */}
-          <Image
-            src="/dashboard-mockup.jpg"
-            alt="Founders Hook Dashboard"
-            fill
-            priority
-            style={{ objectFit: "cover", objectPosition: "top left" }}
-            className="opacity-25 filter blur-[1px]"
-          />
-          {/* Dark Glassmorphic Radial Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#12140d]/90 via-[#18181b]/92 to-[#09090b]/95" />
+        <div className="imac-screen relative overflow-hidden flex flex-col justify-between p-3 sm:p-5 select-none font-sans bg-gradient-to-b from-[#141510] via-[#0d0e0b] to-[#080806]">
           {/* Ambient Glows */}
-          <div className="absolute -top-12 -left-12 h-44 w-44 rounded-full bg-[#8b893a]/25 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-12 -right-12 h-44 w-44 rounded-full bg-[#6B7A2F]/20 blur-3xl pointer-events-none" />
+          <div className="absolute -top-16 -left-16 h-52 w-52 rounded-full bg-[#8b893a]/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -right-16 h-52 w-52 rounded-full bg-[#6B7A2F]/25 blur-3xl pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(139,137,58,0.12),transparent_70%)] pointer-events-none" />
 
-          {/* Interactive Live Countdown Timer inside Mac */}
-          <MacLaunchTimer />
+          {/* Top macOS Window / Browser Bar */}
+          <div className="flex items-center justify-between z-10 w-full">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56] shadow-sm inline-block" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e] shadow-sm inline-block" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f] shadow-sm inline-block" />
+            </div>
+            <div className="flex items-center gap-1 sm:gap-1.5 rounded-full bg-white/10 px-2.5 sm:px-3 py-0.5 text-[8px] sm:text-[11px] font-medium text-white/80 backdrop-blur-md border border-white/10">
+              <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-500" />
+              </span>
+              <span>foundershook.in</span>
+            </div>
+            <div className="text-[9px] sm:text-xs font-semibold text-[#8b893a] uppercase tracking-wider hidden sm:block">
+              Network Active
+            </div>
+          </div>
+
+          {/* Center Announcement Area */}
+          <div className="my-auto z-10 flex flex-col items-center text-center px-2">
+            {/* Live Now Pulsing Badge */}
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 sm:px-3.5 py-1 text-[8px] sm:text-xs font-semibold uppercase tracking-wider text-emerald-300 backdrop-blur-md mb-2 sm:mb-3 shadow-lg">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span>Platform Active</span>
+            </div>
+
+            {/* Main Message */}
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+              Founders Hook{" "}
+              <span className="text-[#d8d672] underline decoration-[#8b893a]/50 decoration-2 underline-offset-4">
+                is live now
+              </span>
+            </h2>
+
+            <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs text-white/70 max-w-[280px] sm:max-w-[340px] leading-relaxed">
+              Connect with founders, pitch your startup, and build the future together.
+            </p>
+
+            {/* CTA Button */}
+            <Link
+              href="/signup"
+              className="mt-3 sm:mt-4 inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#8b893a] hover:bg-[#9c9a42] text-[#0d0e0b] px-3.5 sm:px-4 py-1.5 sm:py-2 text-[9px] sm:text-xs font-bold transition-all shadow-md hover:shadow-lg hover:scale-105"
+            >
+              <span>Explore Platform</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+
+          {/* Bottom macOS Bar */}
+          <div className="z-10 flex items-center justify-between pt-1 border-t border-white/10 text-[7px] sm:text-[10px] text-white/60">
+            <div className="flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span>All Systems Operational</span>
+            </div>
+            <span className="text-white/50">Founders Hook v1.0</span>
+          </div>
         </div>
         <div className="imac-chin" />
       </div>
@@ -1213,7 +1110,7 @@ export default function LandingPage() {
   }, []);
 
   const primaryHref = loggedIn ? "/feed" : "/signup";
-  const primaryLabel = loggedIn ? "Already Registered" : "Register your startup";
+  const primaryLabel = loggedIn ? "Already Registered" : "Register now";
 
   return (
     <main className="landing-page">
@@ -1325,8 +1222,8 @@ export default function LandingPage() {
             className="landing-heading font-bold"
             style={{ fontFamily: "'Calibri', sans-serif" }}
           >
-            Get your{" "}
-            <span className="landing-heading-accent">Early Access, Now!</span>
+            FoundersHook{" "}
+            <span className="landing-heading-accent">is live, now!</span>
           </motion.h1>
 
           <motion.p
@@ -1371,8 +1268,7 @@ export default function LandingPage() {
               ))}
             </div>
             <span className="landing-social-text">
-              500+ founders
-              joining the waitlist
+              Our founders are waiting for you
             </span>
           </motion.div>
         </div>

@@ -4,7 +4,6 @@ import { SESSION_COOKIE } from "@/lib/auth-constants";
 
 // Added /feed to the protected routes array
 const PROTECTED = ["/onboarding", "/dashboard", "/waitlist-success", "/feed", "/founders-hook"];
-const ADMIN_USERNAMES = ["shubham", "adwait", "saraswat", "amoghj_18", "rishabh45", "jay.antbhat"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -20,15 +19,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Developer-only access block for the Feed
-  if (pathname.startsWith("/feed")) {
-    const userLower = session.username?.toLowerCase() || "";
-    const isAllowed = ADMIN_USERNAMES.some((u) => u.toLowerCase() === userLower);
-    if (!isAllowed) {
-      // If a normal user tries to access /feed, bounce them back to the home page
-      const homeUrl = new URL("/", req.url);
-      return NextResponse.redirect(homeUrl);
-    }
+  // Redirect old VIP code waitlist page directly to feed
+  if (pathname.startsWith("/waitlist-success")) {
+    return NextResponse.redirect(new URL("/feed", req.url));
   }
 
   return NextResponse.next();

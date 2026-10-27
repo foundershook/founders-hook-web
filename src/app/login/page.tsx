@@ -30,8 +30,7 @@ export default function LoginPage() {
         setError(data.error || "Couldn't log you in");
         return;
       }
-      const target = data.user.onboardingComplete ? "/feed" : "/onboarding";
-      window.location.href = target;
+      window.location.href = "/feed";
     } catch {
       setError("Network error. Please try again.");
     } finally {

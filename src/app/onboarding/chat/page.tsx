@@ -416,7 +416,7 @@ function AIOnboardingChatContent() {
         if (mode === "edit") {
           router.push("/profile");
         } else {
-          router.push("/onboarding?phase=startup");
+          router.push("/feed");
         }
       }, 700);
     } catch (err: any) {
@@ -581,7 +581,7 @@ function AIOnboardingChatContent() {
                                 </>
                               ) : (
                                 <>
-                                  <span>{mode === "edit" ? "Save & Return to Profile" : "Proceed"}</span>
+                                  <span>{mode === "edit" ? "Save & Return to Profile" : "Proceed to Feed"}</span>
                                   <ArrowRight size={14} />
                                 </>
                               )}
@@ -914,7 +914,7 @@ function AIOnboardingChatContent() {
                   className="btn-white w-full !py-3 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 shadow-glow"
                 >
                   {isSaving ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
-                  <span>{mode === "edit" ? "Save & Return to Profile" : "Proceed"}</span>
+                  <span>{mode === "edit" ? "Save & Return to Profile" : "Proceed to Feed"}</span>
                 </button>
               )}
             </motion.div>

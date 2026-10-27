@@ -39,6 +39,7 @@ interface Conversation {
   _id: string;
   participants: any[];
   type: string;
+  participantDetails?: Record<string, { _id: string; name: string; username: string; avatarUrl?: string }>;
   application?: any;
   startup?: any;
   lastMessageAt: string;
@@ -124,7 +125,7 @@ function MessagesContent() {
         setConversations(convos as any);
         setLoadingConvos(false);
 
-        // If redirected from notification with conversationId, select that conversation
+        // If redirected from notification or profile with conversationId, select that conversation
         if (targetConversationId) {
           const matched = convos.find(
             (c: any) =>
@@ -137,6 +138,9 @@ function MessagesContent() {
           );
           if (matched) {
             setActiveConversationId(matched._id);
+            setMobileView("chat");
+          } else if (targetConversationId.startsWith("direct_")) {
+            setActiveConversationId(targetConversationId);
             setMobileView("chat");
           }
         }
@@ -320,6 +324,21 @@ function MessagesContent() {
         };
       }
     }
+    if (convo.type === "direct") {
+      const otherId = convo.participants?.find((p: string) => String(p) !== String(me?.id));
+      const otherDetails = convo.participantDetails?.[otherId];
+      const title = otherDetails?.name || "Direct Message";
+      const subtitle = otherDetails?.username ? `@${otherDetails.username}` : "Direct Message";
+      return {
+        title,
+        subtitle,
+        isStartup: false,
+        startup: null,
+        avatar: otherDetails?.avatarUrl || null,
+        iconText: title.charAt(0).toUpperCase() || "💬",
+      };
+    }
+
     return { title: "Conversation", subtitle: "", isStartup: false, startup: null, avatar: null, iconText: "💬" };
   };
 

@@ -47,6 +47,7 @@ export interface ConversationDoc {
   _id: string;
   participants: string[];
   type: "application" | "inter-team" | "direct";
+  participantDetails?: Record<string, { _id: string; name: string; username: string; avatarUrl?: string }>;
   applicationId?: string;
   startupId?: string;
   application?: any;
@@ -110,6 +111,7 @@ export function subscribeConversations(
           _id: docSnap.id,
           participants: data.participants || [],
           type: data.type || "direct",
+          participantDetails: data.participantDetails || null,
           applicationId: data.applicationId,
           startupId: data.startupId,
           application: data.application,
@@ -493,4 +495,42 @@ export function subscribeIncomingCalls(
       console.error("Error subscribing to incoming calls:", err);
     }
   );
+}
+
+/**
+ * Create or ensure a direct 1-on-1 conversation document exists in Firestore.
+ */
+export async function getOrCreateDirectConversation(
+  currentUser: { _id: string; name: string; username: string; avatarUrl?: string },
+  targetUser: { _id: string; name: string; username: string; avatarUrl?: string }
+): Promise<string> {
+  const currentId = currentUser._id;
+  const targetId = targetUser._id;
+  const sortedIds = [currentId, targetId].sort();
+  const convoId = `direct_${sortedIds[0]}_${sortedIds[1]}`;
+  const convoRef = doc(db, "conversations", convoId);
+  const now = new Date().toISOString();
+
+  const payload = sanitizeForFirestore({
+    participants: [currentId, targetId],
+    type: "direct",
+    participantDetails: {
+      [currentId]: {
+        _id: currentId,
+        name: currentUser.name || "User",
+        username: currentUser.username || "",
+        avatarUrl: currentUser.avatarUrl || "",
+      },
+      [targetId]: {
+        _id: targetId,
+        name: targetUser.name || "User",
+        username: targetUser.username || "",
+        avatarUrl: targetUser.avatarUrl || "",
+      },
+    },
+    updatedAt: now,
+  });
+
+  await setDoc(convoRef, payload, { merge: true });
+  return convoId;
 }

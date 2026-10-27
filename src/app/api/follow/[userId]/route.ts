@@ -26,17 +26,28 @@ export async function GET(
     const followersCount = targetUser.followers?.length ?? 0;
     const followingCount = targetUser.following?.length ?? 0;
 
-    // Check if the logged-in user is following this user
+    // Check if the logged-in user is following this user and vice-versa
     let isFollowing = false;
+    let isFollowedBy = false;
     const currentUser = await getCurrentUser();
     if (currentUser) {
       const currentId = (currentUser._id as any).toString();
       isFollowing = (targetUser.followers ?? []).some(
         (id: any) => id.toString() === currentId
       );
+      isFollowedBy = (targetUser.following ?? []).some(
+        (id: any) => id.toString() === currentId
+      );
     }
+    const isMutualFollow = isFollowing && isFollowedBy;
 
-    return NextResponse.json({ followers: followersCount, following: followingCount, isFollowing });
+    return NextResponse.json({
+      followers: followersCount,
+      following: followingCount,
+      isFollowing,
+      isFollowedBy,
+      isMutualFollow,
+    });
   } catch (error) {
     console.error("Error fetching follow stats:", error);
     return NextResponse.json({ error: "Failed to fetch follow stats" }, { status: 500 });

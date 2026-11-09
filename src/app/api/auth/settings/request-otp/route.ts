@@ -1,79 +1,84 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import SettingsOtp from "@/models/SettingsOtp";
 import { sendSettingsChangeOtpEmail } from "@/lib/brevo";
+import { requireUser, tooManyRequests } from "@/lib/auth-guard";
+import { rateLimit } from "@/lib/rate-limit";
+import { validatePassword } from "@/lib/password-policy";
+import { isValidEmail, isValidUsername } from "@/lib/validation";
 
+const RequestSchema = z.object({
+  action: z.enum(["email", "username", "password"]),
+  newData: z.string().max(254).optional().default(""),
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const sessionCookie = req.cookies.get("founders_session")?.value;
-    if (!sessionCookie) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    
-    // Simple mock or use jsonwebtoken. In typical next apps, we might use jose or jwt
-    // We will find user by fetching /api/auth/me equivalent or importing standard auth check
-    // Since getSession logic might be complex, let's use the DB directly if we know how tokens are signed.
-    
-    // Instead of duplicating session logic, let's just decode the JWT (from /lib/auth if possible)
-    const { verifySession } = await import("@/lib/auth");
-    const session = await verifySession(sessionCookie);
-    
-    if (!session || !session.userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireUser();
+    if (auth.error) return auth.error;
+    const user = auth.user;
+
+    const limit = await rateLimit(`settings-otp:${user._id}`, 5, 15 * 60);
+    if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
+
+    const parsed = RequestSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request." }, { status: 400 });
     }
 
-    const { action, newData } = await req.json();
-
-    if (!["email", "username", "password"].includes(action)) {
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-    }
+    const { action, newData } = parsed.data;
 
     await connectToDatabase();
-    
-    const user = await User.findById(session.userId);
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
-    // Validation
-    if (action === "email" && newData) {
+    if (action === "email") {
+      if (!isValidEmail(newData)) {
+        return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
+      }
       const existing = await User.findOne({ email: newData.toLowerCase() });
-      if (existing) {
-        return NextResponse.json({ error: "Email is already in use" }, { status: 409 });
+      if (existing && String(existing._id) !== String(user._id)) {
+        return NextResponse.json({ error: "Email is already in use." }, { status: 409 });
       }
     }
 
-    if (action === "username" && newData) {
+    if (action === "username") {
+      if (!isValidUsername(newData)) {
+        return NextResponse.json({ error: "Please enter a valid username." }, { status: 400 });
+      }
       const existing = await User.findOne({ username: newData.toLowerCase() });
-      if (existing) {
-        return NextResponse.json({ error: "Username is already taken" }, { status: 409 });
+      if (existing && String(existing._id) !== String(user._id)) {
+        return NextResponse.json({ error: "Username is already taken." }, { status: 409 });
       }
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    if (action === "password") {
+      const passwordError = validatePassword(newData);
+      if (passwordError) {
+        return NextResponse.json({ error: passwordError }, { status: 400 });
+      }
+    }
 
-    // Delete existing unverified OTPs for this user & action
+    const otp = crypto.randomInt(100000, 1000000).toString();
+    const otpHash = await bcrypt.hash(otp, 10);
+
     await SettingsOtp.deleteMany({ userId: user._id, action });
 
-    // Save token to DB, expires in 15 minutes
     await SettingsOtp.create({
       userId: user._id,
       action,
       newData: newData ? newData.toLowerCase() : undefined,
       otpHash,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      attempts: 0,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
 
-    // Send email.
-    // If changing email -> OTP goes to old email
-    // If changing username -> OTP goes to current email
-    // If changing password -> OTP goes to current email
-    const emailToSend = user.email;
+    // For an email change the code must be delivered to the NEW address, which
+    // proves the caller controls it. Username/password changes are confirmed via
+    // the current email address.
+    const emailToSend = action === "email" ? newData.toLowerCase() : user.email;
 
     await sendSettingsChangeOtpEmail({
       to: emailToSend,
@@ -84,6 +89,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, message: "Verification code sent." });
   } catch (error) {
     console.error("Request OTP error:", error);
-    return NextResponse.json({ error: "An error occurred while processing your request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "An error occurred while processing your request." },
+      { status: 500 }
+    );
   }
 }

@@ -28,42 +28,6 @@ export async function GET() {
 }
 
 /**
- * POST /api/notifications — create a notification (internal use from other API routes)
- */
-export async function POST(request: Request) {
-  try {
-    const user = await getCurrentUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    await connectToDatabase();
-
-    const body = await request.json();
-    const { recipientId, type, title, message, link, applicationId, startupName, roleTitle } = body;
-
-    if (!recipientId || !title) {
-      return NextResponse.json({ error: "recipientId and title are required" }, { status: 400 });
-    }
-
-    const notification = await Notification.create({
-      recipient: recipientId,
-      type: type || "general",
-      title,
-      message: message || "",
-      link: link || "",
-      applicationId: applicationId || null,
-      startupName: startupName || "",
-      roleTitle: roleTitle || "",
-      read: false,
-    });
-
-    return NextResponse.json({ notification }, { status: 201 });
-  } catch (error) {
-    console.error("Error creating notification:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-
-/**
  * PATCH /api/notifications — mark notifications as read
  */
 export async function PATCH(request: Request) {

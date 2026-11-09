@@ -15,6 +15,13 @@ import Post from "../src/models/Post";
 const MONGODB_URI = process.env.MONGODB_URI;
 
 async function main() {
+  if (process.env.NODE_ENV === "production" && !process.argv.includes("--force-demo")) {
+    console.error(
+      "Refusing to run the destructive demo seed in production. Pass --force-demo if you really intend to delete data."
+    );
+    process.exit(1);
+  }
+
   if (!MONGODB_URI) {
     console.error("Set MONGODB_URI in .env.local before seeding.");
     process.exit(1);

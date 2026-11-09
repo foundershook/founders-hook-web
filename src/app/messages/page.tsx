@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,13 +8,14 @@ import Sidebar from "@/components/Sidebar";
 import { timeAgo } from "@/lib/timeAgo";
 import {
   Send,
-  MoreVertical,
   Loader2,
   ChevronLeft,
   ExternalLink,
   MessageSquare,
   Video,
   VideoOff,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import { StartupLogo } from "@/components/StartupMedia";
 import {
@@ -24,6 +25,8 @@ import {
   sendMeetingInvite,
   endMeetingCall,
   syncFirestoreConversation,
+  deleteMessage,
+  deleteConversation,
 } from "@/lib/chat";
 
 type Me = {
@@ -78,6 +81,11 @@ function MessagesContent() {
   const [startingMeet, setStartingMeet] = useState(false);
 
   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
+
+  const [deletedUserIds, setDeletedUserIds] = useState<Set<string>>(new Set());
+  const [deletingMessageId, setDeletingMessageId] = useState<string | null>(null);
+  const [confirmDeleteConversationId, setConfirmDeleteConversationId] = useState<string | null>(null);
+  const [deletingConversation, setDeletingConversation] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -184,6 +192,79 @@ function MessagesContent() {
     }
   }, [messages]);
 
+  // Collect the ids of everyone the current user has spoken with so we can
+  // detect accounts that have since been permanently deleted.
+  const participantKey = useMemo(() => {
+    const ids = new Set<string>();
+    for (const convo of conversations) {
+      for (const participant of convo.participants || []) {
+        const id = String(participant);
+        if (id && id !== String(me?.id)) ids.add(id);
+      }
+    }
+    return Array.from(ids).sort().join(",");
+  }, [conversations, me?.id]);
+
+  useEffect(() => {
+    if (!participantKey) {
+      return;
+    }
+
+    let cancelled = false;
+    fetch(`/api/users/exists?ids=${encodeURIComponent(participantKey)}`)
+      .then((res) => (res.ok ? res.json() : { existing: [] }))
+      .then((data) => {
+        if (cancelled) return;
+        const existing = new Set<string>(
+          ((data.existing as string[]) || []).map(String)
+        );
+        const deleted = participantKey
+          .split(",")
+          .filter((id) => id && !existing.has(id));
+        setDeletedUserIds(new Set(deleted));
+      })
+      .catch(() => {
+        // If the check fails we simply do not show the deletion prompt.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [participantKey]);
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!activeConversationId || deletingMessageId) return;
+    setDeletingMessageId(messageId);
+    try {
+      await deleteMessage(activeConversationId, messageId);
+    } catch (e) {
+      console.error("Error deleting message via Firestore:", e);
+    } finally {
+      setDeletingMessageId(null);
+    }
+  };
+
+  const handleDeleteConversation = async (conversationId: string) => {
+    if (!conversationId || deletingConversation) return;
+    setDeletingConversation(true);
+    try {
+      await deleteConversation(conversationId);
+      await fetch(`/api/conversations/${encodeURIComponent(conversationId)}`, {
+        method: "DELETE",
+      });
+      setConversations((prev) => prev.filter((c) => c._id !== conversationId));
+      if (activeConversationId === conversationId) {
+        setActiveConversationId(null);
+        setMobileView("list");
+      }
+    } catch (e) {
+      console.error("Error deleting conversation via Firestore:", e);
+    } finally {
+      setDeletingConversation(false);
+      setConfirmDeleteConversationId(null);
+    }
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversationId || !me || sending) return;
@@ -282,6 +363,14 @@ function MessagesContent() {
   const isApplicant =
     activeConvo?.type === "application" &&
     String(activeConvo.application?.applicant?._id || activeConvo.application?.applicant || "") === String(me?.id || "");
+  const otherParticipantId = activeConvo
+    ? (activeConvo.participants || [])
+        .map(String)
+        .find((id) => id !== String(me?.id)) || null
+    : null;
+  const otherParticipantDeleted = otherParticipantId
+    ? deletedUserIds.has(otherParticipantId)
+    : false;
 
   // Helper to get chat title/avatar
   const getChatMetadata = (convo: Conversation): {
@@ -539,14 +628,45 @@ function MessagesContent() {
                       </button>
                     )}
 
-                    {/* More Options */}
-                    {activeConvo.type === "application" && (
-                      <button className="text-sand-400 hover:text-sand-200 p-2 rounded-full hover:bg-ink-800 transition">
-                        <MoreVertical size={18} />
-                      </button>
-                    )}
+                    {/* Delete conversation */}
+                    <button
+                      onClick={() => setConfirmDeleteConversationId(activeConvo._id)}
+                      title="Delete conversation"
+                      className="text-sand-400 hover:text-rose-400 p-2 rounded-full hover:bg-ink-800 transition"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </div>
+
+                {otherParticipantDeleted && (
+                  <div className="mx-4 mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle size={18} className="mt-0.5 shrink-0 text-amber-400" />
+                      <p className="text-sm text-amber-200">This user no longer exists. Delete conversation?</p>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <button
+                        onClick={() => setConfirmDeleteConversationId(activeConvo._id)}
+                        className="rounded-lg bg-amber-500/20 px-3 py-1.5 text-xs font-semibold text-amber-200 hover:bg-amber-500/30 transition"
+                      >
+                        Delete conversation
+                      </button>
+                      <button
+                        onClick={() =>
+                          setDeletedUserIds((prev) => {
+                            const next = new Set(prev);
+                            if (otherParticipantId) next.delete(otherParticipantId);
+                            return next;
+                          })
+                        }
+                        className="rounded-lg bg-ink-800 px-3 py-1.5 text-xs font-semibold text-sand-300 hover:bg-ink-700 transition"
+                      >
+                        Keep
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Chat History */}
                 {(() => {
@@ -583,7 +703,7 @@ function MessagesContent() {
                             const showAvatar = !isMe && (i === 0 || chatMessages[i - 1]?.sender?._id !== msg.sender?._id);
 
                             return (
-                              <div key={msg._id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+                              <div key={msg._id} className={`flex ${isMe ? "justify-end" : "justify-start"} group`}>
                                 <div className="flex items-end gap-2 max-w-[85%] md:max-w-[70%]">
                                   {!isMe && (
                                     <div
@@ -678,6 +798,20 @@ function MessagesContent() {
                                       {msg.content}
                                     </div>
                                   )}
+                                  {isMe && !isMeet && (
+                                    <button
+                                      onClick={() => handleDeleteMessage(msg._id)}
+                                      disabled={deletingMessageId === msg._id}
+                                      title="Delete message"
+                                      className="self-center rounded-full p-1.5 text-sand-500 opacity-0 transition hover:bg-ink-800 hover:text-rose-400 group-hover:opacity-100 disabled:opacity-50"
+                                    >
+                                      {deletingMessageId === msg._id ? (
+                                        <Loader2 size={13} className="animate-spin" />
+                                      ) : (
+                                        <Trash2 size={13} />
+                                      )}
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                             );
@@ -735,6 +869,52 @@ function MessagesContent() {
           </div>
 
         </div>
+
+        {confirmDeleteConversationId && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            onClick={() => {
+              if (!deletingConversation) setConfirmDeleteConversationId(null);
+            }}
+          >
+            <div
+              className="w-full max-w-sm rounded-2xl border border-ink-700/60 bg-ink-900 p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start gap-3">
+                <AlertTriangle size={22} className="mt-0.5 shrink-0 text-rose-400" />
+                <div>
+                  <h3 className="text-base font-bold text-sand-100">Delete conversation?</h3>
+                  <p className="mt-1 text-sm text-sand-400">
+                    This permanently removes every message in this conversation for both
+                    participants. This cannot be undone.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-5 flex justify-end gap-2">
+                <button
+                  onClick={() => setConfirmDeleteConversationId(null)}
+                  disabled={deletingConversation}
+                  className="rounded-lg bg-ink-800 px-4 py-2 text-xs font-semibold text-sand-300 hover:bg-ink-700 transition disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteConversation(confirmDeleteConversationId)}
+                  disabled={deletingConversation}
+                  className="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500 transition disabled:opacity-50"
+                >
+                  {deletingConversation ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Trash2 size={14} />
+                  )}
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

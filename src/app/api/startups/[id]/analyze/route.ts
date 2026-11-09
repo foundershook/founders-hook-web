@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
-import { verifySession, SESSION_COOKIE } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-guard";
 import { analyzeWebsite } from "@/lib/analyzeWebsite";
 
 /**
@@ -20,13 +19,9 @@ export async function POST(
 ) {
   const { id } = await params;
 
-  // Auth
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  const session = token ? verifySession(token) : null;
-  if (!session) {
-    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
-  }
+  const auth = await requireUser();
+  if (auth.error) return auth.error;
+  const user = auth.user;
 
   await connectToDatabase();
 
@@ -40,7 +35,7 @@ export async function POST(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (startup.founder.toString() !== session.userId) {
+  if (startup.founder.toString() !== String(user._id)) {
     return NextResponse.json(
       { error: "Forbidden – only the founder can trigger analysis" },
       { status: 403 }

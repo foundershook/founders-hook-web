@@ -14,6 +14,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { ensureFirebaseAuth, authAwareSubscribe } from "@/lib/firebase-auth";
 
 export interface CommentAuthor {
   _id: string;
@@ -66,13 +67,14 @@ export function subscribeToPostComments(
   postId: string,
   callback: (comments: PostComment[]) => void
 ): Unsubscribe {
-  const commentsRef = collection(db, "knowledge_comments", postId, "comments");
-  const q = query(commentsRef, orderBy("createdAt", "desc"));
+  return authAwareSubscribe(() => {
+    const commentsRef = collection(db, "knowledge_comments", postId, "comments");
+    const q = query(commentsRef, orderBy("createdAt", "desc"));
 
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const comments: PostComment[] = snapshot.docs.map((docSnap) => {
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const comments: PostComment[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data();
         return {
           id: docSnap.id,
@@ -84,13 +86,14 @@ export function subscribeToPostComments(
           createdAt: data.createdAt,
         };
       });
-      callback(comments);
-    },
-    (error) => {
-      console.error("Error subscribing to post comments:", error);
-      callback([]);
-    }
-  );
+        callback(comments);
+      },
+      (error) => {
+        console.error("Error subscribing to post comments:", error);
+        callback([]);
+      }
+    );
+  });
 }
 
 /**
@@ -101,6 +104,7 @@ export async function addComment(
   author: CommentAuthor,
   content: string
 ): Promise<string> {
+  await ensureFirebaseAuth();
   const commentsRef = collection(db, "knowledge_comments", postId, "comments");
 
   const cleanAuthor = sanitizeForFirestore({
@@ -134,6 +138,7 @@ export async function addReply(
   content: string,
   replyToUser?: string
 ): Promise<string> {
+  await ensureFirebaseAuth();
   const repliesRef = collection(
     db,
     "knowledge_comments",
@@ -182,6 +187,7 @@ export async function fetchCommentReplies(
   postId: string,
   commentId: string
 ): Promise<CommentReply[]> {
+  await ensureFirebaseAuth();
   const repliesRef = collection(
     db,
     "knowledge_comments",
@@ -212,6 +218,7 @@ export async function deleteComment(
   postId: string,
   commentId: string
 ): Promise<void> {
+  await ensureFirebaseAuth();
   const commentRef = doc(
     db,
     "knowledge_comments",
@@ -230,6 +237,7 @@ export async function deleteReply(
   commentId: string,
   replyId: string
 ): Promise<void> {
+  await ensureFirebaseAuth();
   const replyRef = doc(
     db,
     "knowledge_comments",

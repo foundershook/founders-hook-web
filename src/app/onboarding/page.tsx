@@ -54,7 +54,6 @@ export default function OnboardingPage() {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: currentUser?.id || currentUser?._id,
             profilePic: profilePic || undefined,
           }),
         });

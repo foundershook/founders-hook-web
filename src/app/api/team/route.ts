@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
       : null;
 
     const { searchParams } = new URL(req.url);
-    const skillsParam = searchParams.get("skills") || "";
+    const skillsParam = (searchParams.get("skills") || "").slice(0, 512);
 
     if (!skillsParam.trim()) {
       return NextResponse.json({ users: [], total: 0 });

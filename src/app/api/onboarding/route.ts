@@ -1,23 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
-import { verifySession, SESSION_COOKIE } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-guard";
 
 // Schema now just checks that the body is an object of key/value pairs
 const DynamicOnboardingSchema = z.record(z.string(), z.any());
 
 export async function POST(req: NextRequest) {
   try {
-    // FIX: Await the cookies() function before calling .get()
-    const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE)?.value;
-    const session = token ? verifySession(token) : null;
-    
-    if (!session) {
-      return NextResponse.json({ error: "Please log in first" }, { status: 401 });
-    }
+    const auth = await requireUser();
+    if (auth.error) return auth.error;
+    const user = auth.user;
 
     const body = await req.json();
     const parsed = DynamicOnboardingSchema.safeParse(body);
@@ -28,7 +22,7 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
 
     const updated = await User.findByIdAndUpdate(
-      session.userId,
+      user._id,
       { 
         onboardingAnswers: parsed.data, 
         onboardingComplete: true 

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { PASSWORD_MIN_LENGTH } from "@/lib/password-policy";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -133,10 +134,10 @@ export default function SignupPage() {
               <input
                 required
                 type={showPassword ? "text" : "password"}
-                minLength={6}
+                minLength={PASSWORD_MIN_LENGTH}
                 value={form.password}
                 onChange={(e) => update("password", e.target.value)}
-                placeholder="At least 6 characters"
+                placeholder={`At least ${PASSWORD_MIN_LENGTH} characters`}
                 className="field-input pl-11 pr-11"
               />
               <button

@@ -81,7 +81,8 @@ export async function GET(
         isMutualFollow,
         isCurrentUser,
         isFounder,
-        onboardingAnswers,
+        // Onboarding answers are private to the profile owner.
+        onboardingAnswers: isCurrentUser ? onboardingAnswers : {},
         startups: startups.map((s: any) => ({
           _id: s._id.toString(),
           name: s.name,

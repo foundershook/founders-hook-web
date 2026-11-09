@@ -14,6 +14,8 @@
  *   - Returns null on ANY failure — never throws, never blocks the API route
  */
 
+import { safeFetch } from "./safe-fetch";
+
 export interface AiInsights {
   about: string;
   problem: string;
@@ -35,20 +37,14 @@ function stripHtml(html: string): string {
 }
 
 async function fetchWithTimeout(url: string, timeoutMs = 8000): Promise<Response> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        // Politely identify ourselves; some sites block blank UA
-        "User-Agent":
-          "Mozilla/5.0 (compatible; FoundersHookBot/1.0; +https://foundershook.in)",
-      },
-    });
-  } finally {
-    clearTimeout(timer);
-  }
+  return safeFetch(url, {
+    timeoutMs,
+    headers: {
+      // Politely identify ourselves; some sites block blank UA
+      "User-Agent":
+        "Mozilla/5.0 (compatible; FoundersHookBot/1.0; +https://foundershook.in)",
+    },
+  });
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
@@ -179,7 +175,7 @@ Example output:
 // strategies to extract a valid JSON object from the response.
 function extractJson(raw: string): AiInsights | null {
   // 1. Strip markdown code fences
-  let cleaned = raw.replace(/```(?:json)?\s*/gi, "").replace(/```/g, "").trim();
+  const cleaned = raw.replace(/```(?:json)?\s*/gi, "").replace(/```/g, "").trim();
 
   // 2. Try parsing directly
   try {

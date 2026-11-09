@@ -22,8 +22,11 @@ import {
   UserRound,
   Pencil,
   Save,
+  Trash2,
+  AlertTriangle,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
+import { PASSWORD_MIN_LENGTH } from "@/lib/password-policy";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -46,6 +49,13 @@ export default function SettingsPage() {
   const [step, setStep] = useState<"request" | "verify">("request");
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState("");
+
+  // Account deletion state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   // Fetch current user
   useEffect(() => {
@@ -116,13 +126,43 @@ export default function SettingsPage() {
     router.refresh();
   }
 
+  async function handleDeleteAccount() {
+    if (!deletePassword) {
+      setDeleteError("Enter your password to confirm.");
+      return;
+    }
+    const expected = (currentUser?.username || "").toLowerCase();
+    if (deleteConfirmText.trim().toLowerCase() !== expected && deleteConfirmText.trim().toUpperCase() !== "DELETE") {
+      setDeleteError(`Type ${currentUser?.username || "DELETE"} to confirm.`);
+      return;
+    }
+
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: deletePassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete account");
+      router.push("/");
+      router.refresh();
+    } catch (err: any) {
+      setDeleteError(err?.message || "Failed to delete account");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   async function handleRequestOtp(action: "email" | "username" | "password") {
     if (action !== "password" && !newData.trim()) {
       setActionError(`New ${action} is required.`);
       return;
     }
-    if (action === "password" && newData.length < 8) {
-      setActionError("Password must be at least 8 characters long.");
+    if (action === "password" && newData.length < PASSWORD_MIN_LENGTH) {
+      setActionError(`Password must be at least ${PASSWORD_MIN_LENGTH} characters long.`);
       return;
     }
 
@@ -790,6 +830,83 @@ export default function SettingsPage() {
                         <LogOut size={16} />
                         Log Out
                       </button>
+                    </div>
+
+                    <div className="rounded-xl border border-rose-500/40 bg-rose-950/20 p-5 space-y-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle size={20} className="mt-0.5 shrink-0 text-rose-400" />
+                        <div>
+                          <p className="text-sm font-bold text-sand-100">Delete Account</p>
+                          <p className="text-xs text-sand-400">
+                            Permanently remove your account, profile, startup data, and applications.
+                            Messages you exchanged with other users will remain visible to them.
+                            This action cannot be undone.
+                          </p>
+                        </div>
+                      </div>
+
+                      {!showDeleteConfirm ? (
+                        <button
+                          onClick={() => {
+                            setShowDeleteConfirm(true);
+                            setDeleteError("");
+                            setDeletePassword("");
+                            setDeleteConfirmText("");
+                          }}
+                          className="inline-flex items-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-2 text-sm font-semibold text-rose-300 hover:bg-rose-500/20 transition-all active:scale-95"
+                        >
+                          <Trash2 size={16} />
+                          Delete Account
+                        </button>
+                      ) : (
+                        <div className="space-y-3 rounded-xl border border-rose-500/20 bg-ink-950/40 p-4">
+                          <p className="text-xs text-sand-300">
+                            Type <span className="font-mono font-bold text-rose-300">{currentUser?.username || "DELETE"}</span>{" "}
+                            and enter your password to confirm.
+                          </p>
+                          <input
+                            type="text"
+                            value={deleteConfirmText}
+                            onChange={(e) => setDeleteConfirmText(e.target.value)}
+                            placeholder={currentUser?.username || "DELETE"}
+                            className="w-full rounded-lg bg-ink-950 border border-ink-700/60 px-3 py-2 text-sm text-sand-100 placeholder:text-sand-500 focus:outline-none focus:border-rose-500/50"
+                          />
+                          <input
+                            type="password"
+                            value={deletePassword}
+                            onChange={(e) => setDeletePassword(e.target.value)}
+                            placeholder="Current password"
+                            className="w-full rounded-lg bg-ink-950 border border-ink-700/60 px-3 py-2 text-sm text-sand-100 placeholder:text-sand-500 focus:outline-none focus:border-rose-500/50"
+                          />
+                          {deleteError && <p className="text-xs text-rose-400">{deleteError}</p>}
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={handleDeleteAccount}
+                              disabled={deleting}
+                              className="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white hover:bg-rose-500 transition-all disabled:opacity-50"
+                            >
+                              {deleting ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : (
+                                <Trash2 size={14} />
+                              )}
+                              Permanently Delete
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowDeleteConfirm(false);
+                                setDeleteError("");
+                                setDeletePassword("");
+                                setDeleteConfirmText("");
+                              }}
+                              disabled={deleting}
+                              className="rounded-lg bg-ink-800 text-sand-300 px-4 py-2 text-xs font-semibold hover:bg-ink-700 transition-all disabled:opacity-50"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

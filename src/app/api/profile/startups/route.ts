@@ -1,25 +1,16 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
-import { verifySession, SESSION_COOKIE } from "@/lib/auth";
-import mongoose from "mongoose";
+import { requireUser } from "@/lib/auth-guard";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  const session = token ? verifySession(token) : null;
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const auth = await requireUser();
+  if (auth.error) return auth.error;
+  const user = auth.user;
 
   await connectToDatabase();
 
-  // Match startups collection where founder ObjectId equals current user's ID
-  const startups = await Startup.find({
-    founder: new mongoose.Types.ObjectId(session.userId),
-  })
+  const startups = await Startup.find({ founder: user._id })
     .sort({ createdAt: -1 })
     .populate("founder", "name username avatarUrl")
     .populate("members", "name username avatarUrl")

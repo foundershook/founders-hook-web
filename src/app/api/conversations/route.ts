@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import Application from "@/models/Application";
 import Startup from "@/models/Startup";
+import ConversationDeletion from "@/models/ConversationDeletion";
 import User from "@/models/User"; // Ensure registered
 
 export async function GET(request: Request) {
@@ -27,8 +28,25 @@ export async function GET(request: Request) {
       .populate("applicant", "name username avatarUrl email mobile gender experience resumeUrl resumeName message status createdAt")
       .sort({ createdAt: -1 });
 
+    // Skip conversations the user intentionally deleted so they are not
+    // re-created from the application records on the next page load.
+    const conversationIds = apps.map((app: any) => `app_${app._id.toString()}`);
+    const deletions = await ConversationDeletion.find({
+      conversationId: { $in: conversationIds },
+    })
+      .select("conversationId")
+      .lean<{ conversationId: string }[]>();
+    const deletedConversationIds = new Set(
+      deletions.map((deletion) => deletion.conversationId)
+    );
+
     // Map each application into a conversation thread metadata object for Firestore
-    const conversations = apps.map((app: any) => {
+    const conversations = apps
+      .filter(
+        (app: any) =>
+          !deletedConversationIds.has(`app_${app._id.toString()}`)
+      )
+      .map((app: any) => {
       const startup = app.startup;
       const applicant = app.applicant;
       const participants: string[] = [];

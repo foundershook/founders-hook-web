@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
 import Application from "@/models/Application";
 import User from "@/models/User";
-import { verifySession, SESSION_COOKIE } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-guard";
+import { isResumeUrl } from "@/lib/validation";
+import { createNotification } from "@/lib/notifications";
 
 const ApplySchema = z.object({
   roleId: z.string().min(1),
@@ -23,17 +24,18 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  const session = token ? verifySession(token) : null;
-  if (!session) {
-    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
-  }
+  const auth = await requireUser();
+  if (auth.error) return auth.error;
+  const userId = auth.user._id.toString();
 
   const body = await req.json();
   const parsed = ApplySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  if (parsed.data.resumeUrl && !isResumeUrl(parsed.data.resumeUrl)) {
+    return NextResponse.json({ error: "Invalid resume URL." }, { status: 400 });
   }
 
   await connectToDatabase();
@@ -55,7 +57,7 @@ export async function POST(
     let application = await Application.findOne({
       startup: startup._id,
       roleId: parsed.data.roleId,
-      applicant: session.userId,
+      applicant: userId,
     });
 
     if (application) {
@@ -73,7 +75,7 @@ export async function POST(
       application = await Application.create({
         startup: startup._id,
         roleId: parsed.data.roleId,
-        applicant: session.userId,
+        applicant: userId,
         name: parsed.data.name,
         gender: parsed.data.gender,
         mobile: parsed.data.mobile,
@@ -85,14 +87,13 @@ export async function POST(
       });
     }
 
-    const applicantUser = await User.findById(session.userId).select("name username avatarUrl email mobile");
+    const applicantUser = await User.findById(userId).select("name username avatarUrl email mobile");
 
     // Notify startup founder of new application
-    if (startup.founder && startup.founder.toString() !== session.userId) {
+    if (startup.founder && startup.founder.toString() !== userId) {
       try {
-        const Notification = (await import("@/models/Notification")).default;
         const roleTitleText = matchedRole.title || "Role";
-        await Notification.create({
+        await createNotification({
           recipient: startup.founder,
           type: "new_application",
           title: "New Job Application 🚀",
@@ -101,14 +102,13 @@ export async function POST(
           applicationId: application._id,
           startupName: startup.name,
           roleTitle: roleTitleText,
-          read: false,
         });
       } catch (notifErr) {
         console.error("Failed to create founder notification:", notifErr);
       }
     }
 
-    const participants: string[] = [session.userId];
+    const participants: string[] = [userId];
     if (startup.founder) {
       const founderIdStr = startup.founder.toString();
       if (!participants.includes(founderIdStr)) {
@@ -136,7 +136,7 @@ export async function POST(
         status: application.status || "Pending",
         message: application.message || "",
         applicant: {
-          _id: session.userId,
+          _id: userId,
           name: parsed.data.name || applicantUser?.name || "Applicant",
           username: applicantUser?.username || "",
           avatarUrl: applicantUser?.avatarUrl || "",

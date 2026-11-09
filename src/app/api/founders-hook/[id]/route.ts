@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getCurrentUser } from "@/lib/auth";
 import Application from "@/models/Application";
 import Startup from "@/models/Startup";
+import { createNotification } from "@/lib/notifications";
 
 export async function PATCH(
   req: NextRequest,
@@ -39,7 +40,6 @@ export async function PATCH(
 
     // Create notification for applicant
     try {
-      const Notification = (await import("@/models/Notification")).default;
       const matchedRole = startup.openRoles?.find(
         (r: any) => r._id?.toString() === application.roleId?.toString()
       );
@@ -50,7 +50,7 @@ export async function PATCH(
           ? `${startup.name} accepted your application for ${roleTitle}!`
           : `${startup.name} has updated the status of your application for ${roleTitle} to Rejected.`;
 
-      await Notification.create({
+      await createNotification({
         recipient: application.applicant,
         type: status === "Accepted" ? "application_accepted" : "application_rejected",
         title: status === "Accepted" ? "Application Accepted! 🎉" : "Application Update",
@@ -59,7 +59,6 @@ export async function PATCH(
         applicationId: application._id,
         startupName: startup.name,
         roleTitle,
-        read: false,
       });
     } catch (notifErr) {
       console.error("Failed to create application notification:", notifErr);

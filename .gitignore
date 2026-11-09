@@ -1,8 +1,41 @@
-node_modules
-.next
+# dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Environment files (never commit real secrets)
 .env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test output
+coverage/
+.nyc_output/
+
+# Firebase CLI cache
+.firebase/
+firebase-debug.log*
+
+# Vercel
+.vercel
+
+# OS / editor files
 .DS_Store
-dev-server-network.err.log
-dev-server-network.out.log
-dev-server.err.log
-dev-server.out.log
+Thumbs.db
+.idea/
+
+# Misc
+*.local

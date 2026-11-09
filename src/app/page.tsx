@@ -1509,7 +1509,13 @@ export default function LandingPage() {
 
       {/* ─── FOOTER ─── */}
       <footer className="landing-section relative z-10 border-t border-[#e8e4dc] py-8 text-center text-xs text-[#999] font-normal">
-        © {new Date().getFullYear()} Founders Hook. What if it works?
+        <div>© {new Date().getFullYear()} Founders Hook. What if it works?</div>
+        <Link
+          href="/privacy-policy"
+          className="mt-2 inline-block text-[#6B7A2F] transition-colors hover:text-[#4f5b22] hover:underline"
+        >
+          Privacy Policy
+        </Link>
       </footer>
     </main>
   );

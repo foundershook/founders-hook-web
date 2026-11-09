@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
-import { verifySession, SESSION_COOKIE } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-guard";
 import { analyzeWebsite } from "@/lib/analyzeWebsite";
 import { getDefaultStartupIcon } from "@/lib/startupDefaults";
+import { isSafeHttpsUrl, isSafeHttpUrl } from "@/lib/validation";
 
 export async function GET(
   _req: NextRequest,
@@ -50,12 +50,9 @@ export async function PATCH(
 ) {
   const { id } = await params;
 
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  const session = token ? verifySession(token) : null;
-  if (!session) {
-    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
-  }
+  const auth = await requireUser();
+  if (auth.error) return auth.error;
+  const user = auth.user;
 
   await connectToDatabase();
 
@@ -72,7 +69,7 @@ export async function PATCH(
   const existingName = existing.name || "";
   const existingCategory = existing.category || "";
 
-  if (existing.founder.toString() !== session.userId) {
+  if (existing.founder.toString() !== String(user._id)) {
     return NextResponse.json(
       { error: "Forbidden – only the founder can edit this startup" },
       { status: 403 }
@@ -86,6 +83,20 @@ export async function PATCH(
       { error: parsed.error.issues[0]?.message || "Invalid input" },
       { status: 400 }
     );
+  }
+
+  if (parsed.data.website && !isSafeHttpUrl(parsed.data.website)) {
+    return NextResponse.json({ error: "Invalid website URL." }, { status: 400 });
+  }
+  if (parsed.data.bannerUrl && !isSafeHttpsUrl(parsed.data.bannerUrl)) {
+    return NextResponse.json({ error: "Invalid banner URL." }, { status: 400 });
+  }
+  if (
+    parsed.data.logoUrl &&
+    parsed.data.logoUrl.includes("://") &&
+    !isSafeHttpsUrl(parsed.data.logoUrl)
+  ) {
+    return NextResponse.json({ error: "Invalid logo URL." }, { status: 400 });
   }
 
   const update: Record<string, unknown> = { ...parsed.data };

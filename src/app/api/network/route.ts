@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import Startup from "@/models/Startup";
 import { getCurrentUser } from "@/lib/auth";
+import { escapeRegex, normalizeSearchInput } from "@/lib/search";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,15 +13,16 @@ export async function GET(req: NextRequest) {
     const currentUserId = currentUser ? (currentUser._id as any).toString() : null;
 
     const { searchParams } = new URL(req.url);
-    const query = searchParams.get("q") || "";
+    const query = normalizeSearchInput(searchParams.get("q"));
 
-    // Build search filter
+    // Build search filter. The term is escaped so it is matched literally.
+    const pattern = escapeRegex(query);
     const searchFilter = query
       ? {
           $or: [
-            { name: { $regex: query, $options: "i" } },
-            { username: { $regex: query, $options: "i" } },
-            { bio: { $regex: query, $options: "i" } },
+            { name: { $regex: pattern, $options: "i" } },
+            { username: { $regex: pattern, $options: "i" } },
+            { bio: { $regex: pattern, $options: "i" } },
           ],
         }
       : {};

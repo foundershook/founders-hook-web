@@ -1,56 +1,72 @@
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { z } from "zod";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
 import ResetToken from "@/models/ResetToken";
 import { sendPasswordResetEmail } from "@/lib/brevo";
+import { rateLimit, getClientIp, normalizeKeyPart } from "@/lib/rate-limit";
+import { tooManyRequests } from "@/lib/auth-guard";
+
+const ForgotSchema = z.object({
+  identifier: z.string().min(1).max(254),
+});
+
+const GENERIC_MESSAGE =
+  "If that account exists, we have sent a verification code to its email.";
 
 export async function POST(req: Request) {
   try {
-    const { identifier } = await req.json();
-
-    if (!identifier) {
-      return NextResponse.json({ error: "Username or email is required" }, { status: 400 });
+    const parsed = ForgotSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Username or email is required" },
+        { status: 400 }
+      );
     }
+
+    const identifier = parsed.data.identifier.toLowerCase();
+    const ip = getClientIp(req);
+
+    const limit = await rateLimit(
+      `forgot-password:${ip}:${normalizeKeyPart(identifier)}`,
+      3,
+      15 * 60
+    );
+    if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
 
     await connectToDatabase();
 
-    // Find by email or username
     const user = await User.findOne({
-      $or: [
-        { email: identifier.toLowerCase() },
-        { username: identifier.toLowerCase() }
-      ]
+      $or: [{ email: identifier }, { username: identifier }],
     });
-    
-    // For security reasons, we do not reveal if a user exists or not.
+
+    // Always return the same response to avoid account enumeration.
     if (!user) {
-      return NextResponse.json({ success: true, message: "If that account exists, we have sent a verification code to its email." });
+      return NextResponse.json({ success: true, message: GENERIC_MESSAGE });
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    const otp = crypto.randomInt(100000, 1000000).toString();
+    const otpHash = await bcrypt.hash(otp, 10);
 
-    // Delete any existing tokens for this user to invalidate them
     await ResetToken.deleteMany({ email: user.email });
 
-    // Save token to DB, expires in 15 minutes
     await ResetToken.create({
       email: user.email,
       otpHash,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+      attempts: 0,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
 
-    // Send email with OTP
-    await sendPasswordResetEmail({
-      to: user.email,
-      otp,
-    });
+    await sendPasswordResetEmail({ to: user.email, otp });
 
-    return NextResponse.json({ success: true, message: "If that account exists, we have sent a verification code to its email.", email: user.email });
+    return NextResponse.json({ success: true, message: GENERIC_MESSAGE });
   } catch (error) {
     console.error("Forgot password error:", error);
-    return NextResponse.json({ error: "An error occurred while processing your request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "An error occurred while processing your request" },
+      { status: 500 }
+    );
   }
 }

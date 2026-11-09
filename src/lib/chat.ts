@@ -4,6 +4,8 @@ import {
   addDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
+  getDocs,
   query,
   where,
   orderBy,
@@ -13,6 +15,7 @@ import {
   Unsubscribe,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { ensureFirebaseAuth, authAwareSubscribe } from "@/lib/firebase-auth";
 
 export interface ParticipantUser {
   _id: string;
@@ -99,13 +102,14 @@ export function subscribeConversations(
   onUpdate: (conversations: ConversationDoc[]) => void,
   onError?: (err: any) => void
 ): Unsubscribe {
-  const convosRef = collection(db, "conversations");
-  const q = query(convosRef, where("participants", "array-contains", userId));
+  return authAwareSubscribe(() => {
+    const convosRef = collection(db, "conversations");
+    const q = query(convosRef, where("participants", "array-contains", userId));
 
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const convos: ConversationDoc[] = snapshot.docs.map((docSnap) => {
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const convos: ConversationDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data({ serverTimestamps: "estimate" });
         return {
           _id: docSnap.id,
@@ -133,11 +137,12 @@ export function subscribeConversations(
 
       onUpdate(convos);
     },
-    (err) => {
-      console.error("Error subscribing to conversations:", err);
-      if (onError) onError(err);
-    }
-  );
+      (err) => {
+        console.error("Error subscribing to conversations:", err);
+        if (onError) onError(err);
+      }
+    );
+  }, onError);
 }
 
 /**
@@ -148,11 +153,12 @@ export function subscribeMessages(
   onUpdate: (messages: MessageDoc[]) => void,
   onError?: (err: any) => void
 ): Unsubscribe {
-  const messagesRef = collection(db, "conversations", conversationId, "messages");
-  const q = query(messagesRef, orderBy("createdAt", "asc"));
+  return authAwareSubscribe(() => {
+    const messagesRef = collection(db, "conversations", conversationId, "messages");
+    const q = query(messagesRef, orderBy("createdAt", "asc"));
 
-  return onSnapshot(
-    q,
+    return onSnapshot(
+      q,
     (snapshot) => {
       const messages: MessageDoc[] = snapshot.docs.map((docSnap) => {
         const data = docSnap.data({ serverTimestamps: "estimate" });
@@ -200,11 +206,12 @@ export function subscribeMessages(
 
       onUpdate(messages);
     },
-    (err) => {
-      console.error("Error subscribing to messages:", err);
-      if (onError) onError(err);
-    }
-  );
+      (err) => {
+        console.error("Error subscribing to messages:", err);
+        if (onError) onError(err);
+      }
+    );
+  }, onError);
 }
 
 /**
@@ -224,6 +231,7 @@ export async function sendApplicationCardMessage(
     message?: string;
   }
 ) {
+  await ensureFirebaseAuth();
   const messagesRef = collection(db, "conversations", conversationId, "messages");
   const now = new Date().toISOString();
 
@@ -280,6 +288,7 @@ export async function sendChatMessage(
   sender: { _id: string; name: string; username: string; avatarUrl: string },
   content: string
 ) {
+  await ensureFirebaseAuth();
   const messagesRef = collection(db, "conversations", conversationId, "messages");
   const now = new Date().toISOString();
 
@@ -315,6 +324,7 @@ export async function sendMeetingInvite(
   meetUrl: string,
   startupName?: string
 ) {
+  await ensureFirebaseAuth();
   const messagesRef = collection(db, "conversations", conversationId, "messages");
   const now = new Date().toISOString();
 
@@ -356,6 +366,7 @@ export async function sendMeetingInvite(
  * End an active meeting call.
  */
 export async function endMeetingCall(conversationId: string, messageId?: string) {
+  await ensureFirebaseAuth();
   const now = new Date().toISOString();
   if (messageId) {
     try {
@@ -379,6 +390,34 @@ export async function endMeetingCall(conversationId: string, messageId?: string)
   } catch (e) {
     console.warn("Could not clear activeMeet on convo:", e);
   }
+}
+
+/**
+ * Delete a single message from a conversation. Only participants of the
+ * conversation are permitted by the Firestore rules to do this.
+ */
+export async function deleteMessage(
+  conversationId: string,
+  messageId: string
+): Promise<void> {
+  await ensureFirebaseAuth();
+  const messageRef = doc(db, "conversations", conversationId, "messages", messageId);
+  await deleteDoc(messageRef);
+}
+
+/**
+ * Delete an entire conversation, including every message in its subcollection.
+ * Messages must be removed first because Firestore does not cascade deletes.
+ */
+export async function deleteConversation(conversationId: string): Promise<void> {
+  await ensureFirebaseAuth();
+  const messagesRef = collection(db, "conversations", conversationId, "messages");
+  const snapshot = await getDocs(query(messagesRef));
+
+  await Promise.all(snapshot.docs.map((docSnap) => deleteDoc(docSnap.ref)));
+
+  const convoRef = doc(db, "conversations", conversationId);
+  await deleteDoc(convoRef);
 }
 
 /**
@@ -424,6 +463,7 @@ export async function syncFirestoreConversation(convoData: {
   application?: any;
   startup?: any;
 }) {
+  await ensureFirebaseAuth();
   const convoRef = doc(db, "conversations", convoData.id);
   const now = new Date().toISOString();
 
@@ -454,14 +494,15 @@ export function subscribeIncomingCalls(
     createdAt: string;
   } | null) => void
 ): Unsubscribe {
-  const convosRef = collection(db, "conversations");
-  const q = query(convosRef, where("participants", "array-contains", userId));
+  return authAwareSubscribe(() => {
+    const convosRef = collection(db, "conversations");
+    const q = query(convosRef, where("participants", "array-contains", userId));
 
-  return onSnapshot(
-    q,
-    (snapshot) => {
-      const now = Date.now();
-      let foundCall: any = null;
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        const now = Date.now();
+        let foundCall: any = null;
 
       for (const docSnap of snapshot.docs) {
         const data = docSnap.data();
@@ -491,10 +532,11 @@ export function subscribeIncomingCalls(
 
       onIncomingCall(foundCall);
     },
-    (err) => {
-      console.error("Error subscribing to incoming calls:", err);
-    }
-  );
+      (err) => {
+        console.error("Error subscribing to incoming calls:", err);
+      }
+    );
+  });
 }
 
 /**
@@ -504,6 +546,7 @@ export async function getOrCreateDirectConversation(
   currentUser: { _id: string; name: string; username: string; avatarUrl?: string },
   targetUser: { _id: string; name: string; username: string; avatarUrl?: string }
 ): Promise<string> {
+  await ensureFirebaseAuth();
   const currentId = currentUser._id;
   const targetId = targetUser._id;
   const sortedIds = [currentId, targetId].sort();

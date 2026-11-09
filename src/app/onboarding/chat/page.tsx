@@ -372,14 +372,11 @@ function AIOnboardingChatContent() {
     setError("");
 
     try {
-      const userId = user?.id || user?._id;
-
       if (liveProfile.bio || liveProfile.skills) {
         const bioRes = await fetch("/api/profile/bio", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId,
             bio: liveProfile.bio || "",
             skills: liveProfile.skills || [],
           }),

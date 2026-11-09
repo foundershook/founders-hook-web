@@ -1,26 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { connectToDatabase } from "@/lib/mongodb";
 import Startup from "@/models/Startup";
-import { verifySession, SESSION_COOKIE } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-guard";
 import { analyzeWebsite } from "@/lib/analyzeWebsite";
 import { getDefaultStartupIcon } from "@/lib/startupDefaults";
+import { escapeRegex, normalizeSearchInput } from "@/lib/search";
+import { isSafeHttpsUrl, isSafeHttpUrl } from "@/lib/validation";
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
 
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q")?.trim();
-  const category = searchParams.get("category")?.trim();
+  const q = normalizeSearchInput(searchParams.get("q"));
+  const category = (searchParams.get("category")?.trim() || "").slice(0, 64);
 
   const filter: Record<string, unknown> = {};
   if (category && category !== "All") filter.category = category;
   if (q) {
+    const pattern = escapeRegex(q);
     filter.$or = [
-      { name: { $regex: q, $options: "i" } },
-      { tagline: { $regex: q, $options: "i" } },
-      { category: { $regex: q, $options: "i" } },
+      { name: { $regex: pattern, $options: "i" } },
+      { tagline: { $regex: pattern, $options: "i" } },
+      { category: { $regex: pattern, $options: "i" } },
     ];
   }
 
@@ -54,12 +56,9 @@ const CreateStartupSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  const session = token ? verifySession(token) : null;
-  if (!session) {
-    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
-  }
+  const auth = await requireUser();
+  if (auth.error) return auth.error;
+  const user = auth.user;
 
   const body = await req.json();
   const parsed = CreateStartupSchema.safeParse(body);
@@ -68,6 +67,20 @@ export async function POST(req: NextRequest) {
       { error: parsed.error.issues[0]?.message || "Invalid input" },
       { status: 400 }
     );
+  }
+
+  if (parsed.data.website && !isSafeHttpUrl(parsed.data.website)) {
+    return NextResponse.json({ error: "Invalid website URL." }, { status: 400 });
+  }
+  if (parsed.data.bannerUrl && !isSafeHttpsUrl(parsed.data.bannerUrl)) {
+    return NextResponse.json({ error: "Invalid banner URL." }, { status: 400 });
+  }
+  if (
+    parsed.data.logoUrl &&
+    parsed.data.logoUrl.includes("://") &&
+    !isSafeHttpsUrl(parsed.data.logoUrl)
+  ) {
+    return NextResponse.json({ error: "Invalid logo URL." }, { status: 400 });
   }
 
   await connectToDatabase();
@@ -79,8 +92,8 @@ export async function POST(req: NextRequest) {
 
   const startup = await Startup.create({
     ...parsed.data,
-    founder: session.userId,
-    members: [session.userId],
+    founder: user._id,
+    members: [user._id],
     icon: assignedIcon,
     coverImage: parsed.data.bannerUrl || "",
     website: parsed.data.website || "",

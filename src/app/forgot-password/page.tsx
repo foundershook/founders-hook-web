@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { PASSWORD_MIN_LENGTH } from "@/lib/password-policy";
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -66,9 +67,9 @@ export default function ForgotPasswordPage() {
       setMessage("Passwords do not match");
       return;
     }
-    if (password.length < 8) {
+    if (password.length < PASSWORD_MIN_LENGTH) {
       setStatus("error");
-      setMessage("Password must be at least 8 characters long");
+      setMessage(`Password must be at least ${PASSWORD_MIN_LENGTH} characters long`);
       return;
     }
 

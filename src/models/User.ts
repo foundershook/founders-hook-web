@@ -6,6 +6,8 @@ export interface IUser extends Document {
   username: string;
   email: string;
   passwordHash: string;
+  emailVerified: boolean;
+  mobile?: string;
   avatarUrl: string;
   bannerUrl?: string;
   bio: string;
@@ -14,6 +16,9 @@ export interface IUser extends Document {
   onboardingAnswers: Map<string, any>; 
   
   onboardingComplete: boolean;
+
+  // Incremented whenever credentials change, which invalidates older sessions.
+  sessionVersion: number;
   
   // Waitlist and Early Access fields
   isEarlyAccess: boolean;
@@ -46,7 +51,9 @@ const UserSchema = new Schema<IUser>(
       lowercase: true,
       index: true,
     },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: true, select: false },
+    emailVerified: { type: Boolean, default: false },
+    mobile: { type: String, default: "", trim: true },
     avatarUrl: {
       type: String,
       default: "https://picsum.photos/seed/avatar/200/200",
@@ -74,6 +81,8 @@ const UserSchema = new Schema<IUser>(
     },
     
     onboardingComplete: { type: Boolean, default: false },
+
+    sessionVersion: { type: Number, default: 0 },
     
     // Waitlist / Early Access fields
     isEarlyAccess: { 
@@ -94,7 +103,16 @@ const UserSchema = new Schema<IUser>(
       { type: Schema.Types.ObjectId, ref: "User" }
     ],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (_doc, ret: Record<string, unknown>) => {
+        delete ret.passwordHash;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  }
 );
 
 const User = models?.User || model<IUser>("User", UserSchema);

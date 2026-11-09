@@ -2,7 +2,8 @@ import mongoose, { Schema, Document, models, model } from "mongoose";
 
 export interface IResetToken extends Document {
   email: string;
-  otpHash: string; // The hashed 6-digit OTP
+  otpHash: string; // bcrypt hash of the 6-digit OTP
+  attempts: number;
   expiresAt: Date;
   createdAt: Date;
 }
@@ -19,6 +20,10 @@ const ResetTokenSchema = new Schema<IResetToken>(
     otpHash: {
       type: String,
       required: true,
+    },
+    attempts: {
+      type: Number,
+      default: 0,
     },
     expiresAt: {
       type: Date,

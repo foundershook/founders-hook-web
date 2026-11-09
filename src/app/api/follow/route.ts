@@ -1,39 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth-guard";
+
+function getTargetId(body: unknown): string | null {
+  if (!body || typeof body !== "object") return null;
+  const value = (body as { targetUserId?: unknown }).targetUserId;
+  if (typeof value !== "string" || !mongoose.isValidObjectId(value)) return null;
+  return value;
+}
 
 // POST /api/follow — follow a user
 export async function POST(req: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireUser();
+    if (auth.error) return auth.error;
+    const currentId = auth.user._id.toString();
 
-    const body = await req.json();
-    const { targetUserId } = body;
-
+    const targetUserId = getTargetId(await req.json());
     if (!targetUserId) {
-      return NextResponse.json({ error: "targetUserId is required" }, { status: 400 });
+      return NextResponse.json({ error: "A valid targetUserId is required" }, { status: 400 });
     }
-
-    const currentId = (currentUser._id as any).toString();
     if (currentId === targetUserId) {
       return NextResponse.json({ error: "You cannot follow yourself" }, { status: 400 });
     }
 
     await connectToDatabase();
 
-    // Add targetUserId to currentUser's following (idempotent via $addToSet)
-    await User.findByIdAndUpdate(currentId, {
-      $addToSet: { following: targetUserId },
-    });
+    const target = await User.findById(targetUserId).select("_id");
+    if (!target) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
-    // Add currentUser's id to target user's followers (idempotent via $addToSet)
-    await User.findByIdAndUpdate(targetUserId, {
-      $addToSet: { followers: currentId },
-    });
+    await Promise.all([
+      User.findByIdAndUpdate(currentId, { $addToSet: { following: targetUserId } }),
+      User.findByIdAndUpdate(targetUserId, { $addToSet: { followers: currentId } }),
+    ]);
 
     return NextResponse.json({ success: true, action: "followed" });
   } catch (error) {
@@ -45,31 +48,21 @@ export async function POST(req: NextRequest) {
 // DELETE /api/follow — unfollow a user
 export async function DELETE(req: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireUser();
+    if (auth.error) return auth.error;
+    const currentId = auth.user._id.toString();
 
-    const body = await req.json();
-    const { targetUserId } = body;
-
+    const targetUserId = getTargetId(await req.json());
     if (!targetUserId) {
-      return NextResponse.json({ error: "targetUserId is required" }, { status: 400 });
+      return NextResponse.json({ error: "A valid targetUserId is required" }, { status: 400 });
     }
 
     await connectToDatabase();
 
-    const currentId = (currentUser._id as any).toString();
-
-    // Remove targetUserId from currentUser's following
-    await User.findByIdAndUpdate(currentId, {
-      $pull: { following: targetUserId },
-    });
-
-    // Remove currentUser's id from target's followers
-    await User.findByIdAndUpdate(targetUserId, {
-      $pull: { followers: currentId },
-    });
+    await Promise.all([
+      User.findByIdAndUpdate(currentId, { $pull: { following: targetUserId } }),
+      User.findByIdAndUpdate(targetUserId, { $pull: { followers: currentId } }),
+    ]);
 
     return NextResponse.json({ success: true, action: "unfollowed" });
   } catch (error) {

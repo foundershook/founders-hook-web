@@ -217,7 +217,6 @@ export default function ProfilePage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user._id || user.id, // Pass ID to backend
           bio,
           profilePic,
           bannerUrl,
@@ -283,7 +282,6 @@ export default function ProfilePage() {
                       method: "PUT",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({
-                        userId: user._id || user.id,
                         bannerUrl: newBannerUrl,
                       }),
                     });
@@ -347,12 +345,11 @@ export default function ProfilePage() {
                           await fetch("/api/profile/bio", {
                             method: "PUT",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              userId: user._id || user.id,
-                              bio: bio,
-                              profilePic: newPicUrl,
-                              bannerUrl: bannerUrl,
-                            }),
+                          body: JSON.stringify({
+                            bio: bio,
+                            profilePic: newPicUrl,
+                            bannerUrl: bannerUrl,
+                          }),
                           });
                         } catch (error) {
                           console.error("Failed to auto-save image to database", error);

@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifySession, SESSION_COOKIE } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/mongodb";
 import User from "@/models/User";
+import { requireUser, tooManyRequests } from "@/lib/auth-guard";
+import { rateLimit } from "@/lib/rate-limit";
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -217,13 +217,12 @@ function enforceSingleQuestion(text: string, turnCount: number): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(SESSION_COOKIE)?.value;
-    const session = token ? verifySession(token) : null;
+    const auth = await requireUser();
+    if (auth.error) return auth.error;
+    const userId = auth.user._id.toString();
 
-    if (!session) {
-      return NextResponse.json({ error: "Please log in first" }, { status: 401 });
-    }
+    const limit = await rateLimit(`ai-onboarding:${userId}`, 20, 60);
+    if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
 
     const body = await req.json();
     const {
@@ -243,8 +242,8 @@ export async function POST(req: NextRequest) {
     };
 
     await connectToDatabase();
-    const dbUser: any = await User.findById(session.userId)
-      .select("name username avatarUrl bio skills isFounder")
+    const dbUser: any = await User.findById(userId)
+      .select("name username avatarUrl bio skills")
       .lean();
     const firstName = dbUser?.name ? dbUser.name.split(" ")[0] : "there";
     const existingBio = currentProfile.bio ?? dbUser?.bio ?? "";

@@ -1,0 +1,5 @@
+infisical run -- npm run devversion: 1
+general: {}
+secrets-management:
+    project-id: d1302260-2be1-4f3d-8cd1-67afd89c1183
+    environment: dev

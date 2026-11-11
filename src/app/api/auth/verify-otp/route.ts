@@ -100,6 +100,8 @@ export async function POST(req: NextRequest) {
       vipCode: record.formData.vipCode,
       emailVerified: true,
       sessionVersion: 0,
+      tncAccepted: record.formData.tncAccepted === true,
+      tncVersion: record.formData.tncVersion,
     });
 
     await OtpVerification.deleteOne({ _id: record._id });

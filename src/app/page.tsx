@@ -502,6 +502,7 @@ function FoundersEcosystemWeb() {
                 src="https://res.cloudinary.com/t7efuhnd/image/upload/v1786022235/founder_hook_iorswv.jpg"
                 alt="Founders Hook Logo"
                 fill
+                loading="eager"
                 className="object-cover"
               />
             </div>
@@ -1515,6 +1516,13 @@ export default function LandingPage() {
           className="mt-2 inline-block text-[#6B7A2F] transition-colors hover:text-[#4f5b22] hover:underline"
         >
           Privacy Policy
+        </Link>
+        <span className="mx-2 text-[#d4d0c8]">|</span>
+        <Link
+          href="/terms-and-conditions"
+          className="inline-block text-[#6B7A2F] transition-colors hover:text-[#4f5b22] hover:underline"
+        >
+          Terms &amp; Conditions
         </Link>
       </footer>
     </main>

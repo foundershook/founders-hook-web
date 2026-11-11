@@ -37,7 +37,7 @@ export default function SignupPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, tncAccepted: agreed }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -176,9 +176,26 @@ export default function SignupPage() {
             </span>
             <span className="text-xs leading-5 text-mist-400">
               I have read and agree to the{" "}
-              <span className="font-medium text-mist-200">Terms &amp; Conditions</span> and
-              acknowledge the{" "}
-              <span className="font-medium text-mist-200">Privacy Policy</span>.
+              <Link
+                href="/terms-and-conditions"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="font-medium text-gold-300 underline decoration-gold-300/40 underline-offset-2 transition-colors hover:text-gold-200 hover:decoration-gold-200"
+              >
+                Terms &amp; Conditions
+              </Link>{" "}
+              and acknowledge the{" "}
+              <Link
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="font-medium text-gold-300 underline decoration-gold-300/40 underline-offset-2 transition-colors hover:text-gold-200 hover:decoration-gold-200"
+              >
+                Privacy Policy
+              </Link>
+              .
             </span>
           </label>
 

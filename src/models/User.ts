@@ -20,6 +20,10 @@ export interface IUser extends Document {
   // Incremented whenever credentials change, which invalidates older sessions.
   sessionVersion: number;
   
+  // Terms & Conditions acceptance
+  tncAccepted: boolean;
+  tncVersion: string;
+
   // Waitlist and Early Access fields
   isEarlyAccess: boolean;
   vipCode?: string;
@@ -83,7 +87,11 @@ const UserSchema = new Schema<IUser>(
     onboardingComplete: { type: Boolean, default: false },
 
     sessionVersion: { type: Number, default: 0 },
-    
+
+    // Terms & Conditions acceptance
+    tncAccepted: { type: Boolean, default: false },
+    tncVersion: { type: String, default: "" },
+
     // Waitlist / Early Access fields
     isEarlyAccess: { 
       type: Boolean, 

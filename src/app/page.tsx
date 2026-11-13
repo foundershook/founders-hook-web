@@ -1524,6 +1524,13 @@ export default function LandingPage() {
         >
           Terms &amp; Conditions
         </Link>
+        <span className="mx-2 text-[#d4d0c8]">|</span>
+        <Link
+          href="/ai-disclaimer"
+          className="inline-block text-[#6B7A2F] transition-colors hover:text-[#4f5b22] hover:underline"
+        >
+          AI Disclaimer
+        </Link>
       </footer>
     </main>
   );

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, AtSign, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { ArrowRight, AtSign, Check, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { PASSWORD_MIN_LENGTH } from "@/lib/password-policy";
 
 export default function SignupPage() {
@@ -17,6 +17,7 @@ export default function SignupPage() {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -26,13 +27,17 @@ export default function SignupPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!agreed) {
+      setError("Please agree to the Terms & Conditions and Privacy Policy to continue.");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, tncAccepted: agreed }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -150,6 +155,49 @@ export default function SignupPage() {
               </button>
             </div>
           </div>
+
+          <label className="flex cursor-pointer items-start gap-3 pt-1">
+            <span className="relative mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center">
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => {
+                  setAgreed(e.target.checked);
+                  if (e.target.checked) setError("");
+                }}
+                className="peer sr-only"
+              />
+              <span className="absolute inset-0 rounded-[5px] border border-white/20 bg-ink-850 transition-colors peer-checked:border-gold-500 peer-checked:bg-gold-500 peer-focus-visible:ring-2 peer-focus-visible:ring-gold-500/40 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-ink-900" />
+              <Check
+                size={12}
+                strokeWidth={3}
+                className="pointer-events-none relative text-ink-950 opacity-0 transition-opacity peer-checked:opacity-100"
+              />
+            </span>
+            <span className="text-xs leading-5 text-mist-400">
+              I have read and agree to the{" "}
+              <Link
+                href="/terms-and-conditions"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="font-medium text-gold-300 underline decoration-gold-300/40 underline-offset-2 transition-colors hover:text-gold-200 hover:decoration-gold-200"
+              >
+                Terms &amp; Conditions
+              </Link>{" "}
+              and acknowledge the{" "}
+              <Link
+                href="/privacy-policy"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="font-medium text-gold-300 underline decoration-gold-300/40 underline-offset-2 transition-colors hover:text-gold-200 hover:decoration-gold-200"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </span>
+          </label>
 
           {error && (
             <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">

@@ -9,6 +9,7 @@ import { sendOtpEmail } from "@/lib/brevo";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { tooManyRequests } from "@/lib/auth-guard";
 import { validatePassword } from "@/lib/password-policy";
+import { TNC_VERSION } from "@/lib/legal";
 
 const RegisterSchema = z.object({
   name: z.string().min(2, "Name is too short").max(60),
@@ -22,6 +23,12 @@ const RegisterSchema = z.object({
     ),
   email: z.string().email("Please enter a valid email address").max(254),
   password: z.string().min(1, "Password is required").max(256),
+  tncAccepted: z
+    .boolean()
+    .refine(
+      (value) => value === true,
+      "You must accept the Terms & Conditions and Privacy Policy."
+    ),
 });
 
 function generateOtp(): string {
@@ -89,6 +96,8 @@ export async function POST(req: NextRequest) {
           passwordHash,
           avatarUrl,
           vipCode,
+          tncAccepted: true,
+          tncVersion: TNC_VERSION,
         },
         attempts: 0,
         expiresAt,

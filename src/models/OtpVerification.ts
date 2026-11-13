@@ -9,6 +9,8 @@ export interface IOtpVerification extends Document {
     passwordHash: string;
     avatarUrl: string;
     vipCode: string;
+    tncAccepted: boolean;
+    tncVersion: string;
   };
   attempts: number;
   expiresAt: Date;
@@ -34,6 +36,8 @@ const OtpVerificationSchema = new Schema<IOtpVerification>(
       passwordHash: { type: String, required: true },
       avatarUrl: { type: String, required: true },
       vipCode: { type: String, required: true },
+      tncAccepted: { type: Boolean, required: true },
+      tncVersion: { type: String, required: true },
     },
     attempts: {
       type: Number,
